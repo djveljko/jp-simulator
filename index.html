@@ -1,0 +1,2561 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JP Simulator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0e1a;
+      --bg-secondary: #12182b;
+      --bg-card: #1a2238;
+      --bg-input: #0f1524;
+      --border-primary: #2a3654;
+      --border-accent: #3d5a80;
+      --text-primary: #e8ecf3;
+      --text-secondary: #98a7c0;
+      --text-muted: #6b7a94;
+      --accent-gold: #f4c430;
+      --accent-gold-hover: #ffd700;
+      --accent-blue: #4a90e2;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 4px 12px 0 rgba(0, 0, 0, 0.5);
+      --shadow-lg: 0 10px 30px 0 rgba(0, 0, 0, 0.6);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, var(--bg-primary) 0%, #0d1221 50%, var(--bg-primary) 100%);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+    }
+    
+    header {
+      background: rgba(18, 24, 43, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-primary);
+      padding: 1.75rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-md);
+    }
+    
+    header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--accent-gold);
+    }
+    
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 2.5rem 2rem;
+    }
+    
+    .flex-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2.5rem;
+    }
+    
+    .card {
+      background: linear-gradient(135deg, rgba(26, 34, 56, 0.95) 0%, rgba(18, 24, 43, 0.95) 100%);
+      border-radius: 16px;
+      border: 1px solid var(--border-primary);
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-bottom: 2.5rem;
+    }
+    
+    .card:hover {
+      border-color: var(--border-accent);
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+    
+    .flex-row .card {
+      margin-bottom: 0;
+    }
+    
+    .card h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-primary);
+    }
+    
+    .card h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--accent-gold);
+      margin-bottom: 1rem;
+    }
+    
+    label {
+      display: block;
+      font-size: 0.813rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.01em;
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 0.625rem 0.875rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-primary);
+      background: var(--bg-input);
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      font-family: inherit;
+      margin-bottom: 0.75rem;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+    
+    input:hover {
+      border-color: var(--border-accent);
+    }
+    
+    input:focus, select:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    }
+    
+    input[type="checkbox"] {
+      width: auto;
+      margin-right: 0.5rem;
+      accent-color: var(--accent-gold);
+    }
+    
+    .jp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+    
+    .jp-tag {
+      padding: 0.375rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.688rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .platinum { 
+      background: linear-gradient(135deg, #5b6b8f 0%, #3f4d6b 100%);
+      color: #e8ecf3;
+      box-shadow: 0 2px 6px rgba(91, 107, 143, 0.3);
+    }
+    
+    .gold { 
+      background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
+      color: #1a1a1a;
+      box-shadow: 0 2px 6px rgba(212, 175, 55, 0.4);
+    }
+    
+    .diamond { 
+      background: linear-gradient(135deg, #4fc3f7 0%, #0288d1 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(79, 195, 247, 0.4);
+    }
+    
+    button {
+      background: linear-gradient(135deg, var(--accent-gold) 0%, #e6b422 100%);
+      border: none;
+      color: #1a1a1a;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      margin-top: 0.75rem;
+      margin-right: 0.75rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(244, 196, 48, 0.3);
+    }
+    
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(244, 196, 48, 0.5);
+      background: linear-gradient(135deg, var(--accent-gold-hover) 0%, var(--accent-gold) 100%);
+    }
+    
+    button:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    
+    button.secondary {
+      background: linear-gradient(135deg, #3d5a80 0%, #2a3f5f 100%);
+      color: var(--text-primary);
+      box-shadow: 0 2px 8px rgba(61, 90, 128, 0.3);
+    }
+    
+    button.secondary:hover:not(:disabled) {
+      background: linear-gradient(135deg, #4a6a94 0%, #3d5a80 100%);
+      box-shadow: 0 4px 16px rgba(61, 90, 128, 0.5);
+    }
+    
+    button.small {
+      padding: 0.5rem 1rem;
+      font-size: 0.813rem;
+    }
+    
+    button.green {
+      background: linear-gradient(135deg, var(--accent-green) 0%, #059669 100%);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    }
+    
+    button.green:hover:not(:disabled) {
+      background: linear-gradient(135deg, #34d399 0%, var(--accent-green) 100%);
+      box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5);
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 1rem;
+      font-size: 0.813rem;
+      overflow: hidden;
+      border-radius: 8px;
+    }
+    
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: right;
+      border-bottom: 1px solid var(--border-primary);
+    }
+    
+    th {
+      background: linear-gradient(135deg, rgba(61, 90, 128, 0.3) 0%, rgba(42, 63, 95, 0.3) 100%);
+      text-align: center;
+      color: var(--accent-gold);
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    td:first-child {
+      text-align: left;
+      font-weight: 500;
+    }
+    
+    tbody tr {
+      transition: background-color 0.2s ease;
+    }
+    
+    tbody tr:hover {
+      background: rgba(61, 90, 128, 0.1);
+    }
+    
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .small-note {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-top: 0.75rem;
+      font-weight: 400;
+    }
+    
+    .inline {
+      display: inline-block;
+      width: calc(50% - 1rem);
+      margin-right: 2rem;
+    }
+    
+    .inline:nth-child(2n) {
+      margin-right: 0;
+    }
+    
+    @media (max-width: 900px) {
+      .inline {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 1rem;
+      }
+    }
+    
+    canvas {
+      background: var(--bg-input);
+      border: 1px solid var(--border-primary);
+      border-radius: 12px;
+      width: 100%;
+      height: auto;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .result-highlight {
+      color: var(--accent-gold);
+      font-weight: 600;
+    }
+    
+    .info-box {
+      background: linear-gradient(135deg, rgba(74, 144, 226, 0.1) 0%, rgba(74, 144, 226, 0.05) 100%);
+      border-left: 3px solid var(--accent-blue);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0 1.5rem 0;
+      font-size: 0.813rem;
+      color: var(--text-secondary);
+    }
+    
+    .success {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+      border-left: 3px solid var(--accent-green);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0 1.5rem 0;
+      font-size: 0.813rem;
+      color: #86efac;
+    }
+    
+    .error {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
+      border-left: 3px solid var(--accent-red);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0 1.5rem 0;
+      font-size: 0.813rem;
+      color: #fca5a5;
+    }
+    
+    .warning {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(251, 191, 36, 0.05) 100%);
+      border-left: 3px solid #fbbf24;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0 1.5rem 0;
+      font-size: 0.813rem;
+      color: #fde68a;
+    }
+    
+    .info-label {
+      color: var(--accent-gold);
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    
+    #validationWarnings {
+      margin-bottom: 2.5rem;
+    }
+    
+    .monte-carlo-results {
+      display: none;
+      margin-top: 1.5rem;
+    }
+    
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+    
+    .stat-item {
+      background: linear-gradient(135deg, rgba(15, 21, 36, 0.6) 0%, rgba(12, 17, 30, 0.6) 100%);
+      padding: 1.25rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-primary);
+      border-left: 3px solid var(--accent-gold);
+      transition: all 0.2s ease;
+    }
+    
+    .stat-item:hover {
+      border-color: var(--accent-gold);
+      background: linear-gradient(135deg, rgba(15, 21, 36, 0.8) 0%, rgba(12, 17, 30, 0.8) 100%);
+    }
+    
+    .stat-item label {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.688rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+    
+    .stat-item .value {
+      font-size: 1.5rem;
+      color: var(--accent-gold);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    
+    .scenario-section {
+      display: none;
+      margin-top: 3rem;
+    }
+    
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 1.5rem;
+    }
+    
+    .scenario-card {
+      background: linear-gradient(135deg, rgba(15, 21, 36, 0.6) 0%, rgba(12, 17, 30, 0.6) 100%);
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-primary);
+      transition: all 0.3s ease;
+    }
+    
+    .scenario-card:hover {
+      border-color: var(--border-accent);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .scenario-card.active {
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 20px rgba(244, 196, 48, 0.2);
+    }
+    
+    .scenario-input,
+    .scenario-input-small {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      margin-top: 0.375rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-primary);
+      background: rgba(10, 14, 26, 0.8);
+      color: var(--text-primary);
+      font-size: 0.813rem;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+    
+    .scenario-input-small {
+      padding: 0.375rem 0.625rem;
+      font-size: 0.75rem;
+    }
+    
+    .comparison-highlight {
+      background: rgba(74, 144, 226, 0.15);
+      font-weight: 600;
+    }
+    
+    .auto-generator {
+      background: linear-gradient(135deg, rgba(74, 144, 226, 0.08) 0%, rgba(74, 144, 226, 0.04) 100%);
+      padding: 1.75rem;
+      border-radius: 12px;
+      margin-bottom: 2.5rem;
+      border: 1px solid rgba(74, 144, 226, 0.3);
+    }
+    
+    .auto-generator h3 {
+      margin-top: 0;
+      color: var(--accent-blue);
+      font-size: 1rem;
+    }
+    
+    .contrib-preview {
+      background: rgba(10, 14, 26, 0.6);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 0.75rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      border: 1px solid var(--border-primary);
+    }
+    
+    .jp-mini-section {
+      background: rgba(10, 14, 26, 0.6);
+      padding: 0.875rem;
+      border-radius: 8px;
+      margin-top: 0.75rem;
+      border: 1px solid var(--border-primary);
+    }
+    
+    .jp-mini-section h4 {
+      margin: 0 0 0.625rem 0;
+      font-size: 0.813rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+    
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      margin: 1rem 0;
+      font-size: 0.813rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    
+    .warning-box {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(251, 191, 36, 0.05) 100%);
+      border-left: 3px solid #fbbf24;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0 1.5rem 0;
+      font-size: 0.813rem;
+      color: #fde68a;
+    }
+    
+    .currency-section {
+      background: linear-gradient(135deg, rgba(74, 144, 226, 0.05) 0%, rgba(74, 144, 226, 0.02) 100%);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-top: 2.5rem;
+      border: 1px solid rgba(74, 144, 226, 0.2);
+    }
+    
+    .currency-section h4 {
+      margin: 0 0 1.25rem 0;
+      color: var(--accent-blue);
+      font-size: 0.938rem;
+      font-weight: 600;
+    }
+    
+    .progress-container {
+      display: none;
+      margin-top: 1.5rem;
+      background: linear-gradient(135deg, rgba(15, 21, 36, 0.8) 0%, rgba(12, 17, 30, 0.8) 100%);
+      border-radius: 12px;
+      padding: 1.75rem;
+      border: 1px solid var(--border-accent);
+    }
+    
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .progress-header h3 {
+      margin: 0;
+      color: var(--accent-blue);
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    
+    .progress-percentage {
+      color: var(--accent-gold);
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+    
+    .progress-bar-wrapper {
+      width: 100%;
+      height: 32px;
+      background: rgba(10, 14, 26, 0.8);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border-primary);
+      position: relative;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-blue) 0%, var(--accent-green) 100%);
+      width: 0%;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 1rem;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.75rem;
+      box-shadow: 0 0 20px rgba(74, 144, 226, 0.6);
+    }
+    
+    .progress-bar.pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 0 20px rgba(74, 144, 226, 0.6);
+      }
+      50% {
+        box-shadow: 0 0 30px rgba(74, 144, 226, 0.9);
+      }
+    }
+    
+    .progress-info {
+      margin-top: 0.875rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+      font-weight: 500;
+    }
+    
+    .custom-currency-box {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.04) 100%);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    
+    .custom-currency-box h4 {
+      margin: 0 0 1rem 0;
+      color: var(--accent-green);
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    
+    .custom-currency-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 1.25rem;
+      align-items: end;
+    }
+    
+    .custom-currency-item {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .custom-currency-item label {
+      margin: 0 0 0.375rem 0;
+      font-size: 0.75rem;
+    }
+    
+    .custom-currency-item input {
+      margin-bottom: 0;
+    }
+    
+    .crypto-prefix-box {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.08) 0%, rgba(251, 191, 36, 0.04) 100%);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      display: none;
+    }
+    
+    .crypto-prefix-box h4 {
+      margin: 0 0 0.875rem 0;
+      color: #fbbf24;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    
+    .prefix-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.25rem;
+      align-items: end;
+    }
+    
+    .crypto-badge {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a1a1a;
+      padding: 0.25rem 0.625rem;
+      border-radius: 6px;
+      font-size: 0.625rem;
+      font-weight: 700;
+      margin-left: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .rate-display-box {
+      background: linear-gradient(135deg, rgba(74, 144, 226, 0.08) 0%, rgba(74, 144, 226, 0.04) 100%);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 0.875rem;
+      border: 1px solid rgba(74, 144, 226, 0.3);
+    }
+    
+    .rate-display-box input {
+      background: rgba(10, 14, 26, 0.6);
+      color: var(--accent-blue);
+      font-weight: 600;
+      border: 1px solid rgba(74, 144, 226, 0.4);
+      text-align: center;
+      font-size: 0.813rem;
+    }
+    
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-accent);
+      border-radius: 5px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-blue);
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>🎰 JP Simulator</h1>
+</header>
+
+<div class="container">
+  <div class="card">
+    <h2>Globalni parametri</h2>
+    <div class="flex-row">
+      <div class="inline">
+        <label for="winBetRatioPercent">Win/Bet Ratio (bez JP) [%]</label>
+        <input type="number" id="winBetRatioPercent" value="96.5" step="0.1">
+      </div>
+      <div class="inline">
+        <label for="monthlyTurnoverEur">Mesečni promet (EUR)</label>
+        <input type="text" id="monthlyTurnoverEur" value="11,152,644">
+      </div>
+    </div>
+    <div class="flex-row">
+      <div class="inline">
+        <label for="granularity">Simulation Granularity (EUR po iteraciji)</label>
+        <input type="number" id="granularity" value="1" step="0.1" min="0.1">
+      </div>
+      <div class="inline">
+        <label for="seed">Random seed (opciono)</label>
+        <input type="number" id="seed" placeholder="12345">
+      </div>
+    </div>
+    <div class="info-box" id="iterationInfo">
+      <span class="info-label">Broj iteracija:</span>
+      <span id="iterationCount">-</span> 
+    </div>
+  </div>
+
+  <div class="flex-row">
+    <div class="card">
+      <div class="jp-header">
+        <h2>Platinum JP</h2>
+        <span class="jp-tag platinum">Platinum</span>
+      </div>
+      <label>Base Value (EUR)</label>
+      <input type="number" id="pl_base" value="12.75" step="0.01">
+      <label>Min Drop Zone (EUR)</label>
+      <input type="number" id="pl_min" value="12.75" step="0.01">
+      <label>Max Drop Zone (EUR)</label>
+      <input type="number" id="pl_max" value="34" step="0.01">
+      <div class="warning-box" id="pl_gap_warning" style="display:none;">
+        ⚠️ <strong>GAP = 0 EUR</strong> → JP pada ODMAH! Za ređe dropove, povećaj Min.
+      </div>
+      <label>Bet Requirement (EUR) - samo za info</label>
+      <input type="number" id="pl_bet_req" value="0.05" step="0.01">
+      <label>Standard Contribution [%]</label>
+      <input type="number" id="pl_std" value="0.27" step="0.001">
+      <label>Hidden Contribution [%]</label>
+      <input type="number" id="pl_hidden" value="0.03" step="0.001">
+    </div>
+
+    <div class="card">
+      <div class="jp-header">
+        <h2>Gold JP</h2>
+        <span class="jp-tag gold">Gold</span>
+      </div>
+      <label>Base Value (EUR)</label>
+      <input type="number" id="gd_base" value="17" step="0.01">
+      <label>Min Drop Zone (EUR)</label>
+      <input type="number" id="gd_min" value="42.5" step="0.01">
+      <label>Max Drop Zone (EUR)</label>
+      <input type="number" id="gd_max" value="119" step="0.01">
+      <div class="info-box" id="gd_gap_info">
+        📊 <strong>GAP:</strong> <span id="gd_gap_value">25.5 EUR</span>
+      </div>
+      <label>Bet Requirement (EUR) - samo za info</label>
+      <input type="number" id="gd_bet_req" value="0.40" step="0.01">
+      <label>Standard Contribution [%]</label>
+      <input type="number" id="gd_std" value="0.135" step="0.001">
+      <label>Hidden Contribution [%]</label>
+      <input type="number" id="gd_hidden" value="0.015" step="0.001">
+    </div>
+
+    <div class="card">
+      <div class="jp-header">
+        <h2>Diamond JP</h2>
+        <span class="jp-tag diamond">Diamond</span>
+      </div>
+      <label>Base Value (EUR)</label>
+      <input type="number" id="dm_base" value="382.5" step="0.01">
+      <label>Min Drop Zone (EUR)</label>
+      <input type="number" id="dm_min" value="595" step="0.01">
+      <label>Max Drop Zone (EUR)</label>
+      <input type="number" id="dm_max" value="977.5" step="0.01">
+      <div class="info-box" id="dm_gap_info">
+        📊 <strong>GAP:</strong> <span id="dm_gap_value">212.5 EUR</span>
+      </div>
+      <label>Bet Requirement (EUR) - samo za info</label>
+      <input type="number" id="dm_bet_req" value="1" step="0.01">
+      <label>Standard Contribution [%]</label>
+      <input type="number" id="dm_std" value="0.135" step="0.001">
+      <label>Hidden Contribution [%]</label>
+      <input type="number" id="dm_hidden" value="0.015" step="0.001">
+    </div>
+  </div>
+
+  <div id="validationWarnings"></div>
+
+  <div class="card">
+    <h2>Pokreni simulaciju</h2>
+    <button id="runSimBtn">▶ Run Single Simulation</button>
+    <button id="runMonteCarloBtn" class="secondary">🎲 Run Monte Carlo (100 runs)</button>
+    
+    <div class="progress-container" id="progressContainer">
+      <div class="progress-header">
+        <h3>⏳ Monte Carlo Simulation u toku...</h3>
+        <span class="progress-percentage" id="progressPercentage">0%</span>
+      </div>
+      <div class="progress-bar-wrapper">
+        <div class="progress-bar pulse" id="progressBar">
+          <span id="progressText"></span>
+        </div>
+      </div>
+      <div class="progress-info" id="progressInfo">
+        Obrada simulacija: <strong id="currentRun">0</strong> / <strong id="totalRuns">100</strong>
+      </div>
+    </div>
+    
+    <div class="monte-carlo-results" id="monteCarloResults">
+      <h2>🎲 Monte Carlo Analysis (100 simulacija)</h2>
+      <div class="stat-grid">
+        <div class="stat-item">
+          <label>Prosečan JP RTP</label>
+          <div class="value" id="mcAvgRtp">-</div>
+        </div>
+        <div class="stat-item">
+          <label>Minimum JP RTP</label>
+          <div class="value" id="mcMinRtp">-</div>
+        </div>
+        <div class="stat-item">
+          <label>Maximum JP RTP</label>
+          <div class="value" id="mcMaxRtp">-</div>
+        </div>
+        <div class="stat-item">
+          <label>Std Deviation</label>
+          <div class="value" id="mcStdDev">-</div>
+        </div>
+        <div class="stat-item">
+          <label>95% Confidence Int.</label>
+          <div class="value" id="mcConfidence">-</div>
+        </div>
+        <div class="stat-item">
+          <label>Volatilnost</label>
+          <div class="value" id="mcVolatility">-</div>
+        </div>
+      </div>
+      
+      <h3 style="margin-top: 30px;">Prosečan broj dropova (100 simulacija)</h3>
+      <table>
+        <tr>
+          <th>JP Nivo</th><th>Prosek</th><th>Min</th><th>Max</th><th>Std Dev</th>
+        </tr>
+        <tbody id="mcDropsBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="flex-row">
+    <div class="card">
+      <h2>RTP / House Edge</h2>
+      <table>
+        <tr><th>Metrika</th><th>Vrednost</th></tr>
+        <tr><td>Base game RTP (bez JP)</td><td id="baseRtpCell">-</td></tr>
+        <tr><td>JP RTP doprinos</td><td id="jpRtpCell">-</td></tr>
+        <tr><td>Ukupan RTP (base + JP)</td><td id="totalRtpCell" class="result-highlight">-</td></tr>
+        <tr><td>House Edge (1 - RTP)</td><td id="houseEdgeCell" class="result-highlight">-</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>💰 Ukupna Kontribucija (mesečno)</h2>
+      <table>
+        <tr><th>Tip</th><th>Iznos (EUR)</th><th>% od bet-a</th></tr>
+        <tr>
+          <td>Standard Kontribucija</td>
+          <td id="totalStdCell">-</td>
+          <td id="totalStdPctCell">-</td>
+        </tr>
+        <tr>
+          <td>Hidden Kontribucija</td>
+          <td id="totalHidCell">-</td>
+          <td id="totalHidPctCell">-</td>
+        </tr>
+        <tr style="border-top: 2px solid var(--accent-gold);">
+          <td><strong>UKUPNO</strong></td>
+          <td id="totalContribCell" class="result-highlight">-</td>
+          <td id="totalContribPctCell" class="result-highlight">-</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="flex-row">
+    <div class="card">
+      <h2>💵 GGR & Profitabilnost</h2>
+      <table>
+        <tr><th>Metrika</th><th>Vrednost</th></tr>
+        <tr>
+          <td>Total Paid Out (JP isplate)</td>
+          <td id="totalPaidCell">-</td>
+        </tr>
+        <tr>
+          <td>Base Game Profit (bez JP)</td>
+          <td id="baseGameProfitCell">-</td>
+        </tr>
+        <tr style="border-top: 2px solid var(--accent-gold);">
+          <td><strong>GGR (Gross Gaming Revenue)</strong></td>
+          <td id="ggrCell" class="result-highlight">-</td>
+        </tr>
+        <tr>
+          <td>GGR Margin (%)</td>
+          <td id="ggrMarginCell" class="result-highlight">-</td>
+        </tr>
+      </table>
+      <p class="small-note">GGR = Turnover - Base Game Wins - JP Payouts</p>
+    </div>
+
+    <div class="card">
+      <h2>JP statistika (mesečni nivo)</h2>
+      <table>
+        <tr>
+          <th>JP nivo</th><th># Dropova</th><th>Prosečan drop</th>
+          <th>Ukupno isplaćeno</th>
+        </tr>
+        <tbody id="jpStatsBody">
+          <tr><td colspan="4" style="text-align:center;">Nema podataka</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card scenario-section" id="scenarioSection">
+    <h2>⚡ Scenario Comparison Tool</h2>
+    
+    <div class="auto-generator">
+      <h3>🤖 Automatic Scenario Generator (GAP-Aware)</h3>
+      <p class="small-note">Unesi željeni JP RTP. Generator će inteligentno podesiti kontribucije I GAP-ove.</p>
+      
+      <div class="flex-row" style="gap: 20px;">
+        <div class="inline">
+          <label for="targetJpRtp">Ciljni JP RTP (%)</label>
+          <input type="number" id="targetJpRtp" value="0.50" step="0.05" min="0.1" max="2.0">
+          <p class="small-note">Primer: 0.30% (conservative), 0.50% (standard), 0.80% (aggressive)</p>
+        </div>
+        <div class="inline">
+          <label for="variancePercent">Variance između scenarija (%)</label>
+          <input type="number" id="variancePercent" value="15" step="5" min="5" max="50">
+          <p class="small-note">Primer: 15% = Scenario A (-15%), B (target), C (+15%)</p>
+        </div>
+      </div>
+      
+      <div class="checkbox-label">
+        <input type="checkbox" id="adjustGaps" checked>
+        <span><strong>Podesi GAP-ove (Min-Base)</strong> za kontrolu frekvencije dropova</span>
+      </div>
+      <p class="small-note" style="margin-top: -5px;">
+        ✓ Checked = Veći GAP za manji RTP (ređi dropovi) | ✗ Unchecked = Samo kontribucije se menjaju
+      </p>
+      
+      <button class="green" id="generateScenariosBtn">🚀 Generate 3 Scenarios</button>
+      
+      <div id="generatedPreview" style="display:none; margin-top: 15px;">
+        <h4 style="color: var(--accent-green); margin-bottom: 10px; font-size: 0.875rem;">📋 Generated Scenarios Preview:</h4>
+        <div class="scenario-grid">
+          <div class="contrib-preview" id="previewA"></div>
+          <div class="contrib-preview" id="previewB"></div>
+          <div class="contrib-preview" id="previewC"></div>
+        </div>
+      </div>
+    </div>
+    
+    <h3 style="margin-top: 30px;">🔧 Scenario Configuration & Fine-Tuning</h3>
+    <div class="scenario-grid">
+      <div class="scenario-card">
+        <h3>📋 Scenario A</h3>
+        <label>Naziv:</label>
+        <input type="text" class="scenario-input" id="scenarioA_name" value="Conservative">
+        <label style="margin-top: 10px;">Multiplikator kontribucija:</label>
+        <input type="number" class="scenario-input" id="scenarioA_mult" value="0.85" step="0.01">
+        
+        <div class="jp-mini-section">
+          <h4>🎯 Platinum</h4>
+          <label style="font-size: 11px;">Base (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioA_pl_base" value="12.75" step="0.1">
+          <label style="font-size: 11px;">Min (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioA_pl_min" value="12.75" step="0.1">
+          <label style="font-size: 11px;">Max (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioA_pl_max" value="34" step="0.1">
+        </div>
+        
+        <div class="jp-mini-section">
+          <h4>🥇 Gold</h4>
+          <label style="font-size: 11px;">Base (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioA_gd_base" value="17" step="0.1">
+          <label style="font-size: 11px;">Min (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioA_gd_min" value="42.5" step="0.1">
+          <label style="font-size: 11px;">Max (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioA_gd_max" value="119" step="0.1">
+        </div>
+        
+        <div class="jp-mini-section">
+          <h4>💎 Diamond</h4>
+          <label style="font-size: 11px;">Base (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioA_dm_base" value="382.5" step="1">
+          <label style="font-size: 11px;">Min (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioA_dm_min" value="595" step="1">
+          <label style="font-size: 11px;">Max (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioA_dm_max" value="977.5" step="1">
+        </div>
+        
+        <button class="small secondary" onclick="runScenario('A')">▶ Run Scenario A</button>
+      </div>
+      
+      <div class="scenario-card">
+        <h3>📋 Scenario B</h3>
+        <label>Naziv:</label>
+        <input type="text" class="scenario-input" id="scenarioB_name" value="Target">
+        <label style="margin-top: 10px;">Multiplikator kontribucija:</label>
+        <input type="number" class="scenario-input" id="scenarioB_mult" value="1.0" step="0.01">
+        
+        <div class="jp-mini-section">
+          <h4>🎯 Platinum</h4>
+          <label style="font-size: 11px;">Base (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioB_pl_base" value="12.75" step="0.1">
+          <label style="font-size: 11px;">Min (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioB_pl_min" value="12.75" step="0.1">
+          <label style="font-size: 11px;">Max (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioB_pl_max" value="34" step="0.1">
+        </div>
+        
+        <div class="jp-mini-section">
+          <h4>🥇 Gold</h4>
+          <label style="font-size: 11px;">Base (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioB_gd_base" value="17" step="0.1">
+          <label style="font-size: 11px;">Min (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioB_gd_min" value="42.5" step="0.1">
+          <label style="font-size: 11px;">Max (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioB_gd_max" value="119" step="0.1">
+        </div>
+        
+        <div class="jp-mini-section">
+          <h4>💎 Diamond</h4>
+          <label style="font-size: 11px;">Base (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioB_dm_base" value="382.5" step="1">
+          <label style="font-size: 11px;">Min (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioB_dm_min" value="595" step="1">
+          <label style="font-size: 11px;">Max (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioB_dm_max" value="977.5" step="1">
+        </div>
+        
+        <button class="small secondary" onclick="runScenario('B')">▶ Run Scenario B</button>
+      </div>
+      
+      <div class="scenario-card">
+        <h3>📋 Scenario C</h3>
+        <label>Naziv:</label>
+        <input type="text" class="scenario-input" id="scenarioC_name" value="Aggressive">
+        <label style="margin-top: 10px;">Multiplikator kontribucija:</label>
+        <input type="number" class="scenario-input" id="scenarioC_mult" value="1.15" step="0.01">
+        
+        <div class="jp-mini-section">
+          <h4>🎯 Platinum</h4>
+          <label style="font-size: 11px;">Base (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioC_pl_base" value="12.75" step="0.1">
+          <label style="font-size: 11px;">Min (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioC_pl_min" value="12.75" step="0.1">
+          <label style="font-size: 11px;">Max (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioC_pl_max" value="34" step="0.1">
+        </div>
+        
+        <div class="jp-mini-section">
+          <h4>🥇 Gold</h4>
+          <label style="font-size: 11px;">Base (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioC_gd_base" value="17" step="0.1">
+          <label style="font-size: 11px;">Min (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioC_gd_min" value="42.5" step="0.1">
+          <label style="font-size: 11px;">Max (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioC_gd_max" value="119" step="0.1">
+        </div>
+        
+        <div class="jp-mini-section">
+          <h4>💎 Diamond</h4>
+          <label style="font-size: 11px;">Base (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioC_dm_base" value="382.5" step="1">
+          <label style="font-size: 11px;">Min (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioC_dm_min" value="595" step="1">
+          <label style="font-size: 11px;">Max (EUR):</label>
+          <input type="number" class="scenario-input-small" id="scenarioC_dm_max" value="977.5" step="1">
+        </div>
+        
+        <button class="small secondary" onclick="runScenario('C')">▶ Run Scenario C</button>
+      </div>
+    </div>
+    
+    <h3 style="margin-top: 30px;">📊 Comparison Table</h3>
+    <table id="comparisonTable">
+      <thead>
+        <tr>
+          <th>Metrika</th>
+          <th class="comparison-highlight">Current</th>
+          <th id="scenarioA_header">Scenario A</th>
+          <th id="scenarioB_header">Scenario B</th>
+          <th id="scenarioC_header">Scenario C</th>
+        </tr>
+      </thead>
+      <tbody id="comparisonBody">
+        <tr>
+          <td>JP RTP (%)</td>
+          <td class="comparison-highlight" id="current_jpRtp">-</td>
+          <td id="scenarioA_jpRtp">-</td>
+          <td id="scenarioB_jpRtp">-</td>
+          <td id="scenarioC_jpRtp">-</td>
+        </tr>
+        <tr>
+          <td>Total RTP (%)</td>
+          <td class="comparison-highlight" id="current_totalRtp">-</td>
+          <td id="scenarioA_totalRtp">-</td>
+          <td id="scenarioB_totalRtp">-</td>
+          <td id="scenarioC_totalRtp">-</td>
+        </tr>
+        <tr>
+          <td>House Edge (%)</td>
+          <td class="comparison-highlight" id="current_houseEdge">-</td>
+          <td id="scenarioA_houseEdge">-</td>
+          <td id="scenarioB_houseEdge">-</td>
+          <td id="scenarioC_houseEdge">-</td>
+        </tr>
+        <tr>
+          <td>GGR (EUR)</td>
+          <td class="comparison-highlight" id="current_ggr">-</td>
+          <td id="scenarioA_ggr">-</td>
+          <td id="scenarioB_ggr">-</td>
+          <td id="scenarioC_ggr">-</td>
+        </tr>
+        <tr>
+          <td>Platinum Drops</td>
+          <td class="comparison-highlight" id="current_plDrops">-</td>
+          <td id="scenarioA_plDrops">-</td>
+          <td id="scenarioB_plDrops">-</td>
+          <td id="scenarioC_plDrops">-</td>
+        </tr>
+        <tr>
+          <td>Platinum Avg Drop</td>
+          <td class="comparison-highlight" id="current_plAvg">-</td>
+          <td id="scenarioA_plAvg">-</td>
+          <td id="scenarioB_plAvg">-</td>
+          <td id="scenarioC_plAvg">-</td>
+        </tr>
+        <tr>
+          <td>Platinum GAP</td>
+          <td class="comparison-highlight" id="current_plGap">-</td>
+          <td id="scenarioA_plGap">-</td>
+          <td id="scenarioB_plGap">-</td>
+          <td id="scenarioC_plGap">-</td>
+        </tr>
+        <tr>
+          <td>Gold Drops</td>
+          <td class="comparison-highlight" id="current_gdDrops">-</td>
+          <td id="scenarioA_gdDrops">-</td>
+          <td id="scenarioB_gdDrops">-</td>
+          <td id="scenarioC_gdDrops">-</td>
+        </tr>
+        <tr>
+          <td>Gold Avg Drop</td>
+          <td class="comparison-highlight" id="current_gdAvg">-</td>
+          <td id="scenarioA_gdAvg">-</td>
+          <td id="scenarioB_gdAvg">-</td>
+          <td id="scenarioC_gdAvg">-</td>
+        </tr>
+        <tr>
+          <td>Gold GAP</td>
+          <td class="comparison-highlight" id="current_gdGap">-</td>
+          <td id="scenarioA_gdGap">-</td>
+          <td id="scenarioB_gdGap">-</td>
+          <td id="scenarioC_gdGap">-</td>
+        </tr>
+        <tr>
+          <td>Diamond Drops</td>
+          <td class="comparison-highlight" id="current_dmDrops">-</td>
+          <td id="scenarioA_dmDrops">-</td>
+          <td id="scenarioB_dmDrops">-</td>
+          <td id="scenarioC_dmDrops">-</td>
+        </tr>
+        <tr>
+          <td>Diamond Avg Drop</td>
+          <td class="comparison-highlight" id="current_dmAvg">-</td>
+          <td id="scenarioA_dmAvg">-</td>
+          <td id="scenarioB_dmAvg">-</td>
+          <td id="scenarioC_dmAvg">-</td>
+        </tr>
+        <tr>
+          <td>Diamond GAP</td>
+          <td class="comparison-highlight" id="current_dmGap">-</td>
+          <td id="scenarioA_dmGap">-</td>
+          <td id="scenarioB_dmGap">-</td>
+          <td id="scenarioC_dmGap">-</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>📊 Grafikon – JP RTP tokom simulacije</h2>
+    <canvas id="rtpChart" width="1200" height="360"></canvas>
+    <p class="small-note" style="margin-top:15px;">
+      <strong>X osa:</strong> Procesirani turnover (EUR) | <strong>Y osa:</strong> JP RTP (%)
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>💱 Konvertor valuta - Svi Scenariji</h2>
+    
+    <div class="warning-box">
+      ⚠️ <strong>VAŽNO:</strong> Exchange rates su ažurirani za <strong>12. februar 2026</strong>.<br>
+      Za crypto valute preporučujemo korišćenje <strong>milli/micro prefiksa</strong> radi čitljivosti.<br>
+      <strong>➕ Dodaj Custom Valutu</strong> ako trebaš ažurniji ili specifičniji rate!
+    </div>
+    
+    <div class="custom-currency-box">
+      <h4>➕ Dodaj Custom Valutu</h4>
+      <div class="custom-currency-grid">
+        <div class="custom-currency-item">
+          <label for="customCurrencyCode">Currency Code (3 slova)</label>
+          <input type="text" id="customCurrencyCode" placeholder="npr. TRY, BRL, MXN" maxlength="3" style="text-transform: uppercase;">
+        </div>
+        <div class="custom-currency-item">
+          <label for="customCurrencyRate">Exchange Rate prema EUR</label>
+          <input type="number" id="customCurrencyRate" placeholder="npr. 35.50" step="0.01" min="0.0001">
+        </div>
+        <div style="display: flex; align-items: flex-end;">
+          <button class="green small" id="addCustomCurrencyBtn" style="margin: 0;">➕ Dodaj</button>
+        </div>
+      </div>
+      <p class="small-note" style="margin-top: 8px; margin-bottom: 0;">
+        💡 <strong>Fiat:</strong> Rate = koliko te valute za 1 EUR (1 EUR = 1.19 USD)<br>
+        💡 <strong>Crypto:</strong> Rate = koliko EUR košta 1 coin (1 BTC = 57,710 EUR)
+      </p>
+    </div>
+    
+    <div class="crypto-prefix-box" id="cryptoPrefixBox">
+      <h4>₿ Crypto Prefix (za jake valute)</h4>
+      <div class="prefix-grid">
+        <div>
+          <label for="cryptoPrefix">Izaberi prefix multiplier:</label>
+          <select id="cryptoPrefix">
+            <option value="1">None (1x) - Cela valuta</option>
+            <option value="0.001" selected>milli (0.001x) - Hiljaditi deo (1 mBTC, 1 mETH)</option>
+            <option value="0.000001">micro (0.000001x) - Milioniti deo (1 μBTC, 1 μETH)</option>
+          </select>
+          <p class="small-note" style="margin-top: 5px;">
+            💡 <strong>Primer:</strong> 1 mBTC = 0.001 BTC (~57.71 EUR)
+          </p>
+        </div>
+        <div>
+          <label>Ekvivalent u EUR:</label>
+          <input type="text" id="cryptoEquivalent" readonly style="background: rgba(251, 191, 36, 0.1); color: #fbbf24; font-weight: bold;">
+        </div>
+      </div>
+    </div>
+    
+    <div style="max-width: 600px;">
+      <label for="convCurrency">Izaberi valutu (Top 50 Fiat + Top 10 Crypto)</label>
+      <select id="convCurrency"></select>
+      
+      <div class="rate-display-box" id="rateDisplayBox" style="display:none;">
+        <label style="margin: 0 0 5px 0; font-size: 12px; color: var(--accent-blue);">📊 Current Exchange Rate:</label>
+        <input type="text" id="rateDisplay" readonly>
+      </div>
+      
+      <button id="convertBtn">💰 Generiši tabele za SVE scenarije</button>
+    </div>
+    <div id="convTableContainer" style="display:none; margin-top:20px; overflow-x:auto;">
+      <h3 style="color: var(--accent-gold);">JP Configuration - <span id="selectedCurrency"></span></h3>
+      
+      <div class="currency-section">
+        <h4>📋 Current Configuration (Main Setup)</h4>
+        <table>
+          <thead>
+            <tr><th>JP Level</th><th>Standard %</th><th>Hidden %</th><th>Base Value</th><th>Min</th><th>Max</th><th>Min Bet</th></tr>
+          </thead>
+          <tbody id="convTableCurrent"></tbody>
+        </table>
+      </div>
+      
+      <div class="currency-section">
+        <h4 id="convScenarioA_title">📋 Scenario A</h4>
+        <table>
+          <thead>
+            <tr><th>JP Level</th><th>Standard %</th><th>Hidden %</th><th>Base Value</th><th>Min</th><th>Max</th><th>Min Bet</th></tr>
+          </thead>
+          <tbody id="convTableA"></tbody>
+        </table>
+      </div>
+      
+      <div class="currency-section">
+        <h4 id="convScenarioB_title">📋 Scenario B</h4>
+        <table>
+          <thead>
+            <tr><th>JP Level</th><th>Standard %</th><th>Hidden %</th><th>Base Value</th><th>Min</th><th>Max</th><th>Min Bet</th></tr>
+          </thead>
+          <tbody id="convTableB"></tbody>
+        </table>
+      </div>
+      
+      <div class="currency-section">
+        <h4 id="convScenarioC_title">📋 Scenario C</h4>
+        <table>
+          <thead>
+            <tr><th>JP Level</th><th>Standard %</th><th>Hidden %</th><th>Base Value</th><th>Min</th><th>Max</th><th>Min Bet</th></tr>
+          </thead>
+          <tbody id="convTableC"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentResult = null;
+
+function parseTurnover(str) {
+  if (!str) return 0;
+  return parseFloat(str.toString().replace(/,/g, '')) || 0;
+}
+function formatTurnover(num) {
+  return num.toLocaleString('en-US', { maximumFractionDigits: 0 });
+}
+
+const turnoverInput = document.getElementById('monthlyTurnoverEur');
+turnoverInput.addEventListener('blur', () => {
+  const val = parseTurnover(turnoverInput.value);
+  turnoverInput.value = formatTurnover(val);
+  updateIterationCount();
+});
+
+const granularityInput = document.getElementById('granularity');
+granularityInput.addEventListener('input', updateIterationCount);
+
+function updateIterationCount() {
+  const turnover = parseTurnover(turnoverInput.value);
+  const granularity = parseFloat(granularityInput.value) || 1;
+  const iterations = Math.floor(turnover / granularity);
+  document.getElementById('iterationCount').textContent = iterations.toLocaleString('en-US');
+}
+updateIterationCount();
+
+function LCG(seed) {
+  let m = 0x80000000, a = 1103515245, c = 12345;
+  let state = seed ? seed : Math.floor(Math.random() * (m - 1));
+  return function() {
+    state = (a * state + c) % m;
+    return state / (m - 1);
+  };
+}
+
+function enforceBaseMinConstraint(prefix) {
+  const baseInput = document.getElementById(`${prefix}_base`);
+  const minInput = document.getElementById(`${prefix}_min`);
+  
+  const base = parseFloat(baseInput.value) || 0;
+  const min = parseFloat(minInput.value) || 0;
+  
+  if (base > min) {
+    alert(`⚠️ GREŠKA!\n\nBase Value (${base}) ne može biti VEĆI od Min Drop Zone (${min})!\n\nPostavljam Base = Min.`);
+    baseInput.value = min.toFixed(2);
+  }
+  
+  updateGapWarnings();
+  validateConfiguration();
+}
+
+['pl', 'gd', 'dm'].forEach(prefix => {
+  document.getElementById(`${prefix}_base`).addEventListener('blur', () => enforceBaseMinConstraint(prefix));
+  document.getElementById(`${prefix}_min`).addEventListener('blur', () => enforceBaseMinConstraint(prefix));
+});
+
+function updateProgress(current, total) {
+  const percentage = Math.round((current / total) * 100);
+  const progressBar = document.getElementById('progressBar');
+  const progressPercentage = document.getElementById('progressPercentage');
+  const progressText = document.getElementById('progressText');
+  const currentRun = document.getElementById('currentRun');
+  
+  progressBar.style.width = percentage + '%';
+  progressPercentage.textContent = percentage + '%';
+  progressText.textContent = `${current}/${total}`;
+  currentRun.textContent = current;
+}
+
+function showProgress() {
+  document.getElementById('progressContainer').style.display = 'block';
+  document.getElementById('monteCarloResults').style.display = 'none';
+  document.getElementById('runMonteCarloBtn').disabled = true;
+  document.getElementById('totalRuns').textContent = '100';
+}
+
+function hideProgress() {
+  document.getElementById('progressContainer').style.display = 'none';
+  document.getElementById('runMonteCarloBtn').disabled = false;
+}
+
+function updateGapWarnings() {
+  const plBase = parseFloat(document.getElementById('pl_base').value) || 0;
+  const plMin = parseFloat(document.getElementById('pl_min').value) || 0;
+  const plGap = plMin - plBase;
+  
+  const plWarning = document.getElementById('pl_gap_warning');
+  if (plGap <= 0) {
+    plWarning.style.display = 'block';
+  } else {
+    plWarning.style.display = 'none';
+  }
+  
+  const gdBase = parseFloat(document.getElementById('gd_base').value) || 0;
+  const gdMin = parseFloat(document.getElementById('gd_min').value) || 0;
+  const gdGap = gdMin - gdBase;
+  document.getElementById('gd_gap_value').textContent = gdGap.toFixed(2) + ' EUR';
+  
+  const dmBase = parseFloat(document.getElementById('dm_base').value) || 0;
+  const dmMin = parseFloat(document.getElementById('dm_min').value) || 0;
+  const dmGap = dmMin - dmBase;
+  document.getElementById('dm_gap_value').textContent = dmGap.toFixed(2) + ' EUR';
+}
+
+['pl', 'gd', 'dm'].forEach(prefix => {
+  ['base', 'min'].forEach(field => {
+    document.getElementById(`${prefix}_${field}`).addEventListener('input', updateGapWarnings);
+  });
+});
+updateGapWarnings();
+
+document.getElementById('generateScenariosBtn').addEventListener('click', () => {
+  const targetRtp = parseFloat(document.getElementById('targetJpRtp').value) / 100;
+  const variance = parseFloat(document.getElementById('variancePercent').value) / 100;
+  const adjustGaps = document.getElementById('adjustGaps').checked;
+  
+  const currentPl = (parseFloat(document.getElementById('pl_std').value) + parseFloat(document.getElementById('pl_hidden').value)) / 100;
+  const currentGd = (parseFloat(document.getElementById('gd_std').value) + parseFloat(document.getElementById('gd_hidden').value)) / 100;
+  const currentDm = (parseFloat(document.getElementById('dm_std').value) + parseFloat(document.getElementById('dm_hidden').value)) / 100;
+  const currentTotal = currentPl + currentGd + currentDm;
+  
+  const multiplierA = (targetRtp * (1 - variance)) / currentTotal;
+  const multiplierB = targetRtp / currentTotal;
+  const multiplierC = (targetRtp * (1 + variance)) / currentTotal;
+  
+  document.getElementById('scenarioA_mult').value = multiplierA.toFixed(3);
+  document.getElementById('scenarioB_mult').value = multiplierB.toFixed(3);
+  document.getElementById('scenarioC_mult').value = multiplierC.toFixed(3);
+  
+  const origPlBase = parseFloat(document.getElementById('pl_base').value);
+  const origPlMin = parseFloat(document.getElementById('pl_min').value);
+  const origPlMax = parseFloat(document.getElementById('pl_max').value);
+  const origGdBase = parseFloat(document.getElementById('gd_base').value);
+  const origGdMin = parseFloat(document.getElementById('gd_min').value);
+  const origGdMax = parseFloat(document.getElementById('gd_max').value);
+  const origDmBase = parseFloat(document.getElementById('dm_base').value);
+  const origDmMin = parseFloat(document.getElementById('dm_min').value);
+  const origDmMax = parseFloat(document.getElementById('dm_max').value);
+  
+  const origPlGap = origPlMin - origPlBase;
+  const origGdGap = origGdMin - origGdBase;
+  const origDmGap = origDmMin - origDmBase;
+  
+  if (adjustGaps) {
+    const gapFactorA = 1 / multiplierA;
+    document.getElementById('scenarioA_pl_base').value = origPlBase.toFixed(2);
+    document.getElementById('scenarioA_pl_min').value = (origPlBase + origPlGap * gapFactorA).toFixed(2);
+    document.getElementById('scenarioA_pl_max').value = (origPlBase + origPlGap * gapFactorA + (origPlMax - origPlMin)).toFixed(2);
+    
+    document.getElementById('scenarioA_gd_base').value = origGdBase.toFixed(2);
+    document.getElementById('scenarioA_gd_min').value = (origGdBase + origGdGap * gapFactorA).toFixed(2);
+    document.getElementById('scenarioA_gd_max').value = (origGdBase + origGdGap * gapFactorA + (origGdMax - origGdMin)).toFixed(2);
+    
+    document.getElementById('scenarioA_dm_base').value = origDmBase.toFixed(2);
+    document.getElementById('scenarioA_dm_min').value = (origDmBase + origDmGap * gapFactorA).toFixed(0);
+    document.getElementById('scenarioA_dm_max').value = (origDmBase + origDmGap * gapFactorA + (origDmMax - origDmMin)).toFixed(0);
+    
+    document.getElementById('scenarioB_pl_base').value = origPlBase.toFixed(2);
+    document.getElementById('scenarioB_pl_min').value = origPlMin.toFixed(2);
+    document.getElementById('scenarioB_pl_max').value = origPlMax.toFixed(2);
+    
+    document.getElementById('scenarioB_gd_base').value = origGdBase.toFixed(2);
+    document.getElementById('scenarioB_gd_min').value = origGdMin.toFixed(2);
+    document.getElementById('scenarioB_gd_max').value = origGdMax.toFixed(2);
+    
+    document.getElementById('scenarioB_dm_base').value = origDmBase.toFixed(2);
+    document.getElementById('scenarioB_dm_min').value = origDmMin.toFixed(0);
+    document.getElementById('scenarioB_dm_max').value = origDmMax.toFixed(0);
+    
+    const gapFactorC = 1 / multiplierC;
+    document.getElementById('scenarioC_pl_base').value = origPlBase.toFixed(2);
+    document.getElementById('scenarioC_pl_min').value = Math.max(origPlBase, origPlBase + origPlGap * gapFactorC).toFixed(2);
+    document.getElementById('scenarioC_pl_max').value = (Math.max(origPlBase, origPlBase + origPlGap * gapFactorC) + (origPlMax - origPlMin)).toFixed(2);
+    
+    document.getElementById('scenarioC_gd_base').value = origGdBase.toFixed(2);
+    document.getElementById('scenarioC_gd_min').value = (origGdBase + origGdGap * gapFactorC).toFixed(2);
+    document.getElementById('scenarioC_gd_max').value = (origGdBase + origGdGap * gapFactorC + (origGdMax - origGdMin)).toFixed(2);
+    
+    document.getElementById('scenarioC_dm_base').value = origDmBase.toFixed(2);
+    document.getElementById('scenarioC_dm_min').value = (origDmBase + origDmGap * gapFactorC).toFixed(0);
+    document.getElementById('scenarioC_dm_max').value = (origDmBase + origDmGap * gapFactorC + (origDmMax - origDmMin)).toFixed(0);
+  } else {
+    ['A', 'B', 'C'].forEach(s => {
+      document.getElementById(`scenario${s}_pl_base`).value = origPlBase.toFixed(2);
+      document.getElementById(`scenario${s}_pl_min`).value = origPlMin.toFixed(2);
+      document.getElementById(`scenario${s}_pl_max`).value = origPlMax.toFixed(2);
+      document.getElementById(`scenario${s}_gd_base`).value = origGdBase.toFixed(2);
+      document.getElementById(`scenario${s}_gd_min`).value = origGdMin.toFixed(2);
+      document.getElementById(`scenario${s}_gd_max`).value = origGdMax.toFixed(2);
+      document.getElementById(`scenario${s}_dm_base`).value = origDmBase.toFixed(2);
+      document.getElementById(`scenario${s}_dm_min`).value = origDmMin.toFixed(0);
+      document.getElementById(`scenario${s}_dm_max`).value = origDmMax.toFixed(0);
+    });
+  }
+  
+  const targetRtpPct = (targetRtp * 100).toFixed(2);
+  document.getElementById('scenarioA_name').value = `Conservative (${((targetRtp * (1 - variance)) * 100).toFixed(2)}%)`;
+  document.getElementById('scenarioB_name').value = `Target (${targetRtpPct}%)`;
+  document.getElementById('scenarioC_name').value = `Aggressive (${((targetRtp * (1 + variance)) * 100).toFixed(2)}%)`;
+  
+  const gapAdjust = adjustGaps ? ' + GAP Control' : '';
+  const plGapA = parseFloat(document.getElementById('scenarioA_pl_min').value) - parseFloat(document.getElementById('scenarioA_pl_base').value);
+  const plGapB = parseFloat(document.getElementById('scenarioB_pl_min').value) - parseFloat(document.getElementById('scenarioB_pl_base').value);
+  const plGapC = parseFloat(document.getElementById('scenarioC_pl_min').value) - parseFloat(document.getElementById('scenarioC_pl_base').value);
+  
+  const previewA = `
+    <strong>Scenario A:</strong> ${document.getElementById('scenarioA_name').value}<br>
+    Contrib Mult: ×${multiplierA.toFixed(3)}${gapAdjust}<br>
+    Platinum GAP: ${plGapA.toFixed(2)} EUR<br>
+    Expected JP RTP: ${((targetRtp * (1 - variance)) * 100).toFixed(2)}%
+  `;
+  const previewB = `
+    <strong>Scenario B:</strong> ${document.getElementById('scenarioB_name').value}<br>
+    Contrib Mult: ×${multiplierB.toFixed(3)}${gapAdjust}<br>
+    Platinum GAP: ${plGapB.toFixed(2)} EUR<br>
+    Expected JP RTP: ${(targetRtp * 100).toFixed(2)}%
+  `;
+  const previewC = `
+    <strong>Scenario C:</strong> ${document.getElementById('scenarioC_name').value}<br>
+    Contrib Mult: ×${multiplierC.toFixed(3)}${gapAdjust}<br>
+    Platinum GAP: ${plGapC.toFixed(2)} EUR<br>
+    Expected JP RTP: ${((targetRtp * (1 + variance)) * 100).toFixed(2)}%
+  `;
+  
+  document.getElementById('previewA').innerHTML = previewA;
+  document.getElementById('previewB').innerHTML = previewB;
+  document.getElementById('previewC').innerHTML = previewC;
+  document.getElementById('generatedPreview').style.display = 'block';
+  
+  alert(`✅ Generisana 3 scenarija sa ${adjustGaps ? 'GAP kontrolom' : 'fiksnim zonama'}!\n\nPlatinum GAP:\nA: ${plGapA.toFixed(2)} EUR\nB: ${plGapB.toFixed(2)} EUR\nC: ${plGapC.toFixed(2)} EUR\n\nKlikni "Run Scenario A/B/C".`);
+});
+
+const currencies = {
+  'USD': {name: 'US Dollar', rate: 1.19, type: 'fiat'},
+  'EUR': {name: 'Euro', rate: 1.0, type: 'fiat'},
+  'GBP': {name: 'British Pound', rate: 0.87, type: 'fiat'},
+  'JPY': {name: 'Japanese Yen', rate: 181.6, type: 'fiat'},
+  'CHF': {name: 'Swiss Franc', rate: 0.91, type: 'fiat'},
+  'CAD': {name: 'Canadian Dollar', rate: 1.61, type: 'fiat'},
+  'AUD': {name: 'Australian Dollar', rate: 1.67, type: 'fiat'},
+  'CNY': {name: 'Chinese Yuan', rate: 7.85, type: 'fiat'},
+  'SEK': {name: 'Swedish Krona', rate: 11.5, type: 'fiat'},
+  'NOK': {name: 'Norwegian Krone', rate: 11.0, type: 'fiat'},
+  'DKK': {name: 'Danish Krone', rate: 7.45, type: 'fiat'},
+  'PLN': {name: 'Polish Zloty', rate: 4.21, type: 'fiat'},
+  'CZK': {name: 'Czech Koruna', rate: 25.2, type: 'fiat'},
+  'HUF': {name: 'Hungarian Forint', rate: 390.0, type: 'fiat'},
+  'RON': {name: 'Romanian Leu', rate: 4.97, type: 'fiat'},
+  'BGN': {name: 'Bulgarian Lev', rate: 1.96, type: 'fiat'},
+  'HRK': {name: 'Croatian Kuna', rate: 7.53, type: 'fiat'},
+  'RSD': {name: 'Serbian Dinar', rate: 117.0, type: 'fiat'},
+  'ISK': {name: 'Icelandic Króna', rate: 150.0, type: 'fiat'},
+  'AED': {name: 'UAE Dirham', rate: 4.04, type: 'fiat'},
+  'SAR': {name: 'Saudi Riyal', rate: 4.12, type: 'fiat'},
+  'ILS': {name: 'Israeli Shekel', rate: 4.0, type: 'fiat'},
+  'ZAR': {name: 'South African Rand', rate: 20.5, type: 'fiat'},
+  'EGP': {name: 'Egyptian Pound', rate: 54.0, type: 'fiat'},
+  'TRY': {name: 'Turkish Lira', rate: 35.5, type: 'fiat'},
+  'SGD': {name: 'Singapore Dollar', rate: 1.45, type: 'fiat'},
+  'HKD': {name: 'Hong Kong Dollar', rate: 8.60, type: 'fiat'},
+  'KRW': {name: 'South Korean Won', rate: 1450.0, type: 'fiat'},
+  'INR': {name: 'Indian Rupee', rate: 107.76, type: 'fiat'},
+  'IDR': {name: 'Indonesian Rupiah', rate: 17200.0, type: 'fiat'},
+  'THB': {name: 'Thai Baht', rate: 38.5, type: 'fiat'},
+  'MYR': {name: 'Malaysian Ringgit', rate: 5.0, type: 'fiat'},
+  'PHP': {name: 'Philippine Peso', rate: 61.5, type: 'fiat'},
+  'NZD': {name: 'New Zealand Dollar', rate: 1.78, type: 'fiat'},
+  'MXN': {name: 'Mexican Peso', rate: 18.8, type: 'fiat'},
+  'BRL': {name: 'Brazilian Real', rate: 5.45, type: 'fiat'},
+  'ARS': {name: 'Argentine Peso', rate: 1050.0, type: 'fiat'},
+  'CLP': {name: 'Chilean Peso', rate: 980.0, type: 'fiat'},
+  'COP': {name: 'Colombian Peso', rate: 4250.0, type: 'fiat'},
+  'PEN': {name: 'Peruvian Sol', rate: 4.10, type: 'fiat'},
+  'RUB': {name: 'Russian Ruble', rate: 100.0, type: 'fiat'},
+  'UAH': {name: 'Ukrainian Hryvnia', rate: 45.0, type: 'fiat'},
+  'PKR': {name: 'Pakistani Rupee', rate: 305.0, type: 'fiat'},
+  'BDT': {name: 'Bangladeshi Taka', rate: 120.0, type: 'fiat'},
+  'VND': {name: 'Vietnamese Dong', rate: 27000.0, type: 'fiat'},
+  'NGN': {name: 'Nigerian Naira', rate: 1650.0, type: 'fiat'},
+  'KES': {name: 'Kenyan Shilling', rate: 143.0, type: 'fiat'},
+  'TWD': {name: 'Taiwan Dollar', rate: 34.5, type: 'fiat'},
+  'BTC': {name: 'Bitcoin', rate: 57710.0, type: 'crypto'},
+  'ETH': {name: 'Ethereum', rate: 1616.93, type: 'crypto'},
+  'USDT': {name: 'Tether (USD Stablecoin)', rate: 0.84, type: 'crypto'},
+  'BNB': {name: 'Binance Coin', rate: 543.0, type: 'crypto'},
+  'SOL': {name: 'Solana', rate: 67.15, type: 'crypto'},
+  'XRP': {name: 'Ripple', rate: 1.16, type: 'crypto'},
+  'USDC': {name: 'USD Coin (USD Stablecoin)', rate: 0.84, type: 'crypto'},
+  'ADA': {name: 'Cardano', rate: 0.2151, type: 'crypto'},
+  'AVAX': {name: 'Avalanche', rate: 7.28, type: 'crypto'},
+  'DOGE': {name: 'Dogecoin', rate: 0.0754, type: 'crypto'}
+};
+
+function populateCurrencySelect() {
+  const sel = document.getElementById('convCurrency');
+  sel.innerHTML = '';
+  
+  const fiat = Object.keys(currencies).filter(k => currencies[k].type === 'fiat').sort();
+  const crypto = Object.keys(currencies).filter(k => currencies[k].type === 'crypto').sort();
+  const custom = Object.keys(currencies).filter(k => currencies[k].type === 'custom').sort();
+  
+  if (fiat.length > 0) {
+    const fiatGroup = document.createElement('optgroup');
+    fiatGroup.label = '💵 FIAT Currencies (Top 50)';
+    fiat.forEach(code => {
+      const opt = document.createElement('option');
+      opt.value = code;
+      opt.textContent = `${code} - ${currencies[code].name}`;
+      fiatGroup.appendChild(opt);
+    });
+    sel.appendChild(fiatGroup);
+  }
+  
+  if (crypto.length > 0) {
+    const cryptoGroup = document.createElement('optgroup');
+    cryptoGroup.label = '₿ CRYPTO Currencies (Top 10)';
+    crypto.forEach(code => {
+      const opt = document.createElement('option');
+      opt.value = code;
+      opt.textContent = `${code} - ${currencies[code].name}`;
+      cryptoGroup.appendChild(opt);
+    });
+    sel.appendChild(cryptoGroup);
+  }
+  
+  if (custom.length > 0) {
+    const customGroup = document.createElement('optgroup');
+    customGroup.label = '➕ Custom Currencies';
+    custom.forEach(code => {
+      const opt = document.createElement('option');
+      opt.value = code;
+      opt.textContent = `${code} - ${currencies[code].name}`;
+      customGroup.appendChild(opt);
+    });
+    sel.appendChild(customGroup);
+  }
+}
+populateCurrencySelect();
+
+function updateRateDisplay() {
+  const code = document.getElementById('convCurrency').value;
+  const currency = currencies[code];
+  
+  if (!currency) {
+    document.getElementById('rateDisplayBox').style.display = 'none';
+    return;
+  }
+  
+  document.getElementById('rateDisplayBox').style.display = 'block';
+  
+  let displayText = '';
+  if (currency.type === 'crypto') {
+    const prefix = parseFloat(document.getElementById('cryptoPrefix').value);
+    let prefixName = '';
+    if (prefix === 0.001) prefixName = 'm';
+    else if (prefix === 0.000001) prefixName = 'μ';
+    
+    const effectiveRate = currency.rate * prefix;
+    const formattedRate = effectiveRate >= 1 ? effectiveRate.toLocaleString('en-US', {maximumFractionDigits: 2}) : effectiveRate.toFixed(6);
+    
+    if (prefixName) {
+      displayText = `1 ${prefixName}${code} = ${formattedRate} EUR | Base: 1 ${code} = ${currency.rate.toLocaleString('en-US', {maximumFractionDigits: 2})} EUR`;
+    } else {
+      displayText = `1 ${code} = ${currency.rate.toLocaleString('en-US', {maximumFractionDigits: 2})} EUR (1 coin košta toliko EUR)`;
+    }
+  } else {
+    displayText = `1 EUR = ${currency.rate.toLocaleString('en-US', {maximumFractionDigits: 4})} ${code}`;
+  }
+  
+  document.getElementById('rateDisplay').value = displayText;
+}
+
+document.getElementById('convCurrency').addEventListener('change', () => {
+  const code = document.getElementById('convCurrency').value;
+  const currency = currencies[code];
+  
+  if (currency && currency.type === 'crypto') {
+    document.getElementById('cryptoPrefixBox').style.display = 'block';
+    
+    if (currency.rate > 10000) {
+      document.getElementById('cryptoPrefix').value = '0.001';
+    } else if (currency.rate > 100) {
+      document.getElementById('cryptoPrefix').value = '0.001';
+    } else {
+      document.getElementById('cryptoPrefix').value = '1';
+    }
+    
+    updateCryptoEquivalent();
+  } else {
+    document.getElementById('cryptoPrefixBox').style.display = 'none';
+  }
+  
+  updateRateDisplay();
+});
+
+document.getElementById('cryptoPrefix').addEventListener('change', function() {
+  const code = document.getElementById('convCurrency').value;
+  const currency = currencies[code];
+  
+  if (currency && currency.type === 'crypto' && this.value === '1' && currency.rate > 1000) {
+    const currencyName = code === 'BTC' ? 'Bitcoin' : code === 'ETH' ? 'Ethereum' : code;
+    alert(`⚠️ UPOZORENJE!\n\n${currencyName} je JAKO skupa valuta (${currency.rate.toLocaleString('en-US', {maximumFractionDigits: 2})} EUR).\n\nKorišćenje "None (1x)" će generisati MALE DECIMALNE BROJEVE koji mogu biti teški za čitanje!\n\n💡 PREPORUKA: Koristi "milli (0.001x)" prefix za čitljivije vrednosti.`);
+  }
+  
+  updateCryptoEquivalent();
+  updateRateDisplay();
+});
+
+function updateCryptoEquivalent() {
+  const code = document.getElementById('convCurrency').value;
+  const currency = currencies[code];
+  if (!currency || currency.type !== 'crypto') return;
+  
+  const prefix = parseFloat(document.getElementById('cryptoPrefix').value);
+  const equivalent = (currency.rate * prefix);
+  
+  let prefixName = '';
+  if (prefix === 1) prefixName = '';
+  else if (prefix === 0.001) prefixName = 'm';
+  else if (prefix === 0.000001) prefixName = 'μ';
+  
+  let formattedEquiv;
+  if (equivalent >= 1000) {
+    formattedEquiv = equivalent.toLocaleString('en-US', {maximumFractionDigits: 2});
+  } else if (equivalent >= 1) {
+    formattedEquiv = equivalent.toFixed(2);
+  } else {
+    formattedEquiv = equivalent.toFixed(6);
+  }
+  
+  document.getElementById('cryptoEquivalent').value = `1 ${prefixName}${code} ≈ ${formattedEquiv} EUR`;
+}
+
+document.getElementById('addCustomCurrencyBtn').addEventListener('click', () => {
+  const code = document.getElementById('customCurrencyCode').value.trim().toUpperCase();
+  const rate = parseFloat(document.getElementById('customCurrencyRate').value);
+  
+  if (!code || code.length !== 3) {
+    alert('⚠️ Unesi validan currency code (3 slova, npr. TRY, BRL, MXN)');
+    return;
+  }
+  
+  if (!rate || rate <= 0) {
+    alert('⚠️ Unesi validan exchange rate (npr. 35.50)');
+    return;
+  }
+  
+  if (currencies[code]) {
+    const overwrite = confirm(`Valuta ${code} već postoji sa rate-om ${currencies[code].rate}.\n\nŽeliš da je zamenjiš sa ${rate}?`);
+    if (!overwrite) return;
+  }
+  
+  currencies[code] = {name: `Custom ${code}`, rate: rate, type: 'custom'};
+  populateCurrencySelect();
+  
+  const sel = document.getElementById('convCurrency');
+  sel.value = code;
+  
+  document.getElementById('customCurrencyCode').value = '';
+  document.getElementById('customCurrencyRate').value = '';
+  
+  updateRateDisplay();
+  
+  alert(`✅ Custom valuta ${code} dodana sa rate-om ${rate}!\n\nSada je možeš izabrati iz dropdown-a.`);
+});
+
+document.getElementById('customCurrencyCode').addEventListener('input', (e) => {
+  e.target.value = e.target.value.toUpperCase();
+});
+
+function convertAndRound(amountEur, currencyCode, cryptoPrefix = 1) {
+  if (!currencies[currencyCode]) return null;
+  
+  let effectiveRate = currencies[currencyCode].rate;
+  if (currencies[currencyCode].type === 'crypto') {
+    effectiveRate *= cryptoPrefix;
+  }
+  
+  let value;
+  
+  if (currencies[currencyCode].type === 'crypto') {
+    value = amountEur / effectiveRate;
+  } else {
+    value = amountEur * effectiveRate;
+  }
+  
+  if (currencies[currencyCode].type === 'crypto') {
+    if (cryptoPrefix >= 1) {
+      if (value >= 1) {
+        return Math.round(value * 100000) / 100000;
+      } else if (value >= 0.001) {
+        return Math.round(value * 100000000) / 100000000;
+      } else if (value >= 0.00000001) {
+        return parseFloat(value.toFixed(10));
+      } else {
+        return parseFloat(value.toExponential(4));
+      }
+    } else if (cryptoPrefix >= 0.001) {
+      return Math.round(value * 100) / 100;
+    } else if (cryptoPrefix >= 0.000001) {
+      if (value >= 10) {
+        return Math.round(value);
+      } else {
+        return Math.round(value * 10) / 10;
+      }
+    }
+  } else {
+    if (currencyCode === 'RSD' || currencyCode === 'HUF' || currencyCode === 'JPY' || currencyCode === 'KRW' || currencyCode === 'IDR' || currencyCode === 'VND') {
+      if (value < 1000) value = Math.round(value / 10) * 10;
+      else if (value < 10000) value = Math.round(value / 50) * 50;
+      else if (value < 100000) value = Math.round(value / 100) * 100;
+      else value = Math.round(value / 500) * 500;
+    } else {
+      if (value < 1) value = Math.round(value * 100) / 100;
+      else if (value < 100) value = Math.round(value / 5) * 5;
+      else if (value < 1000) value = Math.round(value / 10) * 10;
+      else if (value < 10000) value = Math.round(value / 100) * 100;
+      else value = Math.round(value / 1000) * 1000;
+    }
+  }
+  
+  return value;
+}
+
+function generateCurrencyTable(code, tbodyId, sourcePrefix) {
+  const cryptoPrefix = currencies[code] && currencies[code].type === 'crypto' ? 
+    parseFloat(document.getElementById('cryptoPrefix').value) : 1;
+  
+  const jpConfigs = [
+    {name: 'Platinum', 
+     base: parseFloat(document.getElementById(`${sourcePrefix}pl_base`).value)||0,
+     min: parseFloat(document.getElementById(`${sourcePrefix}pl_min`).value)||0,
+     max: parseFloat(document.getElementById(`${sourcePrefix}pl_max`).value)||0,
+     betReq: parseFloat(document.getElementById('pl_bet_req').value)||0,
+     std: parseFloat(document.getElementById('pl_std').value)||0,
+     hidden: parseFloat(document.getElementById('pl_hidden').value)||0},
+    {name: 'Gold', 
+     base: parseFloat(document.getElementById(`${sourcePrefix}gd_base`).value)||0,
+     min: parseFloat(document.getElementById(`${sourcePrefix}gd_min`).value)||0,
+     max: parseFloat(document.getElementById(`${sourcePrefix}gd_max`).value)||0,
+     betReq: parseFloat(document.getElementById('gd_bet_req').value)||0,
+     std: parseFloat(document.getElementById('gd_std').value)||0,
+     hidden: parseFloat(document.getElementById('gd_hidden').value)||0},
+    {name: 'Diamond', 
+     base: parseFloat(document.getElementById(`${sourcePrefix}dm_base`).value)||0,
+     min: parseFloat(document.getElementById(`${sourcePrefix}dm_min`).value)||0,
+     max: parseFloat(document.getElementById(`${sourcePrefix}dm_max`).value)||0,
+     betReq: parseFloat(document.getElementById('dm_bet_req').value)||0,
+     std: parseFloat(document.getElementById('dm_std').value)||0,
+     hidden: parseFloat(document.getElementById('dm_hidden').value)||0}
+  ];
+  
+  const tbody = document.getElementById(tbodyId);
+  tbody.innerHTML = '';
+  
+  jpConfigs.forEach(jp => {
+    const tr = document.createElement('tr');
+    const tdName = document.createElement('td');
+    tdName.textContent = jp.name;
+    tdName.style.textTransform = 'capitalize';
+    tr.appendChild(tdName);
+    
+    ['std', 'hidden'].forEach(k => {
+      const td = document.createElement('td');
+      td.textContent = jp[k].toFixed(k==='std'?2:3) + '%';
+      tr.appendChild(td);
+    });
+    
+    ['base', 'min', 'max', 'betReq'].forEach(k => {
+      const td = document.createElement('td');
+      const val = convertAndRound(jp[k], code, cryptoPrefix);
+      if (val === null) {
+        td.textContent = '-';
+      } else if (val === 0 && jp[k] === 0) {
+        td.textContent = '0';
+      } else {
+        let decimals;
+        if (currencies[code].type === 'crypto') {
+          if (cryptoPrefix >= 1) {
+            if (val >= 1) decimals = 5;
+            else if (val >= 0.001) decimals = 8;
+            else decimals = 10;
+          } else if (cryptoPrefix >= 0.001) {
+            decimals = 2;
+          } else {
+            decimals = val >= 10 ? 0 : 1;
+          }
+        } else {
+          decimals = (k==='betReq'&&val<1) ? 2 : 0;
+        }
+        
+        td.textContent = val.toLocaleString('en-US', {
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals
+        });
+      }
+      tr.appendChild(td);
+    });
+    
+    tbody.appendChild(tr);
+  });
+}
+
+document.getElementById('convertBtn').addEventListener('click', () => {
+  const code = document.getElementById('convCurrency').value;
+  const currency = currencies[code];
+  
+  generateCurrencyTable(code, 'convTableCurrent', '');
+  generateCurrencyTable(code, 'convTableA', 'scenarioA_');
+  generateCurrencyTable(code, 'convTableB', 'scenarioB_');
+  generateCurrencyTable(code, 'convTableC', 'scenarioC_');
+  
+  document.getElementById('convScenarioA_title').textContent = '📋 ' + document.getElementById('scenarioA_name').value;
+  document.getElementById('convScenarioB_title').textContent = '📋 ' + document.getElementById('scenarioB_name').value;
+  document.getElementById('convScenarioC_title').textContent = '📋 ' + document.getElementById('scenarioC_name').value;
+  
+  let currencyLabel = `${code} - ${currency.name}`;
+  if (currency.type === 'crypto') {
+    const prefix = parseFloat(document.getElementById('cryptoPrefix').value);
+    let prefixName = '';
+    if (prefix === 0.001) prefixName = 'm';
+    else if (prefix === 0.000001) prefixName = 'μ';
+    
+    if (prefixName) {
+      currencyLabel += ` (${prefixName}${code})`;
+    }
+  }
+  
+  document.getElementById('selectedCurrency').textContent = currencyLabel;
+  document.getElementById('convTableContainer').style.display = 'block';
+});
+
+function drawRtpChart(points) {
+  const canvas = document.getElementById('rtpChart');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  if (!points || points.length === 0) {
+    ctx.fillStyle = '#a0a4d8';
+    ctx.font = '14px Arial';
+    ctx.fillText('Nema podataka – pokreni simulaciju.', 20, 30);
+    return;
+  }
+  
+  const padding = 70;
+  const w = canvas.width - 2*padding;
+  const h = canvas.height - 2*padding;
+  const xs = points.map(p => p.x), ys = points.map(p => p.y);
+  const minX = 0;
+  const maxX = Math.max(...xs);
+  const minY = 0;
+  const maxY = Math.max(...ys) * 1.1;
+  
+  const xScale = v => padding + (v - minX) / (maxX - minX || 1) * w;
+  const yScale = v => padding + h - (v - minY) / (maxY - minY || 1) * h;
+  
+  ctx.strokeStyle = '#2a325a';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(padding, padding, w, h);
+  
+  const xSteps = calculateNiceSteps(minX, maxX, 10);
+  
+  ctx.strokeStyle = '#1a2847';
+  ctx.lineWidth = 0.5;
+  ctx.setLineDash([3, 3]);
+  
+  xSteps.forEach(step => {
+    const x = xScale(step);
+    ctx.beginPath();
+    ctx.moveTo(x, padding);
+    ctx.lineTo(x, padding + h);
+    ctx.stroke();
+  });
+  
+  const ySteps = calculateNiceSteps(minY, maxY, 8);
+  
+  ySteps.forEach(step => {
+    const y = yScale(step);
+    ctx.beginPath();
+    ctx.moveTo(padding, y);
+    ctx.lineTo(padding + w, y);
+    ctx.stroke();
+  });
+  
+  ctx.setLineDash([]);
+  
+  ctx.beginPath();
+  ctx.strokeStyle = '#ffcc33';
+  ctx.lineWidth = 2.5;
+  points.forEach((p, idx) => {
+    const x = xScale(p.x), y = yScale(p.y);
+    if (idx === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  
+  ctx.fillStyle = '#a0a4d8';
+  ctx.font = '11px Arial';
+  ctx.textAlign = 'center';
+  
+  xSteps.forEach(step => {
+    const x = xScale(step);
+    const label = formatAxisNumber(step);
+    ctx.fillText(label, x, canvas.height - 30);
+  });
+  
+  ctx.textAlign = 'right';
+  ySteps.forEach(step => {
+    const y = yScale(step);
+    const label = (step * 100).toFixed(2) + '%';
+    ctx.fillText(label, padding - 10, y + 4);
+  });
+  
+  ctx.fillStyle = '#d0d4ff';
+  ctx.font = 'bold 13px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('Procesirani turnover (EUR)', canvas.width / 2, canvas.height - 10);
+  
+  ctx.save();
+  ctx.translate(15, canvas.height / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('JP RTP (%)', 0, 0);
+  ctx.restore();
+}
+
+function calculateNiceSteps(min, max, targetSteps) {
+  const range = max - min;
+  if (range === 0) return [min];
+  
+  const roughStep = range / targetSteps;
+  
+  const magnitude = Math.pow(10, Math.floor(Math.log10(roughStep)));
+  const normalized = roughStep / magnitude;
+  
+  let niceStep;
+  if (normalized < 1.5) niceStep = 1 * magnitude;
+  else if (normalized < 3) niceStep = 2 * magnitude;
+  else if (normalized < 7) niceStep = 5 * magnitude;
+  else niceStep = 10 * magnitude;
+  
+  const steps = [];
+  let current = Math.ceil(min / niceStep) * niceStep;
+  
+  while (current <= max) {
+    steps.push(current);
+    current += niceStep;
+  }
+  
+  if (min === 0 && !steps.includes(0)) {
+    steps.unshift(0);
+  }
+  
+  return steps;
+}
+
+function formatAxisNumber(num) {
+  if (num === 0) return '0';
+  
+  if (num >= 1000000) {
+    const millions = num / 1000000;
+    return millions % 1 === 0 ? millions + 'M' : millions.toFixed(1) + 'M';
+  } else if (num >= 1000) {
+    const thousands = num / 1000;
+    return thousands % 1 === 0 ? thousands + 'K' : thousands.toFixed(1) + 'K';
+  }
+  
+  return num.toLocaleString('en-US', {maximumFractionDigits: 0});
+}
+
+function validateConfiguration() {
+  const warnings = [];
+  
+  const levels = [
+    {name: 'Platinum', prefix: 'pl'},
+    {name: 'Gold', prefix: 'gd'},
+    {name: 'Diamond', prefix: 'dm'}
+  ];
+  
+  levels.forEach(level => {
+    const base = parseFloat(document.getElementById(`${level.prefix}_base`).value) || 0;
+    const min = parseFloat(document.getElementById(`${level.prefix}_min`).value) || 0;
+    const max = parseFloat(document.getElementById(`${level.prefix}_max`).value) || 0;
+    const stdPct = (parseFloat(document.getElementById(`${level.prefix}_std`).value) || 0) / 100;
+    const hiddenPct = (parseFloat(document.getElementById(`${level.prefix}_hidden`).value) || 0) / 100;
+    
+    if (base > min) {
+      warnings.push({
+        type: 'error',
+        message: `<strong>${level.name}:</strong> Base Value (${base.toFixed(2)}) ne može biti VEĆI od Min Drop Zone (${min.toFixed(2)})!`
+      });
+    }
+    
+    if (min >= max) {
+      warnings.push({
+        type: 'error',
+        message: `<strong>${level.name}:</strong> Min Drop Zone (${min.toFixed(2)}) mora biti manji od Max Drop Zone (${max.toFixed(2)})!`
+      });
+    }
+    
+    if (stdPct > 0 && hiddenPct > 0 && max > base) {
+      const maxCycleTurnover = (max - base) / stdPct;
+      const hiddenAccumulated = maxCycleTurnover * hiddenPct;
+      const nextJpStart = base + hiddenAccumulated;
+      
+      if (nextJpStart > max) {
+        const overflow = nextJpStart - max;
+        const overflowPercent = (overflow / max) * 100;
+        
+        warnings.push({
+          type: 'error',
+          message: `<strong>${level.name} - HIDDEN OVERFLOW!</strong><br>
+            Ako JP padne na Max (${max.toFixed(2)} EUR), hidden contribution će biti ${hiddenAccumulated.toFixed(2)} EUR.<br>
+            Sledeći JP bi počeo sa ${nextJpStart.toFixed(2)} EUR što je <strong>${overflow.toFixed(2)} EUR preko Max-a</strong> (${overflowPercent.toFixed(1)}%)!<br>
+            <strong>REŠENJE:</strong> Smanji Hidden % ili povećaj Max vrednost.`
+        });
+      } else if (nextJpStart > max * 0.95) {
+        warnings.push({
+          type: 'warning',
+          message: `<strong>${level.name} - UPOZORENJE:</strong> Hidden contribution (${hiddenAccumulated.toFixed(2)} EUR) je blizu Max-a. Sledeći JP bi počeo sa ${nextJpStart.toFixed(2)} EUR (${((nextJpStart/max)*100).toFixed(1)}% Max-a).`
+        });
+      }
+    }
+  });
+  
+  const warningsDiv = document.getElementById('validationWarnings');
+  warningsDiv.innerHTML = '';
+  
+  warnings.forEach(w => {
+    const div = document.createElement('div');
+    div.className = w.type;
+    div.innerHTML = `${w.type === 'error' ? '🚫' : '⚠️'} ${w.message}`;
+    warningsDiv.appendChild(div);
+  });
+  
+  return warnings.filter(w => w.type === 'error').length === 0;
+}
+
+function runSingleSimulation(multiplier = 1.0, jpConfig = null) {
+  const winBetRatioPercent = parseFloat(document.getElementById('winBetRatioPercent').value) || 0;
+  const baseGameRtp = winBetRatioPercent / 100;
+  const monthlyTurnoverEur = parseTurnover(document.getElementById('monthlyTurnoverEur').value);
+  const granularity = parseFloat(document.getElementById('granularity').value) || 1;
+  const seedVal = parseInt(document.getElementById('seed').value);
+  const rng = isNaN(seedVal) ? Math.random : LCG(seedVal);
+
+  const iterations = Math.floor(monthlyTurnoverEur / granularity);
+
+  let levels;
+  if (jpConfig) {
+    levels = [
+      {name: 'Platinum', 
+       base: jpConfig.pl.base,
+       minDrop: jpConfig.pl.min,
+       maxDrop: jpConfig.pl.max,
+       stdPct: ((parseFloat(document.getElementById('pl_std').value)||0)/100) * multiplier,
+       hidPct: ((parseFloat(document.getElementById('pl_hidden').value)||0)/100) * multiplier},
+      {name: 'Gold', 
+       base: jpConfig.gd.base,
+       minDrop: jpConfig.gd.min,
+       maxDrop: jpConfig.gd.max,
+       stdPct: ((parseFloat(document.getElementById('gd_std').value)||0)/100) * multiplier,
+       hidPct: ((parseFloat(document.getElementById('gd_hidden').value)||0)/100) * multiplier},
+      {name: 'Diamond', 
+       base: jpConfig.dm.base,
+       minDrop: jpConfig.dm.min,
+       maxDrop: jpConfig.dm.max,
+       stdPct: ((parseFloat(document.getElementById('dm_std').value)||0)/100) * multiplier,
+       hidPct: ((parseFloat(document.getElementById('dm_hidden').value)||0)/100) * multiplier}
+    ];
+  } else {
+    levels = [
+      {name: 'Platinum', 
+       base: parseFloat(document.getElementById('pl_base').value)||0,
+       minDrop: parseFloat(document.getElementById('pl_min').value)||0,
+       maxDrop: parseFloat(document.getElementById('pl_max').value)||0,
+       stdPct: ((parseFloat(document.getElementById('pl_std').value)||0)/100) * multiplier,
+       hidPct: ((parseFloat(document.getElementById('pl_hidden').value)||0)/100) * multiplier},
+      {name: 'Gold', 
+       base: parseFloat(document.getElementById('gd_base').value)||0,
+       minDrop: parseFloat(document.getElementById('gd_min').value)||0,
+       maxDrop: parseFloat(document.getElementById('gd_max').value)||0,
+       stdPct: ((parseFloat(document.getElementById('gd_std').value)||0)/100) * multiplier,
+       hidPct: ((parseFloat(document.getElementById('gd_hidden').value)||0)/100) * multiplier},
+      {name: 'Diamond', 
+       base: parseFloat(document.getElementById('dm_base').value)||0,
+       minDrop: parseFloat(document.getElementById('dm_min').value)||0,
+       maxDrop: parseFloat(document.getElementById('dm_max').value)||0,
+       stdPct: ((parseFloat(document.getElementById('dm_std').value)||0)/100) * multiplier,
+       hidPct: ((parseFloat(document.getElementById('dm_hidden').value)||0)/100) * multiplier}
+    ];
+  }
+
+  let totalTurnoverProcessed = 0;
+
+  const jpState = levels.map(l => {
+    const range = l.maxDrop - l.minDrop;
+    const randomVal = isNaN(seedVal) ? Math.random() : rng();
+    const hitPoint = l.minDrop + randomVal * range;
+    
+    return {
+      name: l.name, 
+      currentValue: l.base, 
+      fixedBase: l.base,
+      hitPoint: hitPoint, 
+      hiddenAcc: 0,
+      dropCount: 0, 
+      totalPaidOut: 0, 
+      totalStdContrib: 0, 
+      totalHiddenContrib: 0,
+      minDrop: l.minDrop,
+      maxDrop: l.maxDrop,
+      gap: l.minDrop - l.base
+    };
+  });
+
+  const rtpPoints = [];
+  let jpPaidSoFar = 0;
+  const sampleStep = Math.max(1, Math.floor(iterations / 200));
+
+  for (let i = 0; i < iterations; i++) {
+    const turnoverChunk = granularity;
+    totalTurnoverProcessed += turnoverChunk;
+
+    for (let j = 0; j < levels.length; j++) {
+      const cfg = levels[j], st = jpState[j];
+      const stdC = turnoverChunk * cfg.stdPct;
+      const hidC = turnoverChunk * cfg.hidPct;
+      
+      st.currentValue += stdC;
+      st.hiddenAcc += hidC;
+      st.totalStdContrib += stdC;
+      st.totalHiddenContrib += hidC;
+      
+      if (st.currentValue >= st.hitPoint) {
+        const payout = st.currentValue;
+        st.dropCount += 1;
+        st.totalPaidOut += payout;
+        jpPaidSoFar += payout;
+        
+        st.currentValue = st.fixedBase;
+        st.hiddenAcc = 0;
+        
+        const range = cfg.maxDrop - cfg.minDrop;
+        const randomVal = isNaN(seedVal) ? Math.random() : rng();
+        st.hitPoint = cfg.minDrop + randomVal * range;
+      }
+    }
+    
+    if (i % sampleStep === 0 && totalTurnoverProcessed > 0) {
+      rtpPoints.push({ x: totalTurnoverProcessed, y: jpPaidSoFar / totalTurnoverProcessed });
+    }
+  }
+
+  const jpRtp = totalTurnoverProcessed > 0 ? (jpPaidSoFar / totalTurnoverProcessed) : 0;
+  const totalRtp = baseGameRtp + jpRtp;
+  
+  return {
+    jpState,
+    jpRtp,
+    totalRtp,
+    baseGameRtp,
+    rtpPoints,
+    monthlyTurnoverEur
+  };
+}
+
+function displayResults(result) {
+  const { jpState, jpRtp, totalRtp, baseGameRtp, rtpPoints, monthlyTurnoverEur } = result;
+  
+  let jpTotalPaidOut = 0;
+  let totalStdContrib = 0;
+  let totalHidContrib = 0;
+  
+  const tbody = document.getElementById('jpStatsBody');
+  tbody.innerHTML = '';
+
+  jpState.forEach(st => {
+    jpTotalPaidOut += st.totalPaidOut;
+    totalStdContrib += st.totalStdContrib;
+    totalHidContrib += st.totalHiddenContrib;
+    
+    const avgDrop = st.dropCount > 0 ? (st.totalPaidOut / st.dropCount) : 0;
+    const tr = document.createElement('tr');
+    function td(val, alignRight = true) {
+      const cell = document.createElement('td');
+      cell.textContent = typeof val === 'number' ? val.toLocaleString('en-US', {maximumFractionDigits: 2}) : val;
+      if (!alignRight) cell.style.textAlign = 'left';
+      return cell;
+    }
+    tr.appendChild(td(st.name, false));
+    tr.appendChild(td(st.dropCount));
+    tr.appendChild(td(avgDrop));
+    tr.appendChild(td(st.totalPaidOut));
+    tbody.appendChild(tr);
+  });
+  
+  document.getElementById('totalStdCell').textContent = totalStdContrib.toLocaleString('en-US', {maximumFractionDigits: 2});
+  document.getElementById('totalStdPctCell').textContent = ((totalStdContrib / monthlyTurnoverEur) * 100).toFixed(3) + '%';
+  document.getElementById('totalHidCell').textContent = totalHidContrib.toLocaleString('en-US', {maximumFractionDigits: 2});
+  document.getElementById('totalHidPctCell').textContent = ((totalHidContrib / monthlyTurnoverEur) * 100).toFixed(3) + '%';
+  document.getElementById('totalContribCell').textContent = (totalStdContrib + totalHidContrib).toLocaleString('en-US', {maximumFractionDigits: 2});
+  document.getElementById('totalContribPctCell').textContent = (((totalStdContrib + totalHidContrib) / monthlyTurnoverEur) * 100).toFixed(3) + '%';
+
+  const houseEdge = 1 - totalRtp;
+  
+  const baseGameWins = monthlyTurnoverEur * baseGameRtp;
+  const baseGameProfit = monthlyTurnoverEur - baseGameWins;
+  const ggr = monthlyTurnoverEur - baseGameWins - jpTotalPaidOut;
+  const ggrMargin = (ggr / monthlyTurnoverEur) * 100;
+  
+  document.getElementById('baseRtpCell').textContent = (baseGameRtp * 100).toFixed(2) + ' %';
+  document.getElementById('jpRtpCell').textContent = (jpRtp * 100).toFixed(2) + ' %';
+  document.getElementById('totalRtpCell').textContent = (totalRtp * 100).toFixed(2) + ' %';
+  document.getElementById('houseEdgeCell').textContent = (houseEdge * 100).toFixed(2) + ' %';
+  
+  document.getElementById('totalPaidCell').textContent = jpTotalPaidOut.toLocaleString('en-US', {maximumFractionDigits: 0}) + ' EUR';
+  document.getElementById('baseGameProfitCell').textContent = baseGameProfit.toLocaleString('en-US', {maximumFractionDigits: 0}) + ' EUR';
+  document.getElementById('ggrCell').textContent = ggr.toLocaleString('en-US', {maximumFractionDigits: 0}) + ' EUR';
+  document.getElementById('ggrMarginCell').textContent = ggrMargin.toFixed(2) + ' %';
+  
+  drawRtpChart(rtpPoints);
+  
+  document.getElementById('current_jpRtp').textContent = (jpRtp * 100).toFixed(2);
+  document.getElementById('current_totalRtp').textContent = (totalRtp * 100).toFixed(2);
+  document.getElementById('current_houseEdge').textContent = (houseEdge * 100).toFixed(2);
+  document.getElementById('current_ggr').textContent = ggr.toLocaleString('en-US', {maximumFractionDigits: 0});
+  document.getElementById('current_plDrops').textContent = jpState[0].dropCount.toLocaleString();
+  document.getElementById('current_plAvg').textContent = (jpState[0].dropCount > 0 ? (jpState[0].totalPaidOut / jpState[0].dropCount) : 0).toFixed(2);
+  document.getElementById('current_plGap').textContent = jpState[0].gap.toFixed(2);
+  document.getElementById('current_gdDrops').textContent = jpState[1].dropCount.toLocaleString();
+  document.getElementById('current_gdAvg').textContent = (jpState[1].dropCount > 0 ? (jpState[1].totalPaidOut / jpState[1].dropCount) : 0).toFixed(2);
+  document.getElementById('current_gdGap').textContent = jpState[1].gap.toFixed(2);
+  document.getElementById('current_dmDrops').textContent = jpState[2].dropCount.toLocaleString();
+  document.getElementById('current_dmAvg').textContent = (jpState[2].dropCount > 0 ? (jpState[2].totalPaidOut / jpState[2].dropCount) : 0).toFixed(2);
+  document.getElementById('current_dmGap').textContent = jpState[2].gap.toFixed(0);
+  
+  document.getElementById('scenarioSection').style.display = 'block';
+}
+
+function runScenario(scenario) {
+  const multiplier = parseFloat(document.getElementById(`scenario${scenario}_mult`).value);
+  const name = document.getElementById(`scenario${scenario}_name`).value;
+  
+  const jpConfig = {
+    pl: {
+      base: parseFloat(document.getElementById(`scenario${scenario}_pl_base`).value),
+      min: parseFloat(document.getElementById(`scenario${scenario}_pl_min`).value),
+      max: parseFloat(document.getElementById(`scenario${scenario}_pl_max`).value)
+    },
+    gd: {
+      base: parseFloat(document.getElementById(`scenario${scenario}_gd_base`).value),
+      min: parseFloat(document.getElementById(`scenario${scenario}_gd_min`).value),
+      max: parseFloat(document.getElementById(`scenario${scenario}_gd_max`).value)
+    },
+    dm: {
+      base: parseFloat(document.getElementById(`scenario${scenario}_dm_base`).value),
+      min: parseFloat(document.getElementById(`scenario${scenario}_dm_min`).value),
+      max: parseFloat(document.getElementById(`scenario${scenario}_dm_max`).value)
+    }
+  };
+  
+  document.getElementById(`scenario${scenario}_header`).textContent = name;
+  
+  const result = runSingleSimulation(multiplier, jpConfig);
+  const { jpState, jpRtp, totalRtp, baseGameRtp, monthlyTurnoverEur } = result;
+  
+  const houseEdge = 1 - totalRtp;
+  let jpTotalPaidOut = 0;
+  jpState.forEach(st => jpTotalPaidOut += st.totalPaidOut);
+  
+  const baseGameWins = monthlyTurnoverEur * baseGameRtp;
+  const ggr = monthlyTurnoverEur - baseGameWins - jpTotalPaidOut;
+  
+  document.getElementById(`scenario${scenario}_jpRtp`).textContent = (jpRtp * 100).toFixed(2);
+  document.getElementById(`scenario${scenario}_totalRtp`).textContent = (totalRtp * 100).toFixed(2);
+  document.getElementById(`scenario${scenario}_houseEdge`).textContent = (houseEdge * 100).toFixed(2);
+  document.getElementById(`scenario${scenario}_ggr`).textContent = ggr.toLocaleString('en-US', {maximumFractionDigits: 0});
+  document.getElementById(`scenario${scenario}_plDrops`).textContent = jpState[0].dropCount.toLocaleString();
+  document.getElementById(`scenario${scenario}_plAvg`).textContent = (jpState[0].dropCount > 0 ? (jpState[0].totalPaidOut / jpState[0].dropCount) : 0).toFixed(2);
+  document.getElementById(`scenario${scenario}_plGap`).textContent = jpState[0].gap.toFixed(2);
+  document.getElementById(`scenario${scenario}_gdDrops`).textContent = jpState[1].dropCount.toLocaleString();
+  document.getElementById(`scenario${scenario}_gdAvg`).textContent = (jpState[1].dropCount > 0 ? (jpState[1].totalPaidOut / jpState[1].dropCount) : 0).toFixed(2);
+  document.getElementById(`scenario${scenario}_gdGap`).textContent = jpState[1].gap.toFixed(2);
+  document.getElementById(`scenario${scenario}_dmDrops`).textContent = jpState[2].dropCount.toLocaleString();
+  document.getElementById(`scenario${scenario}_dmAvg`).textContent = (jpState[2].dropCount > 0 ? (jpState[2].totalPaidOut / jpState[2].dropCount) : 0).toFixed(2);
+  document.getElementById(`scenario${scenario}_dmGap`).textContent = jpState[2].gap.toFixed(0);
+  
+  alert(`✅ ${name} scenario completed!\n\nJP RTP: ${(jpRtp * 100).toFixed(2)}%\nPlatinum: ${jpState[0].dropCount} dropova (GAP: ${jpState[0].gap.toFixed(2)} EUR)\nAvg Drop: ${(jpState[0].dropCount > 0 ? (jpState[0].totalPaidOut / jpState[0].dropCount) : 0).toFixed(2)} EUR`);
+}
+
+async function runMonteCarlo() {
+  if (!validateConfiguration()) {
+    alert('Molim te ispravi greške u konfiguraciji!');
+    return;
+  }
+  
+  showProgress();
+  
+  const numRuns = 100;
+  const results = [];
+  
+  for (let run = 0; run < numRuns; run++) {
+    document.getElementById('seed').value = '';
+    const result = runSingleSimulation();
+    results.push(result);
+    
+    updateProgress(run + 1, numRuns);
+    
+    if (run % 5 === 0) {
+      await new Promise(resolve => setTimeout(resolve, 1));
+    }
+  }
+  
+  const jpRtps = results.map(r => r.jpRtp * 100);
+  const avgRtp = jpRtps.reduce((a, b) => a + b, 0) / jpRtps.length;
+  const minRtp = Math.min(...jpRtps);
+  const maxRtp = Math.max(...jpRtps);
+  
+  const variance = jpRtps.reduce((sum, val) => sum + Math.pow(val - avgRtp, 2), 0) / jpRtps.length;
+  const stdDev = Math.sqrt(variance);
+  
+  const z = 1.96;
+  const marginError = z * (stdDev / Math.sqrt(numRuns));
+  const confLow = avgRtp - marginError;
+  const confHigh = avgRtp + marginError;
+  
+  const volatility = (stdDev / avgRtp) * 100;
+  
+  document.getElementById('mcAvgRtp').textContent = avgRtp.toFixed(3) + '%';
+  document.getElementById('mcMinRtp').textContent = minRtp.toFixed(3) + '%';
+  document.getElementById('mcMaxRtp').textContent = maxRtp.toFixed(3) + '%';
+  document.getElementById('mcStdDev').textContent = '±' + stdDev.toFixed(3) + '%';
+  document.getElementById('mcConfidence').textContent = `[${confLow.toFixed(2)}%, ${confHigh.toFixed(2)}%]`;
+  document.getElementById('mcVolatility').textContent = volatility.toFixed(2) + '%';
+  
+  const dropStats = {
+    'Platinum': [],
+    'Gold': [],
+    'Diamond': []
+  };
+  
+  results.forEach(r => {
+    r.jpState.forEach(st => {
+      dropStats[st.name].push(st.dropCount);
+    });
+  });
+  
+  const mcDropsBody = document.getElementById('mcDropsBody');
+  mcDropsBody.innerHTML = '';
+  
+  ['Platinum', 'Gold', 'Diamond'].forEach(name => {
+    const drops = dropStats[name];
+    const avg = drops.reduce((a, b) => a + b, 0) / drops.length;
+    const min = Math.min(...drops);
+    const max = Math.max(...drops);
+    const variance = drops.reduce((sum, val) => sum + Math.pow(val - avg, 2), 0) / drops.length;
+    const stdDev = Math.sqrt(variance);
+    
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="text-align:left;">${name}</td>
+      <td>${avg.toFixed(0)}</td>
+      <td>${min}</td>
+      <td>${max}</td>
+      <td>±${stdDev.toFixed(0)}</td>
+    `;
+    mcDropsBody.appendChild(tr);
+  });
+  
+  hideProgress();
+  document.getElementById('monteCarloResults').style.display = 'block';
+  displayResults(results[results.length - 1]);
+  
+  alert('✅ Monte Carlo simulacija završena (100 runs)!');
+}
+
+document.getElementById('runSimBtn').addEventListener('click', () => {
+  if (!validateConfiguration()) {
+    alert('Molim te ispravi greške u konfiguraciji!');
+    return;
+  }
+  
+  document.getElementById('monteCarloResults').style.display = 'none';
+  
+  const result = runSingleSimulation(1.0, null);
+  currentResult = result;
+  displayResults(result);
+});
+
+document.getElementById('runMonteCarloBtn').addEventListener('click', runMonteCarlo);
+
+['pl', 'gd', 'dm'].forEach(prefix => {
+  ['base', 'min', 'max', 'std', 'hidden'].forEach(field => {
+    document.getElementById(`${prefix}_${field}`).addEventListener('input', validateConfiguration);
+  });
+});
+
+validateConfiguration();
+</script>
+
+</body>
+</html>
