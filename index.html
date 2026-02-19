@@ -26,7 +26,30 @@
       --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
       --shadow-md: 0 4px 12px 0 rgba(0, 0, 0, 0.5);
       --shadow-lg: 0 10px 30px 0 rgba(0, 0, 0, 0.6);
-    }
+    
+
+    .progress-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin:1rem 0;padding:1rem;background:var(--bg-input);border-radius:8px;border:1px solid var(--border-primary)}
+    .progress-stat{text-align:center}
+    .progress-stat-label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.5rem}
+    .progress-stat-value{font-size:1.1rem;font-weight:600;color:var(--accent-blue)}
+    .progress-controls{display:flex;gap:1rem;justify-content:center;margin-top:1rem}
+    .spinner{width:20px;height:20px;border:3px solid rgba(244,196,48,0.3);border-top-color:var(--accent-gold);border-radius:50%;animation:spinner-rotate 0.8s linear infinite}
+    @keyframes spinner-rotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+    body.light-mode{--bg-primary:#f0f4f8;--bg-secondary:#fff;--bg-card:#fff;--bg-input:#f7fafc;--border-primary:#cbd5e0;--text-primary:#1a202c;--text-secondary:#2d3748;--text-muted:#4a5568;--accent-gold:#b7791f;--accent-blue:#2b6cb0;--accent-green:#2f855a;--accent-red:#c53030}
+    body.light-mode{background:linear-gradient(135deg,#e8f0f7 0%,#f5f8fb 50%,#e8f0f7 100%)}
+    body.light-mode header{background:rgba(255,255,255,0.95);border-bottom:1px solid #cbd5e0}
+    body.light-mode .card,.light-mode .scenario-card{background:#fff!important;box-shadow:0 2px 12px rgba(0,0,0,0.1)!important;border:1px solid #e2e8f0!important}
+    body.light-mode .jp-mini-section{background:#f7fafc!important;border:1.5px solid #cbd5e0!important}
+    body.light-mode h1,body.light-mode h2,body.light-mode h3,body.light-mode h4{color:#2d3748!important}
+    body.light-mode input,body.light-mode select{background:#fff!important;color:#1a202c!important;border:1.5px solid #cbd5e0!important}
+    body.light-mode button.primary{background:linear-gradient(135deg,#b7791f 0%,#975a16 100%)!important}
+    body.light-mode button.secondary{background:#edf2f7!important;color:#2d3748!important}
+    body.light-mode table{background:#fff!important;border:1px solid #e2e8f0!important}
+    body.light-mode th{color:#2d3748!important}
+    body.light-mode td{color:#1a202c!important}
+    body{transition:background 0.3s ease}
+
+}
     
     * {
       box-sizing: border-box;
@@ -729,33 +752,307 @@
     ::-webkit-scrollbar-thumb:hover {
       background: var(--accent-blue);
     }
+
+.tip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  background: rgba(74, 144, 226, 0.25);
+  color: var(--accent-blue);
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: 700;
+  cursor: help;
+  position: relative;
+  margin-left: 5px;
+  vertical-align: middle;
+  border: 1px solid rgba(74, 144, 226, 0.4);
+  flex-shrink: 0;
+}
+.tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a2238;
+  color: #e8ecf3;
+  border: 1px solid var(--border-accent);
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.5;
+  white-space: normal;
+  width: 260px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 9999;
+}
+.tip:hover::after {
+  opacity: 1;
+}
+body.light-mode .tip::after {
+  background: #fff;
+  color: #1a202c;
+  border-color: #cbd5e0;
+}
+
+/* ===== TOOLTIP SYSTEM ===== */
+.tip {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 15px; height: 15px;
+  background: rgba(74,144,226,0.25); color: var(--accent-blue);
+  border-radius: 50%; font-size: 0.65rem; font-weight: 700;
+  cursor: help; position: relative; margin-left: 5px;
+  vertical-align: middle; border: 1px solid rgba(74,144,226,0.4); flex-shrink: 0;
+}
+.tip::after {
+  content: attr(data-tip);
+  position: absolute; bottom: calc(100% + 8px); left: 50%;
+  transform: translateX(-50%);
+  background: #1a2238; color: #e8ecf3;
+  border: 1px solid var(--border-accent); border-radius: 8px;
+  padding: 0.6rem 0.85rem; font-size: 0.75rem; font-weight: 400;
+  line-height: 1.5; white-space: normal; width: 260px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  opacity: 0; pointer-events: none; transition: opacity 0.2s ease; z-index: 9999;
+}
+.tip:hover::after { opacity: 1; }
+body.light-mode .tip::after { background: #fff; color: #1a202c; border-color: #cbd5e0; }
+
+
+
+
+  
+/* ===== SCENARIO NOVI LAYOUT ===== */
+.sc-contrib-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:4px}
+.sc-contrib-item label{font-size:11px;color:var(--text-muted);margin-bottom:2px;display:block}
+.sc-contrib-item input{margin-bottom:0!important}
+.scenario-live{background:rgba(10,14,26,0.85);border:1px solid var(--border-accent);border-radius:8px;padding:10px 13px;margin:12px 0 10px 0;font-size:0.79rem}
+.scenario-live .sl-title{font-size:0.71rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--accent-blue);margin-bottom:5px}
+.scenario-live .sl-row{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid rgba(42,54,84,0.35)}
+.scenario-live .sl-row:last-child{border-bottom:none}
+.scenario-live .sl-lbl{color:var(--text-muted)}
+.scenario-live .sl-val{font-weight:600;color:var(--text-primary)}
+.scenario-live .sl-rtp{font-weight:700;color:var(--accent-gold);font-size:.87rem}
+.ct-sep-pl td{border-top:2px solid rgba(232,236,243,0.25)!important;padding-top:8px!important}
+.ct-sep-gd td{border-top:2px solid rgba(251,191,36,0.35)!important;padding-top:8px!important}
+.ct-sep-dm td{border-top:2px solid rgba(79,195,247,0.35)!important;padding-top:8px!important}
+.ct-label-pl td:first-child{color:#e8ecf3!important;font-weight:700!important}
+.ct-label-gd td:first-child{color:var(--accent-gold)!important;font-weight:700!important}
+.ct-label-dm td:first-child{color:#4fc3f7!important;font-weight:700!important}
+
+
+    .sc-total-contrib {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(244, 196, 48, 0.08);
+      border: 1px solid rgba(244, 196, 48, 0.25);
+      border-radius: 6px;
+      padding: 0.3rem 0.65rem;
+      margin: 0.35rem 0 0.25rem 0;
+      font-size: 0.78rem;
+    }
+    .sc-total-label { color: var(--text-secondary); }
+    .sc-total-value { color: var(--accent-gold); font-weight: 700; }
+    .sc-warnings .error {
+      background: linear-gradient(135deg, rgba(239,68,68,0.1) 0%, rgba(239,68,68,0.05) 100%);
+      border-left: 3px solid #ef4444;
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      margin: 0.4rem 0;
+      font-size: 0.72rem;
+      color: #fca5a5;
+      line-height: 1.5;
+    }
+    .sc-warnings .warning {
+      background: linear-gradient(135deg, rgba(251,191,36,0.1) 0%, rgba(251,191,36,0.05) 100%);
+      border-left: 3px solid #fbbf24;
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      margin: 0.4rem 0;
+      font-size: 0.72rem;
+      color: #fde68a;
+      line-height: 1.5;
+    }
+  
+    .sc-contrib-summary {
+      background: rgba(74, 144, 226, 0.06);
+      border: 1px solid rgba(74, 144, 226, 0.2);
+      border-radius: 8px;
+      padding: 0.6rem 0.75rem;
+      margin: 0.5rem 0 0.4rem 0;
+      font-size: 0.75rem;
+    }
+    .sc-contrib-summary .scs-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 0.45rem;
+    }
+    .sc-contrib-summary .scs-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.18rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      gap: 0.5rem;
+    }
+    .sc-contrib-summary .scs-row:last-child { border-bottom: none; }
+    .sc-contrib-summary .scs-name { color: var(--text-secondary); min-width: 75px; }
+    .sc-contrib-summary .scs-vals { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+    .sc-contrib-summary .scs-std  { color: var(--accent-blue); }
+    .sc-contrib-summary .scs-hid  { color: #a78bfa; }
+    .sc-contrib-summary .scs-tot  { color: var(--accent-gold); font-weight: 700; }
+    button.small.secondary:disabled,
+    button.small.secondary[disabled] {
+      opacity: 0.35;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  
+    /* ===== LIGHT MODE - nove klase (V9+) ===== */
+    body.light-mode .scenario-live {
+      background: #f0f4f8 !important;
+      border: 1px solid #cbd5e0 !important;
+    }
+    body.light-mode .sl-title { color: #2b6cb0 !important; }
+    body.light-mode .sl-row   { border-bottom-color: #e2e8f0 !important; }
+    body.light-mode .sl-lbl   { color: #4a5568 !important; }
+    body.light-mode .sl-val   { color: #1a202c !important; }
+    body.light-mode .sl-rtp   { color: #b7791f !important; }
+    body.light-mode .sc-contrib-summary {
+      background: rgba(43,108,176,0.06) !important;
+      border: 1px solid rgba(43,108,176,0.2) !important;
+    }
+    body.light-mode .scs-title { color: #4a5568 !important; }
+    body.light-mode .scs-row   { border-bottom-color: #e2e8f0 !important; }
+    body.light-mode .scs-name  { color: #2d3748 !important; }
+    body.light-mode .scs-std   { color: #2b6cb0 !important; }
+    body.light-mode .scs-hid   { color: #6b46c1 !important; }
+    body.light-mode .scs-tot   { color: #b7791f !important; }
+    body.light-mode .sc-warnings .error {
+      background: linear-gradient(135deg,rgba(197,48,48,0.08) 0%,rgba(197,48,48,0.04) 100%) !important;
+      border-left-color: #c53030 !important; color: #9b2c2c !important;
+    }
+    body.light-mode .sc-warnings .warning {
+      background: linear-gradient(135deg,rgba(183,121,31,0.1) 0%,rgba(183,121,31,0.05) 100%) !important;
+      border-left-color: #b7791f !important; color: #7b341e !important;
+    }
+    body.light-mode button.small.secondary:disabled,
+    body.light-mode button.small.secondary[disabled] {
+      opacity: 0.4 !important; background: #e2e8f0 !important; color: #a0aec0 !important;
+    }
+    body.light-mode .sc-total-label { color: #4a5568 !important; }
+    body.light-mode .sc-total-value { color: #b7791f !important; }
+
+    /* ===== RESPONSIVE / MOBILE ===== */
+    @media (max-width: 768px) {
+      header > div { flex-wrap: wrap; gap: 0.75rem; padding: 0.5rem 1rem; }
+      header h1 { font-size: 1.3rem !important; }
+      .container { padding: 1.25rem 1rem !important; }
+      .flex-row { grid-template-columns: 1fr !important; }
+      .scenario-grid { grid-template-columns: 1fr !important; }
+      .stat-grid { grid-template-columns: repeat(2,1fr) !important; }
+      .progress-stats-grid { grid-template-columns: repeat(2,1fr) !important; }
+      .scs-vals { flex-wrap: wrap; gap: 0.3rem; }
+      table { font-size: 0.75rem !important; display: block; overflow-x: auto;
+              white-space: nowrap; -webkit-overflow-scrolling: touch; }
+      .progress-controls { flex-wrap: wrap; gap: 0.5rem; }
+      canvas { width: 100% !important; }
+    }
+    @media (max-width: 480px) {
+      header h1 { font-size: 1.1rem !important; }
+      h2 { font-size: 1.1rem !important; }
+      h3 { font-size: 0.95rem !important; }
+      .card { padding: 1rem !important; border-radius: 10px !important; }
+      .scenario-card { padding: 1rem !important; }
+      .jp-mini-section { padding: 0.75rem !important; }
+      .stat-grid { grid-template-columns: 1fr !important; }
+      input[type="number"], input[type="text"], select {
+        font-size: 0.95rem !important; padding: 0.5rem 0.75rem !important; }
+      #runSimBtn, #runMonteCarloBtn { width: 100%; display: block;
+        margin-left: 0 !important; margin-bottom: 0.5rem !important; }
+      #exportExcelBtn { width: 100%; display: block; margin-left: 0 !important; }
+      .jp-header { flex-wrap: wrap; gap: 0.4rem; }
+      .scs-row { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
+      .sl-row { flex-direction: column; align-items: flex-start; padding: 0.3rem 0; }
+      .scenario-live { font-size: 0.78rem !important; }
+      table { font-size: 0.68rem !important; display: block; overflow-x: auto;
+              white-space: nowrap; -webkit-overflow-scrolling: touch; }
+      .tip { display: none; }
+      .info-box { font-size: 0.75rem !important; padding: 0.75rem !important; }
+      .sc-contrib-summary { font-size: 0.72rem !important; }
+      .chart-controls { flex-direction: column; gap: 0.4rem; }
+    }
+
+  
+    /* Placeholder styling */
+    input::placeholder {
+      color: var(--text-muted);
+      opacity: 0.55;
+      font-style: italic;
+      font-size: 0.82em;
+    }
+    body.light-mode input::placeholder {
+      color: #94a3b8;
+      opacity: 0.8;
+    }
+
   </style>
+  <!-- SheetJS Library za Excel export -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 <header>
-  <h1>🎰 JP Simulator</h1>
-</header>
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 1600px; margin: 0 auto;">
+      <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; color: var(--accent-gold);">🎰 Jackpot Simulator</h1>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <div style="text-align: right;">
+          <div style="font-size: 0.7rem; color: var(--text-muted);" id="ratesTimestamp">Rates loading...</div>
+          <button id="refreshRatesBtn" class="secondary" style="padding: 0.5rem 0.9rem; font-size: 0.85rem;">
+            🔄 <span id="refreshText">Refresh</span>
+          </button>
+        </div>
+        <button id="themeToggle" class="secondary" style="padding: 0.65rem 1.2rem; font-size: 0.95rem; cursor: pointer;">
+          <span id="themeIcon">☀️</span> <span id="themeText">Light Mode</span>
+        </button>
+      </div>
+    </div>
+  </header>
 
 <div class="container">
   <div class="card">
     <h2>Globalni parametri</h2>
     <div class="flex-row">
       <div class="inline">
-        <label for="winBetRatioPercent">Win/Bet Ratio (bez JP) [%]</label>
+        <label for="winBetRatioPercent">Win/Bet Ratio (bez JP) [%] <span class="tip" data-tip="Procenat turnover-a koji se vraća igračima iz base game-a (bez JP). Tipično 94-97%. Npr. 96.5% znači da od 100 EUR opklada, 96.50 EUR ide igračima.">ⓘ</span></label>
+
         <input type="number" id="winBetRatioPercent" value="96.5" step="0.1">
       </div>
       <div class="inline">
-        <label for="monthlyTurnoverEur">Mesečni promet (EUR)</label>
-        <input type="text" id="monthlyTurnoverEur" value="11,152,644">
+        <label for="monthlyTurnoverEur">Mesečni total BET EUR <span class="tip" data-tip="Ukupan iznos svih opklada u mesecu u EUR. Osnova za sve RTP i GGR kalkulacije. Veći promet = stabilniji rezultati simulacije.">ⓘ</span></label>
+
+        <input type="text" id="monthlyTurnoverEur" value="" placeholder="npr. 11,000,000">
       </div>
     </div>
     <div class="flex-row">
       <div class="inline">
-        <label for="granularity">Simulation Granularity (EUR po iteraciji)</label>
+        <label for="granularity">Simulation Granularity (EUR po iteraciji) <span class="tip" data-tip="Veličina jedne iteracije u EUR. Vrednost 1 = jedna iteracija po EUR prometa. Manji broj = preciznija simulacija ali sporija. Preporučeno: 1 EUR.">ⓘ</span></label>
+
         <input type="number" id="granularity" value="1" step="0.1" min="0.1">
       </div>
       <div class="inline">
-        <label for="seed">Random seed (opciono)</label>
+        <label for="seed">Random seed (opciono) <span class="tip" data-tip="Fiksirani seed osigurava identične rezultate pri svakom pokretanju. Korisno za reprodukciju specifičnih scenarija. Prazno = novi random seed svaki put.">ⓘ</span></label>
+
         <input type="number" id="seed" placeholder="12345">
       </div>
     </div>
@@ -771,21 +1068,27 @@
         <h2>Platinum JP</h2>
         <span class="jp-tag platinum">Platinum</span>
       </div>
-      <label>Base Value (EUR)</label>
-      <input type="number" id="pl_base" value="12.75" step="0.01">
-      <label>Min Drop Zone (EUR)</label>
-      <input type="number" id="pl_min" value="12.75" step="0.01">
-      <label>Max Drop Zone (EUR)</label>
-      <input type="number" id="pl_max" value="34" step="0.01">
+      <label>Base Value (EUR) <span class="tip" data-tip="Vrednost JP-a odmah nakon dropa — to je minimum od kojeg JP počinje ponovo da raste. JP nikad ne može biti ispod ove vrednosti.">ⓘ</span></label>
+
+      <input type="number" id="pl_base" value="" placeholder="npr. 10" step="0.01">
+      <label>Min Drop Zone (EUR) <span class="tip" data-tip="Najniži mogući iznos na koji JP može da padne. Hit point se bira nasumično između Min i Max. GAP = Min - Base: veći GAP znači da JP mora više da naraste pre pada.">ⓘ</span></label>
+
+      <input type="number" id="pl_min" value="" placeholder="npr. 15" step="0.01">
+      <label>Max Drop Zone (EUR) <span class="tip" data-tip="Najviši mogući iznos na koji JP može da padne. Ako JP dostigne Max, pad je zagarantovan. Raspon Min-Max određuje prosečan iznos isplate.">ⓘ</span></label>
+
+      <input type="number" id="pl_max" value="" placeholder="npr. 35" step="0.01">
       <div class="warning-box" id="pl_gap_warning" style="display:none;">
         ⚠️ <strong>GAP = 0 EUR</strong> → JP pada ODMAH! Za ređe dropove, povećaj Min.
       </div>
-      <label>Bet Requirement (EUR) - samo za info</label>
-      <input type="number" id="pl_bet_req" value="0.05" step="0.01">
-      <label>Standard Contribution [%]</label>
-      <input type="number" id="pl_std" value="0.27" step="0.001">
-      <label>Hidden Contribution [%]</label>
-      <input type="number" id="pl_hidden" value="0.03" step="0.001">
+      <label>Bet Requirement (EUR - samo za info) <span class="tip" data-tip="Minimalni iznos opklade da bi igrač bio kvalifikovan za ovaj JP nivo. Samo informativno — ne utiče na simulaciju.">ⓘ</span></label>
+
+      <input type="number" id="pl_bet_req" value="" placeholder="npr. 0.05" step="0.01">
+      <label>Standard Contribution [%] <span class="tip" data-tip="Vidljivi procenat svake opklade koji puni JP fond. Direktno određuje brzinu rasta JP-a i JP RTP doprinos. Npr. 0.27% znači 0.0027 EUR po svakom 1 EUR opklade.">ⓘ</span></label>
+
+      <input type="number" id="pl_std" value="" placeholder="npr. 0.27" step="0.001">
+      <label>Hidden Contribution [%] <span class="tip" data-tip="Skrivena kontribucija koja se akumulira u JP ali se ne prikazuje igraču. Resetuje se na 0 nakon svakog dropa. Povećava prosečan iznos isplate bez povećanja vidljive vrednosti JP-a.">ⓘ</span></label>
+
+      <input type="number" id="pl_hidden" value="" placeholder="npr. 0.03" step="0.001">
     </div>
 
     <div class="card">
@@ -793,21 +1096,27 @@
         <h2>Gold JP</h2>
         <span class="jp-tag gold">Gold</span>
       </div>
-      <label>Base Value (EUR)</label>
-      <input type="number" id="gd_base" value="17" step="0.01">
-      <label>Min Drop Zone (EUR)</label>
-      <input type="number" id="gd_min" value="42.5" step="0.01">
-      <label>Max Drop Zone (EUR)</label>
-      <input type="number" id="gd_max" value="119" step="0.01">
+      <label>Base Value (EUR) <span class="tip" data-tip="Vrednost JP-a odmah nakon dropa — to je minimum od kojeg JP počinje ponovo da raste. JP nikad ne može biti ispod ove vrednosti.">ⓘ</span></label>
+
+      <input type="number" id="gd_base" value="" placeholder="npr. 15" step="0.01">
+      <label>Min Drop Zone (EUR) <span class="tip" data-tip="Najniži mogući iznos na koji JP može da padne. Hit point se bira nasumično između Min i Max. GAP = Min - Base: veći GAP znači da JP mora više da naraste pre pada.">ⓘ</span></label>
+
+      <input type="number" id="gd_min" value="" placeholder="npr. 40" step="0.01">
+      <label>Max Drop Zone (EUR) <span class="tip" data-tip="Najviši mogući iznos na koji JP može da padne. Ako JP dostigne Max, pad je zagarantovan. Raspon Min-Max određuje prosečan iznos isplate.">ⓘ</span></label>
+
+      <input type="number" id="gd_max" value="" placeholder="npr. 110" step="0.01">
       <div class="info-box" id="gd_gap_info">
         📊 <strong>GAP:</strong> <span id="gd_gap_value">25.5 EUR</span>
       </div>
-      <label>Bet Requirement (EUR) - samo za info</label>
-      <input type="number" id="gd_bet_req" value="0.40" step="0.01">
-      <label>Standard Contribution [%]</label>
-      <input type="number" id="gd_std" value="0.135" step="0.001">
-      <label>Hidden Contribution [%]</label>
-      <input type="number" id="gd_hidden" value="0.015" step="0.001">
+      <label>Bet Requirement (EUR - samo za info) <span class="tip" data-tip="Minimalni iznos opklade da bi igrač bio kvalifikovan za ovaj JP nivo. Samo informativno — ne utiče na simulaciju.">ⓘ</span></label>
+
+      <input type="number" id="gd_bet_req" value="" placeholder="npr. 0.40" step="0.01">
+      <label>Standard Contribution [%] <span class="tip" data-tip="Vidljivi procenat svake opklade koji puni JP fond. Direktno određuje brzinu rasta JP-a i JP RTP doprinos. Npr. 0.27% znači 0.0027 EUR po svakom 1 EUR opklade.">ⓘ</span></label>
+
+      <input type="number" id="gd_std" value="" placeholder="npr. 0.13" step="0.001">
+      <label>Hidden Contribution [%] <span class="tip" data-tip="Skrivena kontribucija koja se akumulira u JP ali se ne prikazuje igraču. Resetuje se na 0 nakon svakog dropa. Povećava prosečan iznos isplate bez povećanja vidljive vrednosti JP-a.">ⓘ</span></label>
+
+      <input type="number" id="gd_hidden" value="" placeholder="npr. 0.01" step="0.001">
     </div>
 
     <div class="card">
@@ -815,21 +1124,27 @@
         <h2>Diamond JP</h2>
         <span class="jp-tag diamond">Diamond</span>
       </div>
-      <label>Base Value (EUR)</label>
-      <input type="number" id="dm_base" value="382.5" step="0.01">
-      <label>Min Drop Zone (EUR)</label>
-      <input type="number" id="dm_min" value="595" step="0.01">
-      <label>Max Drop Zone (EUR)</label>
-      <input type="number" id="dm_max" value="977.5" step="0.01">
+      <label>Base Value (EUR) <span class="tip" data-tip="Vrednost JP-a odmah nakon dropa — to je minimum od kojeg JP počinje ponovo da raste. JP nikad ne može biti ispod ove vrednosti.">ⓘ</span></label>
+
+      <input type="number" id="dm_base" value="" placeholder="npr. 350" step="0.01">
+      <label>Min Drop Zone (EUR) <span class="tip" data-tip="Najniži mogući iznos na koji JP može da padne. Hit point se bira nasumično između Min i Max. GAP = Min - Base: veći GAP znači da JP mora više da naraste pre pada.">ⓘ</span></label>
+
+      <input type="number" id="dm_min" value="" placeholder="npr. 600" step="0.01">
+      <label>Max Drop Zone (EUR) <span class="tip" data-tip="Najviši mogući iznos na koji JP može da padne. Ako JP dostigne Max, pad je zagarantovan. Raspon Min-Max određuje prosečan iznos isplate.">ⓘ</span></label>
+
+      <input type="number" id="dm_max" value="" placeholder="npr. 1000" step="0.01">
       <div class="info-box" id="dm_gap_info">
         📊 <strong>GAP:</strong> <span id="dm_gap_value">212.5 EUR</span>
       </div>
-      <label>Bet Requirement (EUR) - samo za info</label>
-      <input type="number" id="dm_bet_req" value="1" step="0.01">
-      <label>Standard Contribution [%]</label>
-      <input type="number" id="dm_std" value="0.135" step="0.001">
-      <label>Hidden Contribution [%]</label>
-      <input type="number" id="dm_hidden" value="0.015" step="0.001">
+      <label>Bet Requirement (EUR - samo za info) <span class="tip" data-tip="Minimalni iznos opklade da bi igrač bio kvalifikovan za ovaj JP nivo. Samo informativno — ne utiče na simulaciju.">ⓘ</span></label>
+
+      <input type="number" id="dm_bet_req" value="" placeholder="npr. 1.00" step="0.01">
+      <label>Standard Contribution [%] <span class="tip" data-tip="Vidljivi procenat svake opklade koji puni JP fond. Direktno određuje brzinu rasta JP-a i JP RTP doprinos. Npr. 0.27% znači 0.0027 EUR po svakom 1 EUR opklade.">ⓘ</span></label>
+
+      <input type="number" id="dm_std" value="" placeholder="npr. 0.13" step="0.001">
+      <label>Hidden Contribution [%] <span class="tip" data-tip="Skrivena kontribucija koja se akumulira u JP ali se ne prikazuje igraču. Resetuje se na 0 nakon svakog dropa. Povećava prosečan iznos isplate bez povećanja vidljive vrednosti JP-a.">ⓘ</span></label>
+
+      <input type="number" id="dm_hidden" value="" placeholder="npr. 0.01" step="0.001">
     </div>
   </div>
 
@@ -838,24 +1153,34 @@
   <div class="card">
     <h2>Pokreni simulaciju</h2>
     <button id="runSimBtn">▶ Run Single Simulation</button>
+<button id="exportExcelBtn" class="secondary" style="margin-left: 10px;" disabled>📊 Export to Excel</button>
+
     <button id="runMonteCarloBtn" class="secondary">🎲 Run Monte Carlo (100 runs)</button>
     
     <div class="progress-container" id="progressContainer">
       <div class="progress-header">
-        <h3>⏳ Monte Carlo Simulation u toku...</h3>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="spinner" id="progressSpinner"></div>
+          <h3>⏳ Monte Carlo Simulation u toku...</h3>
+        </div>
         <span class="progress-percentage" id="progressPercentage">0%</span>
       </div>
       <div class="progress-bar-wrapper">
-        <div class="progress-bar pulse" id="progressBar">
-          <span id="progressText"></span>
-        </div>
+        <div class="progress-bar pulse" id="progressBar"><span id="progressText"></span></div>
       </div>
-      <div class="progress-info" id="progressInfo">
-        Obrada simulacija: <strong id="currentRun">0</strong> / <strong id="totalRuns">100</strong>
+      <div class="progress-stats-grid">
+        <div class="progress-stat"><div class="progress-stat-label">Simulacije</div><div class="progress-stat-value"><strong id="currentRun">0</strong> / <strong id="totalRuns">100</strong></div></div>
+        <div class="progress-stat"><div class="progress-stat-label">Brzina</div><div class="progress-stat-value" id="simulationSpeed">- sim/s</div></div>
+        <div class="progress-stat"><div class="progress-stat-label">Preostalo vreme</div><div class="progress-stat-value" id="estimatedTime">Calculating...</div></div>
+        <div class="progress-stat"><div class="progress-stat-label">Ukupno vreme</div><div class="progress-stat-value" id="elapsedTime">0s</div></div>
+      </div>
+      <div class="progress-controls">
+        <button id="pauseResumeBtn" class="secondary small" style="display:none;"><span id="pauseIcon">⏸</span> <span id="pauseText">Pause</span></button>
+        <button id="cancelSimBtn" class="secondary small" style="display:none; background: var(--accent-red);">⏹ Cancel</button>
       </div>
     </div>
-    
-    <div class="monte-carlo-results" id="monteCarloResults">
+
+    <div class="monte-carlo-results" class="monte-carlo-results" id="monteCarloResults">
       <h2>🎲 Monte Carlo Analysis (100 simulacija)</h2>
       <div class="stat-grid">
         <div class="stat-item">
@@ -971,163 +1296,282 @@
   <div class="card scenario-section" id="scenarioSection">
     <h2>⚡ Scenario Comparison Tool</h2>
     
-    <div class="auto-generator">
-      <h3>🤖 Automatic Scenario Generator (GAP-Aware)</h3>
-      <p class="small-note">Unesi željeni JP RTP. Generator će inteligentno podesiti kontribucije I GAP-ove.</p>
-      
-      <div class="flex-row" style="gap: 20px;">
-        <div class="inline">
-          <label for="targetJpRtp">Ciljni JP RTP (%)</label>
-          <input type="number" id="targetJpRtp" value="0.50" step="0.05" min="0.1" max="2.0">
-          <p class="small-note">Primer: 0.30% (conservative), 0.50% (standard), 0.80% (aggressive)</p>
-        </div>
-        <div class="inline">
-          <label for="variancePercent">Variance između scenarija (%)</label>
-          <input type="number" id="variancePercent" value="15" step="5" min="5" max="50">
-          <p class="small-note">Primer: 15% = Scenario A (-15%), B (target), C (+15%)</p>
-        </div>
-      </div>
-      
-      <div class="checkbox-label">
-        <input type="checkbox" id="adjustGaps" checked>
-        <span><strong>Podesi GAP-ove (Min-Base)</strong> za kontrolu frekvencije dropova</span>
-      </div>
-      <p class="small-note" style="margin-top: -5px;">
-        ✓ Checked = Veći GAP za manji RTP (ređi dropovi) | ✗ Unchecked = Samo kontribucije se menjaju
-      </p>
-      
-      <button class="green" id="generateScenariosBtn">🚀 Generate 3 Scenarios</button>
-      
-      <div id="generatedPreview" style="display:none; margin-top: 15px;">
-        <h4 style="color: var(--accent-green); margin-bottom: 10px; font-size: 0.875rem;">📋 Generated Scenarios Preview:</h4>
-        <div class="scenario-grid">
-          <div class="contrib-preview" id="previewA"></div>
-          <div class="contrib-preview" id="previewB"></div>
-          <div class="contrib-preview" id="previewC"></div>
-        </div>
-      </div>
-    </div>
-    
+
+
+  
     <h3 style="margin-top: 30px;">🔧 Scenario Configuration & Fine-Tuning</h3>
     <div class="scenario-grid">
       <div class="scenario-card">
-        <h3>📋 Scenario A</h3>
+        <h3>📋 Conservative</h3>
         <label>Naziv:</label>
         <input type="text" class="scenario-input" id="scenarioA_name" value="Conservative">
-        <label style="margin-top: 10px;">Multiplikator kontribucija:</label>
-        <input type="number" class="scenario-input" id="scenarioA_mult" value="0.85" step="0.01">
-        
-        <div class="jp-mini-section">
-          <h4>🎯 Platinum</h4>
-          <label style="font-size: 11px;">Base (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioA_pl_base" value="12.75" step="0.1">
-          <label style="font-size: 11px;">Min (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioA_pl_min" value="12.75" step="0.1">
-          <label style="font-size: 11px;">Max (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioA_pl_max" value="34" step="0.1">
+        <div class="jp-mini-section"><h4>⚪ Platinum</h4>
+          <div class="sc-contrib-row">
+            <div class="sc-contrib-item"><label>Std (%):</label>
+              <input type="number" class="scenario-input-small" id="scenarioA_pl_std" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 0.12" step="0.01" min="0"></div>
+            <div class="sc-contrib-item"><label>Hidden (%):</label>
+              <input type="number" class="scenario-input-small" id="scenarioA_pl_hidden" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 0.01" step="0.01" min="0"></div>
+          </div>
+          <label style="font-size:11px;">Base (EUR):</label><input type="number" class="scenario-input-small" id="scenarioA_pl_base" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 10" step="0.1">
+          <label style="font-size:11px;">Min (EUR):</label><input type="number" class="scenario-input-small" id="scenarioA_pl_min" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 15" step="0.1">
+          <label style="font-size:11px;">Max (EUR):</label><input type="number" class="scenario-input-small" id="scenarioA_pl_max" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 35" step="0.1">
         </div>
-        
-        <div class="jp-mini-section">
-          <h4>🥇 Gold</h4>
-          <label style="font-size: 11px;">Base (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioA_gd_base" value="17" step="0.1">
-          <label style="font-size: 11px;">Min (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioA_gd_min" value="42.5" step="0.1">
-          <label style="font-size: 11px;">Max (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioA_gd_max" value="119" step="0.1">
+        <div class="jp-mini-section"><h4>🟡 Gold</h4>
+          <div class="sc-contrib-row">
+            <div class="sc-contrib-item"><label>Std (%):</label>
+              <input type="number" class="scenario-input-small" id="scenarioA_gd_std" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 0.12" step="0.01" min="0"></div>
+            <div class="sc-contrib-item"><label>Hidden (%):</label>
+              <input type="number" class="scenario-input-small" id="scenarioA_gd_hidden" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 0.01" step="0.01" min="0"></div>
+          </div>
+          <label style="font-size:11px;">Base (EUR):</label><input type="number" class="scenario-input-small" id="scenarioA_gd_base" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 15" step="0.1">
+          <label style="font-size:11px;">Min (EUR):</label><input type="number" class="scenario-input-small" id="scenarioA_gd_min" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 40" step="0.1">
+          <label style="font-size:11px;">Max (EUR):</label><input type="number" class="scenario-input-small" id="scenarioA_gd_max" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 110" step="0.1">
         </div>
-        
-        <div class="jp-mini-section">
-          <h4>💎 Diamond</h4>
-          <label style="font-size: 11px;">Base (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioA_dm_base" value="382.5" step="1">
-          <label style="font-size: 11px;">Min (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioA_dm_min" value="595" step="1">
-          <label style="font-size: 11px;">Max (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioA_dm_max" value="977.5" step="1">
+        <div class="jp-mini-section"><h4>💎 Diamond</h4>
+          <div class="sc-contrib-row">
+            <div class="sc-contrib-item"><label>Std (%):</label>
+              <input type="number" class="scenario-input-small" id="scenarioA_dm_std" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 0.12" step="0.01" min="0"></div>
+            <div class="sc-contrib-item"><label>Hidden (%):</label>
+              <input type="number" class="scenario-input-small" id="scenarioA_dm_hidden" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 0.01" step="0.01" min="0"></div>
+          </div>
+          <label style="font-size:11px;">Base (EUR):</label><input type="number" class="scenario-input-small" id="scenarioA_dm_base" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 350" step="1">
+          <label style="font-size:11px;">Min (EUR):</label><input type="number" class="scenario-input-small" id="scenarioA_dm_min" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 600" step="1">
+          <label style="font-size:11px;">Max (EUR):</label><input type="number" class="scenario-input-small" id="scenarioA_dm_max" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 1000" step="1">
         </div>
-        
-        <button class="small secondary" onclick="runScenario('A')">▶ Run Scenario A</button>
+        <div class="sc-contrib-summary" id="scContribSummary_A">
+          <div class="scs-title">⚡ Pregled kontribucija po nivou</div>
+          <div class="scs-row">
+            <span class="scs-name">⚪ Platinum</span>
+            <span class="scs-vals">
+              <span class="scs-std" id="scs_A_pl_std">Std —</span>
+              <span style="color:var(--text-muted)">+</span>
+              <span class="scs-hid" id="scs_A_pl_hid">Hidden —</span>
+              <span style="color:var(--text-muted)">=</span>
+              <span class="scs-tot" id="scs_A_pl_tot">—</span>
+            </span>
+          </div>
+          <div class="scs-row">
+            <span class="scs-name">🟡 Gold</span>
+            <span class="scs-vals">
+              <span class="scs-std" id="scs_A_gd_std">Std —</span>
+              <span style="color:var(--text-muted)">+</span>
+              <span class="scs-hid" id="scs_A_gd_hid">Hidden —</span>
+              <span style="color:var(--text-muted)">=</span>
+              <span class="scs-tot" id="scs_A_gd_tot">—</span>
+            </span>
+          </div>
+          <div class="scs-row">
+            <span class="scs-name">💎 Diamond</span>
+            <span class="scs-vals">
+              <span class="scs-std" id="scs_A_dm_std">Std —</span>
+              <span style="color:var(--text-muted)">+</span>
+              <span class="scs-hid" id="scs_A_dm_hid">Hidden —</span>
+              <span style="color:var(--text-muted)">=</span>
+              <span class="scs-tot" id="scs_A_dm_tot">—</span>
+            </span>
+          </div>
+          <div class="scs-row" style="border-top:1px solid rgba(183,121,31,0.4);margin-top:3px;padding-top:3px;">
+            <span class="scs-name" style="font-weight:700;color:var(--accent-gold);">∑ Ukupno</span>
+            <span class="scs-vals">
+              <span class="scs-std" id="scs_A_total_std" style="font-weight:600;">Std —</span>
+              <span style="color:var(--text-muted)">+</span>
+              <span class="scs-hid" id="scs_A_total_hid" style="font-weight:600;">Hidden —</span>
+              <span style="color:var(--text-muted)">=</span>
+              <span class="scs-tot" id="scs_A_total_tot" style="font-size:0.86rem;">—</span>
+            </span>
+          </div>
+        </div>
+        <div id="scWarnings_A" class="sc-warnings"></div>
+        <div class="scenario-live" id="liveStatsA">
+          <div class="sl-title">📊 Live procena (mesečno)</div>
+          <div class="sl-row"><span class="sl-lbl">⚪ PL drops / avg payout:</span><span class="sl-val" id="lsA_pl">—</span></div>
+          <div class="sl-row"><span class="sl-lbl">🟡 GD drops / avg payout:</span><span class="sl-val" id="lsA_gd">—</span></div>
+          <div class="sl-row"><span class="sl-lbl">💎 DM drops / avg payout:</span><span class="sl-val" id="lsA_dm">—</span></div>
+          <div class="sl-row"><span class="sl-lbl"><strong>Procenjeni JP RTP:</strong></span><span class="sl-rtp" id="lsA_rtp">—</span></div>
+        </div>
+        <button class="small secondary" id="runScenarioBtn_A" onclick="runScenario('A')">▶ Run Scenario A</button>
       </div>
       
       <div class="scenario-card">
-        <h3>📋 Scenario B</h3>
+        <h3>🎯 Target</h3>
         <label>Naziv:</label>
         <input type="text" class="scenario-input" id="scenarioB_name" value="Target">
-        <label style="margin-top: 10px;">Multiplikator kontribucija:</label>
-        <input type="number" class="scenario-input" id="scenarioB_mult" value="1.0" step="0.01">
-        
-        <div class="jp-mini-section">
-          <h4>🎯 Platinum</h4>
-          <label style="font-size: 11px;">Base (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioB_pl_base" value="12.75" step="0.1">
-          <label style="font-size: 11px;">Min (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioB_pl_min" value="12.75" step="0.1">
-          <label style="font-size: 11px;">Max (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioB_pl_max" value="34" step="0.1">
+        <div class="jp-mini-section"><h4>⚪ Platinum</h4>
+          <div class="sc-contrib-row">
+            <div class="sc-contrib-item"><label>Std (%):</label>
+              <input type="number" class="scenario-input-small" id="scenarioB_pl_std" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 0.12" step="0.01" min="0"></div>
+            <div class="sc-contrib-item"><label>Hidden (%):</label>
+              <input type="number" class="scenario-input-small" id="scenarioB_pl_hidden" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 0.01" step="0.01" min="0"></div>
+          </div>
+          <label style="font-size:11px;">Base (EUR):</label><input type="number" class="scenario-input-small" id="scenarioB_pl_base" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 10" step="0.1">
+          <label style="font-size:11px;">Min (EUR):</label><input type="number" class="scenario-input-small" id="scenarioB_pl_min" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 15" step="0.1">
+          <label style="font-size:11px;">Max (EUR):</label><input type="number" class="scenario-input-small" id="scenarioB_pl_max" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 35" step="0.1">
         </div>
-        
-        <div class="jp-mini-section">
-          <h4>🥇 Gold</h4>
-          <label style="font-size: 11px;">Base (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioB_gd_base" value="17" step="0.1">
-          <label style="font-size: 11px;">Min (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioB_gd_min" value="42.5" step="0.1">
-          <label style="font-size: 11px;">Max (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioB_gd_max" value="119" step="0.1">
+        <div class="jp-mini-section"><h4>🟡 Gold</h4>
+          <div class="sc-contrib-row">
+            <div class="sc-contrib-item"><label>Std (%):</label>
+              <input type="number" class="scenario-input-small" id="scenarioB_gd_std" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 0.12" step="0.01" min="0"></div>
+            <div class="sc-contrib-item"><label>Hidden (%):</label>
+              <input type="number" class="scenario-input-small" id="scenarioB_gd_hidden" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 0.01" step="0.01" min="0"></div>
+          </div>
+          <label style="font-size:11px;">Base (EUR):</label><input type="number" class="scenario-input-small" id="scenarioB_gd_base" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 15" step="0.1">
+          <label style="font-size:11px;">Min (EUR):</label><input type="number" class="scenario-input-small" id="scenarioB_gd_min" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 40" step="0.1">
+          <label style="font-size:11px;">Max (EUR):</label><input type="number" class="scenario-input-small" id="scenarioB_gd_max" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 110" step="0.1">
         </div>
-        
-        <div class="jp-mini-section">
-          <h4>💎 Diamond</h4>
-          <label style="font-size: 11px;">Base (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioB_dm_base" value="382.5" step="1">
-          <label style="font-size: 11px;">Min (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioB_dm_min" value="595" step="1">
-          <label style="font-size: 11px;">Max (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioB_dm_max" value="977.5" step="1">
+        <div class="jp-mini-section"><h4>💎 Diamond</h4>
+          <div class="sc-contrib-row">
+            <div class="sc-contrib-item"><label>Std (%):</label>
+              <input type="number" class="scenario-input-small" id="scenarioB_dm_std" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 0.12" step="0.01" min="0"></div>
+            <div class="sc-contrib-item"><label>Hidden (%):</label>
+              <input type="number" class="scenario-input-small" id="scenarioB_dm_hidden" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 0.01" step="0.01" min="0"></div>
+          </div>
+          <label style="font-size:11px;">Base (EUR):</label><input type="number" class="scenario-input-small" id="scenarioB_dm_base" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 350" step="1">
+          <label style="font-size:11px;">Min (EUR):</label><input type="number" class="scenario-input-small" id="scenarioB_dm_min" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 600" step="1">
+          <label style="font-size:11px;">Max (EUR):</label><input type="number" class="scenario-input-small" id="scenarioB_dm_max" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 1000" step="1">
         </div>
-        
-        <button class="small secondary" onclick="runScenario('B')">▶ Run Scenario B</button>
+        <div class="sc-contrib-summary" id="scContribSummary_B">
+          <div class="scs-title">⚡ Pregled kontribucija po nivou</div>
+          <div class="scs-row">
+            <span class="scs-name">⚪ Platinum</span>
+            <span class="scs-vals">
+              <span class="scs-std" id="scs_B_pl_std">Std —</span>
+              <span style="color:var(--text-muted)">+</span>
+              <span class="scs-hid" id="scs_B_pl_hid">Hidden —</span>
+              <span style="color:var(--text-muted)">=</span>
+              <span class="scs-tot" id="scs_B_pl_tot">—</span>
+            </span>
+          </div>
+          <div class="scs-row">
+            <span class="scs-name">🟡 Gold</span>
+            <span class="scs-vals">
+              <span class="scs-std" id="scs_B_gd_std">Std —</span>
+              <span style="color:var(--text-muted)">+</span>
+              <span class="scs-hid" id="scs_B_gd_hid">Hidden —</span>
+              <span style="color:var(--text-muted)">=</span>
+              <span class="scs-tot" id="scs_B_gd_tot">—</span>
+            </span>
+          </div>
+          <div class="scs-row">
+            <span class="scs-name">💎 Diamond</span>
+            <span class="scs-vals">
+              <span class="scs-std" id="scs_B_dm_std">Std —</span>
+              <span style="color:var(--text-muted)">+</span>
+              <span class="scs-hid" id="scs_B_dm_hid">Hidden —</span>
+              <span style="color:var(--text-muted)">=</span>
+              <span class="scs-tot" id="scs_B_dm_tot">—</span>
+            </span>
+          </div>
+          <div class="scs-row" style="border-top:1px solid rgba(183,121,31,0.4);margin-top:3px;padding-top:3px;">
+            <span class="scs-name" style="font-weight:700;color:var(--accent-gold);">∑ Ukupno</span>
+            <span class="scs-vals">
+              <span class="scs-std" id="scs_B_total_std" style="font-weight:600;">Std —</span>
+              <span style="color:var(--text-muted)">+</span>
+              <span class="scs-hid" id="scs_B_total_hid" style="font-weight:600;">Hidden —</span>
+              <span style="color:var(--text-muted)">=</span>
+              <span class="scs-tot" id="scs_B_total_tot" style="font-size:0.86rem;">—</span>
+            </span>
+          </div>
+        </div>
+        <div id="scWarnings_B" class="sc-warnings"></div>
+        <div class="scenario-live" id="liveStatsB">
+          <div class="sl-title">📊 Live procena (mesečno)</div>
+          <div class="sl-row"><span class="sl-lbl">⚪ PL drops / avg payout:</span><span class="sl-val" id="lsB_pl">—</span></div>
+          <div class="sl-row"><span class="sl-lbl">🟡 GD drops / avg payout:</span><span class="sl-val" id="lsB_gd">—</span></div>
+          <div class="sl-row"><span class="sl-lbl">💎 DM drops / avg payout:</span><span class="sl-val" id="lsB_dm">—</span></div>
+          <div class="sl-row"><span class="sl-lbl"><strong>Procenjeni JP RTP:</strong></span><span class="sl-rtp" id="lsB_rtp">—</span></div>
+        </div>
+        <button class="small secondary" id="runScenarioBtn_B" onclick="runScenario('B')">▶ Run Scenario B</button>
       </div>
       
       <div class="scenario-card">
-        <h3>📋 Scenario C</h3>
+        <h3>🚀 Aggressive</h3>
         <label>Naziv:</label>
         <input type="text" class="scenario-input" id="scenarioC_name" value="Aggressive">
-        <label style="margin-top: 10px;">Multiplikator kontribucija:</label>
-        <input type="number" class="scenario-input" id="scenarioC_mult" value="1.15" step="0.01">
-        
-        <div class="jp-mini-section">
-          <h4>🎯 Platinum</h4>
-          <label style="font-size: 11px;">Base (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioC_pl_base" value="12.75" step="0.1">
-          <label style="font-size: 11px;">Min (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioC_pl_min" value="12.75" step="0.1">
-          <label style="font-size: 11px;">Max (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioC_pl_max" value="34" step="0.1">
+        <div class="jp-mini-section"><h4>⚪ Platinum</h4>
+          <div class="sc-contrib-row">
+            <div class="sc-contrib-item"><label>Std (%):</label>
+              <input type="number" class="scenario-input-small" id="scenarioC_pl_std" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 0.12" step="0.01" min="0"></div>
+            <div class="sc-contrib-item"><label>Hidden (%):</label>
+              <input type="number" class="scenario-input-small" id="scenarioC_pl_hidden" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 0.01" step="0.01" min="0"></div>
+          </div>
+          <label style="font-size:11px;">Base (EUR):</label><input type="number" class="scenario-input-small" id="scenarioC_pl_base" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 10" step="0.1">
+          <label style="font-size:11px;">Min (EUR):</label><input type="number" class="scenario-input-small" id="scenarioC_pl_min" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 15" step="0.1">
+          <label style="font-size:11px;">Max (EUR):</label><input type="number" class="scenario-input-small" id="scenarioC_pl_max" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 35" step="0.1">
         </div>
-        
-        <div class="jp-mini-section">
-          <h4>🥇 Gold</h4>
-          <label style="font-size: 11px;">Base (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioC_gd_base" value="17" step="0.1">
-          <label style="font-size: 11px;">Min (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioC_gd_min" value="42.5" step="0.1">
-          <label style="font-size: 11px;">Max (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioC_gd_max" value="119" step="0.1">
+        <div class="jp-mini-section"><h4>🟡 Gold</h4>
+          <div class="sc-contrib-row">
+            <div class="sc-contrib-item"><label>Std (%):</label>
+              <input type="number" class="scenario-input-small" id="scenarioC_gd_std" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 0.12" step="0.01" min="0"></div>
+            <div class="sc-contrib-item"><label>Hidden (%):</label>
+              <input type="number" class="scenario-input-small" id="scenarioC_gd_hidden" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 0.01" step="0.01" min="0"></div>
+          </div>
+          <label style="font-size:11px;">Base (EUR):</label><input type="number" class="scenario-input-small" id="scenarioC_gd_base" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 15" step="0.1">
+          <label style="font-size:11px;">Min (EUR):</label><input type="number" class="scenario-input-small" id="scenarioC_gd_min" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 40" step="0.1">
+          <label style="font-size:11px;">Max (EUR):</label><input type="number" class="scenario-input-small" id="scenarioC_gd_max" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 110" step="0.1">
         </div>
-        
-        <div class="jp-mini-section">
-          <h4>💎 Diamond</h4>
-          <label style="font-size: 11px;">Base (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioC_dm_base" value="382.5" step="1">
-          <label style="font-size: 11px;">Min (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioC_dm_min" value="595" step="1">
-          <label style="font-size: 11px;">Max (EUR):</label>
-          <input type="number" class="scenario-input-small" id="scenarioC_dm_max" value="977.5" step="1">
+        <div class="jp-mini-section"><h4>💎 Diamond</h4>
+          <div class="sc-contrib-row">
+            <div class="sc-contrib-item"><label>Std (%):</label>
+              <input type="number" class="scenario-input-small" id="scenarioC_dm_std" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 0.12" step="0.01" min="0"></div>
+            <div class="sc-contrib-item"><label>Hidden (%):</label>
+              <input type="number" class="scenario-input-small" id="scenarioC_dm_hidden" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 0.01" step="0.01" min="0"></div>
+          </div>
+          <label style="font-size:11px;">Base (EUR):</label><input type="number" class="scenario-input-small" id="scenarioC_dm_base" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 350" step="1">
+          <label style="font-size:11px;">Min (EUR):</label><input type="number" class="scenario-input-small" id="scenarioC_dm_min" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 600" step="1">
+          <label style="font-size:11px;">Max (EUR):</label><input type="number" class="scenario-input-small" id="scenarioC_dm_max" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 1000" step="1">
         </div>
-        
-        <button class="small secondary" onclick="runScenario('C')">▶ Run Scenario C</button>
+        <div class="sc-contrib-summary" id="scContribSummary_C">
+          <div class="scs-title">⚡ Pregled kontribucija po nivou</div>
+          <div class="scs-row">
+            <span class="scs-name">⚪ Platinum</span>
+            <span class="scs-vals">
+              <span class="scs-std" id="scs_C_pl_std">Std —</span>
+              <span style="color:var(--text-muted)">+</span>
+              <span class="scs-hid" id="scs_C_pl_hid">Hidden —</span>
+              <span style="color:var(--text-muted)">=</span>
+              <span class="scs-tot" id="scs_C_pl_tot">—</span>
+            </span>
+          </div>
+          <div class="scs-row">
+            <span class="scs-name">🟡 Gold</span>
+            <span class="scs-vals">
+              <span class="scs-std" id="scs_C_gd_std">Std —</span>
+              <span style="color:var(--text-muted)">+</span>
+              <span class="scs-hid" id="scs_C_gd_hid">Hidden —</span>
+              <span style="color:var(--text-muted)">=</span>
+              <span class="scs-tot" id="scs_C_gd_tot">—</span>
+            </span>
+          </div>
+          <div class="scs-row">
+            <span class="scs-name">💎 Diamond</span>
+            <span class="scs-vals">
+              <span class="scs-std" id="scs_C_dm_std">Std —</span>
+              <span style="color:var(--text-muted)">+</span>
+              <span class="scs-hid" id="scs_C_dm_hid">Hidden —</span>
+              <span style="color:var(--text-muted)">=</span>
+              <span class="scs-tot" id="scs_C_dm_tot">—</span>
+            </span>
+          </div>
+          <div class="scs-row" style="border-top:1px solid rgba(183,121,31,0.4);margin-top:3px;padding-top:3px;">
+            <span class="scs-name" style="font-weight:700;color:var(--accent-gold);">∑ Ukupno</span>
+            <span class="scs-vals">
+              <span class="scs-std" id="scs_C_total_std" style="font-weight:600;">Std —</span>
+              <span style="color:var(--text-muted)">+</span>
+              <span class="scs-hid" id="scs_C_total_hid" style="font-weight:600;">Hidden —</span>
+              <span style="color:var(--text-muted)">=</span>
+              <span class="scs-tot" id="scs_C_total_tot" style="font-size:0.86rem;">—</span>
+            </span>
+          </div>
+        </div>
+        <div id="scWarnings_C" class="sc-warnings"></div>
+        <div class="scenario-live" id="liveStatsC">
+          <div class="sl-title">📊 Live procena (mesečno)</div>
+          <div class="sl-row"><span class="sl-lbl">⚪ PL drops / avg payout:</span><span class="sl-val" id="lsC_pl">—</span></div>
+          <div class="sl-row"><span class="sl-lbl">🟡 GD drops / avg payout:</span><span class="sl-val" id="lsC_gd">—</span></div>
+          <div class="sl-row"><span class="sl-lbl">💎 DM drops / avg payout:</span><span class="sl-val" id="lsC_dm">—</span></div>
+          <div class="sl-row"><span class="sl-lbl"><strong>Procenjeni JP RTP:</strong></span><span class="sl-rtp" id="lsC_rtp">—</span></div>
+        </div>
+        <button class="small secondary" id="runScenarioBtn_C" onclick="runScenario('C')">▶ Run Scenario C</button>
       </div>
     </div>
     
@@ -1171,69 +1615,51 @@
           <td id="scenarioB_ggr">-</td>
           <td id="scenarioC_ggr">-</td>
         </tr>
-        <tr>
-          <td>Platinum Drops</td>
+        <tr class="ct-sep-pl ct-label-pl">
+          <td>⚪ Platinum Drops</td>
           <td class="comparison-highlight" id="current_plDrops">-</td>
           <td id="scenarioA_plDrops">-</td>
           <td id="scenarioB_plDrops">-</td>
           <td id="scenarioC_plDrops">-</td>
         </tr>
-        <tr>
-          <td>Platinum Avg Drop</td>
+        <tr class="ct-label-pl">
+          <td>⚪ Platinum Avg Drop</td>
           <td class="comparison-highlight" id="current_plAvg">-</td>
           <td id="scenarioA_plAvg">-</td>
           <td id="scenarioB_plAvg">-</td>
           <td id="scenarioC_plAvg">-</td>
         </tr>
-        <tr>
-          <td>Platinum GAP</td>
-          <td class="comparison-highlight" id="current_plGap">-</td>
-          <td id="scenarioA_plGap">-</td>
-          <td id="scenarioB_plGap">-</td>
-          <td id="scenarioC_plGap">-</td>
-        </tr>
-        <tr>
-          <td>Gold Drops</td>
+        
+        <tr class="ct-sep-gd ct-label-gd">
+          <td>🟡 Gold Drops</td>
           <td class="comparison-highlight" id="current_gdDrops">-</td>
           <td id="scenarioA_gdDrops">-</td>
           <td id="scenarioB_gdDrops">-</td>
           <td id="scenarioC_gdDrops">-</td>
         </tr>
-        <tr>
-          <td>Gold Avg Drop</td>
+        <tr class="ct-label-gd">
+          <td>🟡 Gold Avg Drop</td>
           <td class="comparison-highlight" id="current_gdAvg">-</td>
           <td id="scenarioA_gdAvg">-</td>
           <td id="scenarioB_gdAvg">-</td>
           <td id="scenarioC_gdAvg">-</td>
         </tr>
-        <tr>
-          <td>Gold GAP</td>
-          <td class="comparison-highlight" id="current_gdGap">-</td>
-          <td id="scenarioA_gdGap">-</td>
-          <td id="scenarioB_gdGap">-</td>
-          <td id="scenarioC_gdGap">-</td>
-        </tr>
-        <tr>
-          <td>Diamond Drops</td>
+        
+        <tr class="ct-sep-dm ct-label-dm">
+          <td>💎 Diamond Drops</td>
           <td class="comparison-highlight" id="current_dmDrops">-</td>
           <td id="scenarioA_dmDrops">-</td>
           <td id="scenarioB_dmDrops">-</td>
           <td id="scenarioC_dmDrops">-</td>
         </tr>
-        <tr>
-          <td>Diamond Avg Drop</td>
+        <tr class="ct-label-dm">
+          <td>💎 Diamond Avg Drop</td>
           <td class="comparison-highlight" id="current_dmAvg">-</td>
           <td id="scenarioA_dmAvg">-</td>
           <td id="scenarioB_dmAvg">-</td>
           <td id="scenarioC_dmAvg">-</td>
         </tr>
-        <tr>
-          <td>Diamond GAP</td>
-          <td class="comparison-highlight" id="current_dmGap">-</td>
-          <td id="scenarioA_dmGap">-</td>
-          <td id="scenarioB_dmGap">-</td>
-          <td id="scenarioC_dmGap">-</td>
-        </tr>
+        
       </tbody>
     </table>
   </div>
@@ -1241,6 +1667,10 @@
   <div class="card">
     <h2>📊 Grafikon – JP RTP tokom simulacije</h2>
     <canvas id="rtpChart" width="1200" height="360"></canvas>
+<div style="text-align:right; margin-top:10px;">
+  <button class="secondary small" id="downloadChartBtn" style="display:none" onclick="downloadChart()">💾 Save Chart as PNG</button>
+</div>
+
     <p class="small-note" style="margin-top:15px;">
       <strong>X osa:</strong> Procesirani turnover (EUR) | <strong>Y osa:</strong> JP RTP (%)
     </p>
@@ -1355,6 +1785,9 @@
 </div>
 
 <script>
+  // Scenario results storage
+  let scenarioResults = { A: null, B: null, C: null };
+
 let currentResult = null;
 
 function parseTurnover(str) {
@@ -1468,126 +1901,6 @@ function updateGapWarnings() {
 });
 updateGapWarnings();
 
-document.getElementById('generateScenariosBtn').addEventListener('click', () => {
-  const targetRtp = parseFloat(document.getElementById('targetJpRtp').value) / 100;
-  const variance = parseFloat(document.getElementById('variancePercent').value) / 100;
-  const adjustGaps = document.getElementById('adjustGaps').checked;
-  
-  const currentPl = (parseFloat(document.getElementById('pl_std').value) + parseFloat(document.getElementById('pl_hidden').value)) / 100;
-  const currentGd = (parseFloat(document.getElementById('gd_std').value) + parseFloat(document.getElementById('gd_hidden').value)) / 100;
-  const currentDm = (parseFloat(document.getElementById('dm_std').value) + parseFloat(document.getElementById('dm_hidden').value)) / 100;
-  const currentTotal = currentPl + currentGd + currentDm;
-  
-  const multiplierA = (targetRtp * (1 - variance)) / currentTotal;
-  const multiplierB = targetRtp / currentTotal;
-  const multiplierC = (targetRtp * (1 + variance)) / currentTotal;
-  
-  document.getElementById('scenarioA_mult').value = multiplierA.toFixed(3);
-  document.getElementById('scenarioB_mult').value = multiplierB.toFixed(3);
-  document.getElementById('scenarioC_mult').value = multiplierC.toFixed(3);
-  
-  const origPlBase = parseFloat(document.getElementById('pl_base').value);
-  const origPlMin = parseFloat(document.getElementById('pl_min').value);
-  const origPlMax = parseFloat(document.getElementById('pl_max').value);
-  const origGdBase = parseFloat(document.getElementById('gd_base').value);
-  const origGdMin = parseFloat(document.getElementById('gd_min').value);
-  const origGdMax = parseFloat(document.getElementById('gd_max').value);
-  const origDmBase = parseFloat(document.getElementById('dm_base').value);
-  const origDmMin = parseFloat(document.getElementById('dm_min').value);
-  const origDmMax = parseFloat(document.getElementById('dm_max').value);
-  
-  const origPlGap = origPlMin - origPlBase;
-  const origGdGap = origGdMin - origGdBase;
-  const origDmGap = origDmMin - origDmBase;
-  
-  if (adjustGaps) {
-    const gapFactorA = 1 / multiplierA;
-    document.getElementById('scenarioA_pl_base').value = origPlBase.toFixed(2);
-    document.getElementById('scenarioA_pl_min').value = (origPlBase + origPlGap * gapFactorA).toFixed(2);
-    document.getElementById('scenarioA_pl_max').value = (origPlBase + origPlGap * gapFactorA + (origPlMax - origPlMin)).toFixed(2);
-    
-    document.getElementById('scenarioA_gd_base').value = origGdBase.toFixed(2);
-    document.getElementById('scenarioA_gd_min').value = (origGdBase + origGdGap * gapFactorA).toFixed(2);
-    document.getElementById('scenarioA_gd_max').value = (origGdBase + origGdGap * gapFactorA + (origGdMax - origGdMin)).toFixed(2);
-    
-    document.getElementById('scenarioA_dm_base').value = origDmBase.toFixed(2);
-    document.getElementById('scenarioA_dm_min').value = (origDmBase + origDmGap * gapFactorA).toFixed(0);
-    document.getElementById('scenarioA_dm_max').value = (origDmBase + origDmGap * gapFactorA + (origDmMax - origDmMin)).toFixed(0);
-    
-    document.getElementById('scenarioB_pl_base').value = origPlBase.toFixed(2);
-    document.getElementById('scenarioB_pl_min').value = origPlMin.toFixed(2);
-    document.getElementById('scenarioB_pl_max').value = origPlMax.toFixed(2);
-    
-    document.getElementById('scenarioB_gd_base').value = origGdBase.toFixed(2);
-    document.getElementById('scenarioB_gd_min').value = origGdMin.toFixed(2);
-    document.getElementById('scenarioB_gd_max').value = origGdMax.toFixed(2);
-    
-    document.getElementById('scenarioB_dm_base').value = origDmBase.toFixed(2);
-    document.getElementById('scenarioB_dm_min').value = origDmMin.toFixed(0);
-    document.getElementById('scenarioB_dm_max').value = origDmMax.toFixed(0);
-    
-    const gapFactorC = 1 / multiplierC;
-    document.getElementById('scenarioC_pl_base').value = origPlBase.toFixed(2);
-    document.getElementById('scenarioC_pl_min').value = Math.max(origPlBase, origPlBase + origPlGap * gapFactorC).toFixed(2);
-    document.getElementById('scenarioC_pl_max').value = (Math.max(origPlBase, origPlBase + origPlGap * gapFactorC) + (origPlMax - origPlMin)).toFixed(2);
-    
-    document.getElementById('scenarioC_gd_base').value = origGdBase.toFixed(2);
-    document.getElementById('scenarioC_gd_min').value = (origGdBase + origGdGap * gapFactorC).toFixed(2);
-    document.getElementById('scenarioC_gd_max').value = (origGdBase + origGdGap * gapFactorC + (origGdMax - origGdMin)).toFixed(2);
-    
-    document.getElementById('scenarioC_dm_base').value = origDmBase.toFixed(2);
-    document.getElementById('scenarioC_dm_min').value = (origDmBase + origDmGap * gapFactorC).toFixed(0);
-    document.getElementById('scenarioC_dm_max').value = (origDmBase + origDmGap * gapFactorC + (origDmMax - origDmMin)).toFixed(0);
-  } else {
-    ['A', 'B', 'C'].forEach(s => {
-      document.getElementById(`scenario${s}_pl_base`).value = origPlBase.toFixed(2);
-      document.getElementById(`scenario${s}_pl_min`).value = origPlMin.toFixed(2);
-      document.getElementById(`scenario${s}_pl_max`).value = origPlMax.toFixed(2);
-      document.getElementById(`scenario${s}_gd_base`).value = origGdBase.toFixed(2);
-      document.getElementById(`scenario${s}_gd_min`).value = origGdMin.toFixed(2);
-      document.getElementById(`scenario${s}_gd_max`).value = origGdMax.toFixed(2);
-      document.getElementById(`scenario${s}_dm_base`).value = origDmBase.toFixed(2);
-      document.getElementById(`scenario${s}_dm_min`).value = origDmMin.toFixed(0);
-      document.getElementById(`scenario${s}_dm_max`).value = origDmMax.toFixed(0);
-    });
-  }
-  
-  const targetRtpPct = (targetRtp * 100).toFixed(2);
-  document.getElementById('scenarioA_name').value = `Conservative (${((targetRtp * (1 - variance)) * 100).toFixed(2)}%)`;
-  document.getElementById('scenarioB_name').value = `Target (${targetRtpPct}%)`;
-  document.getElementById('scenarioC_name').value = `Aggressive (${((targetRtp * (1 + variance)) * 100).toFixed(2)}%)`;
-  
-  const gapAdjust = adjustGaps ? ' + GAP Control' : '';
-  const plGapA = parseFloat(document.getElementById('scenarioA_pl_min').value) - parseFloat(document.getElementById('scenarioA_pl_base').value);
-  const plGapB = parseFloat(document.getElementById('scenarioB_pl_min').value) - parseFloat(document.getElementById('scenarioB_pl_base').value);
-  const plGapC = parseFloat(document.getElementById('scenarioC_pl_min').value) - parseFloat(document.getElementById('scenarioC_pl_base').value);
-  
-  const previewA = `
-    <strong>Scenario A:</strong> ${document.getElementById('scenarioA_name').value}<br>
-    Contrib Mult: ×${multiplierA.toFixed(3)}${gapAdjust}<br>
-    Platinum GAP: ${plGapA.toFixed(2)} EUR<br>
-    Expected JP RTP: ${((targetRtp * (1 - variance)) * 100).toFixed(2)}%
-  `;
-  const previewB = `
-    <strong>Scenario B:</strong> ${document.getElementById('scenarioB_name').value}<br>
-    Contrib Mult: ×${multiplierB.toFixed(3)}${gapAdjust}<br>
-    Platinum GAP: ${plGapB.toFixed(2)} EUR<br>
-    Expected JP RTP: ${(targetRtp * 100).toFixed(2)}%
-  `;
-  const previewC = `
-    <strong>Scenario C:</strong> ${document.getElementById('scenarioC_name').value}<br>
-    Contrib Mult: ×${multiplierC.toFixed(3)}${gapAdjust}<br>
-    Platinum GAP: ${plGapC.toFixed(2)} EUR<br>
-    Expected JP RTP: ${((targetRtp * (1 + variance)) * 100).toFixed(2)}%
-  `;
-  
-  document.getElementById('previewA').innerHTML = previewA;
-  document.getElementById('previewB').innerHTML = previewB;
-  document.getElementById('previewC').innerHTML = previewC;
-  document.getElementById('generatedPreview').style.display = 'block';
-  
-  alert(`✅ Generisana 3 scenarija sa ${adjustGaps ? 'GAP kontrolom' : 'fiksnim zonama'}!\n\nPlatinum GAP:\nA: ${plGapA.toFixed(2)} EUR\nB: ${plGapB.toFixed(2)} EUR\nC: ${plGapC.toFixed(2)} EUR\n\nKlikni "Run Scenario A/B/C".`);
-});
 
 const currencies = {
   'USD': {name: 'US Dollar', rate: 1.19, type: 'fiat'},
@@ -1649,51 +1962,10 @@ const currencies = {
   'AVAX': {name: 'Avalanche', rate: 7.28, type: 'crypto'},
   'DOGE': {name: 'Dogecoin', rate: 0.0754, type: 'crypto'}
 };
+window.currencies = currencies; // Expose globally for live rates
 
-function populateCurrencySelect() {
-  const sel = document.getElementById('convCurrency');
-  sel.innerHTML = '';
-  
-  const fiat = Object.keys(currencies).filter(k => currencies[k].type === 'fiat').sort();
-  const crypto = Object.keys(currencies).filter(k => currencies[k].type === 'crypto').sort();
-  const custom = Object.keys(currencies).filter(k => currencies[k].type === 'custom').sort();
-  
-  if (fiat.length > 0) {
-    const fiatGroup = document.createElement('optgroup');
-    fiatGroup.label = '💵 FIAT Currencies (Top 50)';
-    fiat.forEach(code => {
-      const opt = document.createElement('option');
-      opt.value = code;
-      opt.textContent = `${code} - ${currencies[code].name}`;
-      fiatGroup.appendChild(opt);
-    });
-    sel.appendChild(fiatGroup);
-  }
-  
-  if (crypto.length > 0) {
-    const cryptoGroup = document.createElement('optgroup');
-    cryptoGroup.label = '₿ CRYPTO Currencies (Top 10)';
-    crypto.forEach(code => {
-      const opt = document.createElement('option');
-      opt.value = code;
-      opt.textContent = `${code} - ${currencies[code].name}`;
-      cryptoGroup.appendChild(opt);
-    });
-    sel.appendChild(cryptoGroup);
-  }
-  
-  if (custom.length > 0) {
-    const customGroup = document.createElement('optgroup');
-    customGroup.label = '➕ Custom Currencies';
-    custom.forEach(code => {
-      const opt = document.createElement('option');
-      opt.value = code;
-      opt.textContent = `${code} - ${currencies[code].name}`;
-      customGroup.appendChild(opt);
-    });
-    sel.appendChild(customGroup);
-  }
-}
+
+function populateCurrencySelect(){const sel=document.getElementById('convCurrency');sel.innerHTML='';const LIVE=['USD','GBP','RSD','CHF','JPY','CNY','TRY','INR','AUD','CAD','BRL','MXN','BTC','ETH','USDT','BNB','ADA','XRP','SOL','DOT','DOGE','LTC'];const fiatLive=[],fiatStatic=[],cryptoLive=[],cryptoStatic=[],custom=[];Object.keys(currencies).forEach(code=>{const curr=currencies[code];const isLive=LIVE.includes(code);if(curr.type==='fiat'){isLive?fiatLive.push(code):fiatStatic.push(code);}else if(curr.type==='crypto'){isLive?cryptoLive.push(code):cryptoStatic.push(code);}else if(curr.type==='custom'){custom.push(code);}});fiatLive.sort();fiatStatic.sort();cryptoLive.sort();cryptoStatic.sort();custom.sort();if(fiatLive.length>0){const g=document.createElement('optgroup');g.label='🟢 FIAT Live Rates (Auto-updated)';fiatLive.forEach(code=>{const opt=document.createElement('option');opt.value=code;opt.textContent=`${code} - ${currencies[code].name} 🟢`;g.appendChild(opt);});sel.appendChild(g);}if(fiatStatic.length>0){const g=document.createElement('optgroup');g.label='⚪ FIAT Static (Feb 2026)';fiatStatic.forEach(code=>{const opt=document.createElement('option');opt.value=code;opt.textContent=`${code} - ${currencies[code].name}`;g.appendChild(opt);});sel.appendChild(g);}if(cryptoLive.length>0){const g=document.createElement('optgroup');g.label='🟢 CRYPTO Live Rates (Auto-updated)';cryptoLive.forEach(code=>{const opt=document.createElement('option');opt.value=code;opt.textContent=`${code} - ${currencies[code].name} 🟢`;g.appendChild(opt);});sel.appendChild(g);}if(cryptoStatic.length>0){const g=document.createElement('optgroup');g.label='⚪ CRYPTO Static (Feb 2026)';cryptoStatic.forEach(code=>{const opt=document.createElement('option');opt.value=code;opt.textContent=`${code} - ${currencies[code].name}`;g.appendChild(opt);});sel.appendChild(g);}if(custom.length>0){const g=document.createElement('optgroup');g.label='➕ Custom Currencies';custom.forEach(code=>{const opt=document.createElement('option');opt.value=code;opt.textContent=`${code} - ${currencies[code].name}`;g.appendChild(opt);});sel.appendChild(g);}}
 populateCurrencySelect();
 
 function updateRateDisplay() {
@@ -1891,22 +2163,22 @@ function generateCurrencyTable(code, tbodyId, sourcePrefix) {
      min: parseFloat(document.getElementById(`${sourcePrefix}pl_min`).value)||0,
      max: parseFloat(document.getElementById(`${sourcePrefix}pl_max`).value)||0,
      betReq: parseFloat(document.getElementById('pl_bet_req').value)||0,
-     std: parseFloat(document.getElementById('pl_std').value)||0,
-     hidden: parseFloat(document.getElementById('pl_hidden').value)||0},
+     std: parseFloat(document.getElementById(`${sourcePrefix}pl_std`).value)||0,
+     hidden: parseFloat(document.getElementById(`${sourcePrefix}pl_hidden`).value)||0},
     {name: 'Gold', 
      base: parseFloat(document.getElementById(`${sourcePrefix}gd_base`).value)||0,
      min: parseFloat(document.getElementById(`${sourcePrefix}gd_min`).value)||0,
      max: parseFloat(document.getElementById(`${sourcePrefix}gd_max`).value)||0,
      betReq: parseFloat(document.getElementById('gd_bet_req').value)||0,
-     std: parseFloat(document.getElementById('gd_std').value)||0,
-     hidden: parseFloat(document.getElementById('gd_hidden').value)||0},
+     std: parseFloat(document.getElementById(`${sourcePrefix}gd_std`).value)||0,
+     hidden: parseFloat(document.getElementById(`${sourcePrefix}gd_hidden`).value)||0},
     {name: 'Diamond', 
      base: parseFloat(document.getElementById(`${sourcePrefix}dm_base`).value)||0,
      min: parseFloat(document.getElementById(`${sourcePrefix}dm_min`).value)||0,
      max: parseFloat(document.getElementById(`${sourcePrefix}dm_max`).value)||0,
      betReq: parseFloat(document.getElementById('dm_bet_req').value)||0,
-     std: parseFloat(document.getElementById('dm_std').value)||0,
-     hidden: parseFloat(document.getElementById('dm_hidden').value)||0}
+     std: parseFloat(document.getElementById(`${sourcePrefix}dm_std`).value)||0,
+     hidden: parseFloat(document.getElementById(`${sourcePrefix}dm_hidden`).value)||0}
   ];
   
   const tbody = document.getElementById(tbodyId);
@@ -1989,98 +2261,130 @@ document.getElementById('convertBtn').addEventListener('click', () => {
   document.getElementById('convTableContainer').style.display = 'block';
 });
 
-function drawRtpChart(points) {
+function drawRtpChart(points, scenarios = {}) {
   const canvas = document.getElementById('rtpChart');
+  if (!canvas) return;
+
   const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-  if (!points || points.length === 0) {
-    ctx.fillStyle = '#a0a4d8';
-    ctx.font = '14px Arial';
-    ctx.fillText('Nema podataka – pokreni simulaciju.', 20, 30);
-    return;
-  }
-  
-  const padding = 70;
-  const w = canvas.width - 2*padding;
-  const h = canvas.height - 2*padding;
-  const xs = points.map(p => p.x), ys = points.map(p => p.y);
-  const minX = 0;
-  const maxX = Math.max(...xs);
-  const minY = 0;
-  const maxY = Math.max(...ys) * 1.1;
-  
-  const xScale = v => padding + (v - minX) / (maxX - minX || 1) * w;
-  const yScale = v => padding + h - (v - minY) / (maxY - minY || 1) * h;
-  
-  ctx.strokeStyle = '#2a325a';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(padding, padding, w, h);
-  
-  const xSteps = calculateNiceSteps(minX, maxX, 10);
-  
-  ctx.strokeStyle = '#1a2847';
-  ctx.lineWidth = 0.5;
-  ctx.setLineDash([3, 3]);
-  
-  xSteps.forEach(step => {
-    const x = xScale(step);
-    ctx.beginPath();
-    ctx.moveTo(x, padding);
-    ctx.lineTo(x, padding + h);
-    ctx.stroke();
-  });
-  
-  const ySteps = calculateNiceSteps(minY, maxY, 8);
-  
-  ySteps.forEach(step => {
-    const y = yScale(step);
-    ctx.beginPath();
-    ctx.moveTo(padding, y);
-    ctx.lineTo(padding + w, y);
-    ctx.stroke();
-  });
-  
-  ctx.setLineDash([]);
-  
+  const width = canvas.width;
+  const height = canvas.height;
+  const padding = { top: 40, right: 120, bottom: 60, left: 80 };
+
+  ctx.clearRect(0, 0, width, height);
+
+  // Combine all points to find ranges
+  let allPoints = [...points];
+  if (scenarios.A) allPoints = allPoints.concat(scenarios.A);
+  if (scenarios.B) allPoints = allPoints.concat(scenarios.B);
+  if (scenarios.C) allPoints = allPoints.concat(scenarios.C);
+
+  if (allPoints.length === 0) return;
+
+  const maxX = Math.max(...allPoints.map(p => p.x));
+  const maxY = Math.max(...allPoints.map(p => p.y));
+  const minY = Math.min(...allPoints.map(p => p.y));
+
+  const chartWidth = width - padding.left - padding.right;
+  const chartHeight = height - padding.top - padding.bottom;
+
+  const scaleX = chartWidth / maxX;
+  const scaleY = chartHeight / (maxY - minY);
+
+  // Draw axes
+  ctx.strokeStyle = '#2a3654';
+  ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.strokeStyle = '#ffcc33';
-  ctx.lineWidth = 2.5;
-  points.forEach((p, idx) => {
-    const x = xScale(p.x), y = yScale(p.y);
-    if (idx === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  });
+  ctx.moveTo(padding.left, padding.top);
+  ctx.lineTo(padding.left, height - padding.bottom);
+  ctx.lineTo(width - padding.right, height - padding.bottom);
   ctx.stroke();
-  
-  ctx.fillStyle = '#a0a4d8';
-  ctx.font = '11px Arial';
+
+  // Draw grid
+  ctx.strokeStyle = '#1a2238';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 5; i++) {
+    const y = padding.top + (chartHeight * i / 5);
+    ctx.beginPath();
+    ctx.moveTo(padding.left, y);
+    ctx.lineTo(width - padding.right, y);
+    ctx.stroke();
+
+    const value = maxY - ((maxY - minY) * i / 5);
+    ctx.fillStyle = '#6b7a94';
+    ctx.font = '11px Inter';
+    ctx.textAlign = 'right';
+    ctx.fillText((value * 100).toFixed(2) + '%', padding.left - 10, y + 4);
+  }
+
+  // X-axis labels
+  ctx.fillStyle = '#6b7a94';
+  ctx.font = '11px Inter';
   ctx.textAlign = 'center';
-  
-  xSteps.forEach(step => {
-    const x = xScale(step);
-    const label = formatAxisNumber(step);
-    ctx.fillText(label, x, canvas.height - 30);
+  for (let i = 0; i <= 5; i++) {
+    const x = padding.left + (chartWidth * i / 5);
+    const value = (maxX * i / 5);
+    ctx.fillText(value.toLocaleString('en-US', {maximumFractionDigits: 0}), x, height - padding.bottom + 20);
+  }
+
+  // Helper function to draw line
+  const drawLine = (pts, color, width, label) => {
+    if (!pts || pts.length === 0) return;
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.beginPath();
+
+    pts.forEach((point, idx) => {
+      const x = padding.left + (point.x * scaleX);
+      const y = height - padding.bottom - ((point.y - minY) * scaleY);
+
+      if (idx === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    });
+
+    ctx.stroke();
+  };
+
+  // Draw lines (scenarios first, then current on top)
+  if (scenarios.A) drawLine(scenarios.A, '#10b981', 2, 'Scenario A');
+  if (scenarios.B) drawLine(scenarios.B, '#fb923c', 2, 'Scenario B');
+  if (scenarios.C) drawLine(scenarios.C, '#ef4444', 2, 'Scenario C');
+  drawLine(points, '#f4c430', 3, 'Current');
+
+  // Legend
+  const legendX = width - padding.right + 10;
+  let legendY = padding.top + 20;
+  ctx.font = '12px Inter';
+  ctx.textAlign = 'left';
+
+  const legendItems = [
+    { label: 'Current', color: '#f4c430', show: true },
+    { label: 'Scenario A', color: '#10b981', show: scenarios.A },
+    { label: 'Scenario B', color: '#fb923c', show: scenarios.B },
+    { label: 'Scenario C', color: '#ef4444', show: scenarios.C }
+  ];
+
+  legendItems.forEach(item => {
+    if (!item.show) return;
+
+    ctx.fillStyle = item.color;
+    ctx.fillRect(legendX, legendY - 8, 20, 3);
+    ctx.fillStyle = '#e8ecf3';
+    ctx.fillText(item.label, legendX + 25, legendY);
+    legendY += 20;
   });
-  
-  ctx.textAlign = 'right';
-  ySteps.forEach(step => {
-    const y = yScale(step);
-    const label = (step * 100).toFixed(2) + '%';
-    ctx.fillText(label, padding - 10, y + 4);
-  });
-  
-  ctx.fillStyle = '#d0d4ff';
-  ctx.font = 'bold 13px Arial';
+
+  // Title
+  ctx.fillStyle = '#e8ecf3';
+  ctx.font = 'bold 14px Inter';
   ctx.textAlign = 'center';
-  ctx.fillText('Procesirani turnover (EUR)', canvas.width / 2, canvas.height - 10);
-  
-  ctx.save();
-  ctx.translate(15, canvas.height / 2);
-  ctx.rotate(-Math.PI / 2);
-  ctx.fillText('JP RTP (%)', 0, 0);
-  ctx.restore();
+  ctx.fillText('JP RTP Progression', width / 2, 25);
 }
+
+
 
 function calculateNiceSteps(min, max, targetSteps) {
   const range = max - min;
@@ -2201,7 +2505,7 @@ function runSingleSimulation(multiplier = 1.0, jpConfig = null) {
   const granularity = parseFloat(document.getElementById('granularity').value) || 1;
   const seedVal = parseInt(document.getElementById('seed').value);
   const rng = isNaN(seedVal) ? Math.random : LCG(seedVal);
-
+const effectiveMultiplier = jpConfig ? 1.0 : multiplier;
   const iterations = Math.floor(monthlyTurnoverEur / granularity);
 
   let levels;
@@ -2211,20 +2515,20 @@ function runSingleSimulation(multiplier = 1.0, jpConfig = null) {
        base: jpConfig.pl.base,
        minDrop: jpConfig.pl.min,
        maxDrop: jpConfig.pl.max,
-       stdPct: ((parseFloat(document.getElementById('pl_std').value)||0)/100) * multiplier,
-       hidPct: ((parseFloat(document.getElementById('pl_hidden').value)||0)/100) * multiplier},
+       stdPct: ((parseFloat(document.getElementById(`${sourcePrefix}pl_std`).value)||0)/100) * effectiveMultiplier,
+       hidPct: ((parseFloat(document.getElementById(`${sourcePrefix}pl_hidden`).value)||0)/100) * effectiveMultiplier},
       {name: 'Gold', 
        base: jpConfig.gd.base,
        minDrop: jpConfig.gd.min,
        maxDrop: jpConfig.gd.max,
-       stdPct: ((parseFloat(document.getElementById('gd_std').value)||0)/100) * multiplier,
-       hidPct: ((parseFloat(document.getElementById('gd_hidden').value)||0)/100) * multiplier},
+       stdPct: ((parseFloat(document.getElementById(`${sourcePrefix}gd_std`).value)||0)/100) * effectiveMultiplier,
+       hidPct: ((parseFloat(document.getElementById(`${sourcePrefix}gd_hidden`).value)||0)/100) * effectiveMultiplier},
       {name: 'Diamond', 
        base: jpConfig.dm.base,
        minDrop: jpConfig.dm.min,
        maxDrop: jpConfig.dm.max,
-       stdPct: ((parseFloat(document.getElementById('dm_std').value)||0)/100) * multiplier,
-       hidPct: ((parseFloat(document.getElementById('dm_hidden').value)||0)/100) * multiplier}
+       stdPct: ((parseFloat(document.getElementById(`${sourcePrefix}dm_std`).value)||0)/100) * effectiveMultiplier,
+       hidPct: ((parseFloat(document.getElementById(`${sourcePrefix}dm_hidden`).value)||0)/100) * effectiveMultiplier}
     ];
   } else {
     levels = [
@@ -2232,20 +2536,20 @@ function runSingleSimulation(multiplier = 1.0, jpConfig = null) {
        base: parseFloat(document.getElementById('pl_base').value)||0,
        minDrop: parseFloat(document.getElementById('pl_min').value)||0,
        maxDrop: parseFloat(document.getElementById('pl_max').value)||0,
-       stdPct: ((parseFloat(document.getElementById('pl_std').value)||0)/100) * multiplier,
-       hidPct: ((parseFloat(document.getElementById('pl_hidden').value)||0)/100) * multiplier},
+       stdPct: ((parseFloat(document.getElementById(`${sourcePrefix}pl_std`).value)||0)/100) * multiplier,
+       hidPct: ((parseFloat(document.getElementById(`${sourcePrefix}pl_hidden`).value)||0)/100) * multiplier},
       {name: 'Gold', 
        base: parseFloat(document.getElementById('gd_base').value)||0,
        minDrop: parseFloat(document.getElementById('gd_min').value)||0,
        maxDrop: parseFloat(document.getElementById('gd_max').value)||0,
-       stdPct: ((parseFloat(document.getElementById('gd_std').value)||0)/100) * multiplier,
-       hidPct: ((parseFloat(document.getElementById('gd_hidden').value)||0)/100) * multiplier},
+       stdPct: ((parseFloat(document.getElementById(`${sourcePrefix}gd_std`).value)||0)/100) * multiplier,
+       hidPct: ((parseFloat(document.getElementById(`${sourcePrefix}gd_hidden`).value)||0)/100) * multiplier},
       {name: 'Diamond', 
        base: parseFloat(document.getElementById('dm_base').value)||0,
        minDrop: parseFloat(document.getElementById('dm_min').value)||0,
        maxDrop: parseFloat(document.getElementById('dm_max').value)||0,
-       stdPct: ((parseFloat(document.getElementById('dm_std').value)||0)/100) * multiplier,
-       hidPct: ((parseFloat(document.getElementById('dm_hidden').value)||0)/100) * multiplier}
+       stdPct: ((parseFloat(document.getElementById(`${sourcePrefix}dm_std`).value)||0)/100) * multiplier,
+       hidPct: ((parseFloat(document.getElementById(`${sourcePrefix}dm_hidden`).value)||0)/100) * multiplier}
     ];
   }
 
@@ -2379,159 +2683,121 @@ function displayResults(result) {
   
   drawRtpChart(rtpPoints);
   
+document.getElementById('downloadChartBtn').style.display = 'inline-block';
+
   document.getElementById('current_jpRtp').textContent = (jpRtp * 100).toFixed(2);
   document.getElementById('current_totalRtp').textContent = (totalRtp * 100).toFixed(2);
   document.getElementById('current_houseEdge').textContent = (houseEdge * 100).toFixed(2);
   document.getElementById('current_ggr').textContent = ggr.toLocaleString('en-US', {maximumFractionDigits: 0});
   document.getElementById('current_plDrops').textContent = jpState[0].dropCount.toLocaleString();
   document.getElementById('current_plAvg').textContent = (jpState[0].dropCount > 0 ? (jpState[0].totalPaidOut / jpState[0].dropCount) : 0).toFixed(2);
-  document.getElementById('current_plGap').textContent = jpState[0].gap.toFixed(2);
+  if(document.getElementById('current_plGap')) document.getElementById('current_plGap').textContent = jpState[0].gap.toFixed(2);
   document.getElementById('current_gdDrops').textContent = jpState[1].dropCount.toLocaleString();
   document.getElementById('current_gdAvg').textContent = (jpState[1].dropCount > 0 ? (jpState[1].totalPaidOut / jpState[1].dropCount) : 0).toFixed(2);
-  document.getElementById('current_gdGap').textContent = jpState[1].gap.toFixed(2);
+  if(document.getElementById('current_gdGap')) document.getElementById('current_gdGap').textContent = jpState[1].gap.toFixed(2);
   document.getElementById('current_dmDrops').textContent = jpState[2].dropCount.toLocaleString();
   document.getElementById('current_dmAvg').textContent = (jpState[2].dropCount > 0 ? (jpState[2].totalPaidOut / jpState[2].dropCount) : 0).toFixed(2);
-  document.getElementById('current_dmGap').textContent = jpState[2].gap.toFixed(0);
+  if(document.getElementById('current_dmGap')) document.getElementById('current_dmGap').textContent = jpState[2].gap.toFixed(0);
   
   document.getElementById('scenarioSection').style.display = 'block';
+
+
+  // Enable Excel export button
+  document.getElementById('exportExcelBtn').disabled = false;
 }
 
 function runScenario(scenario) {
-  const multiplier = parseFloat(document.getElementById(`scenario${scenario}_mult`).value);
+  if (!currentResult) {
+    alert('⚠️ Prvo pokreni glavnu simulaciju!');
+    return;
+  }
+  // Provjeri validacijske greške za ovaj scenario
+  var warningsDiv = document.getElementById('scWarnings_' + scenario);
+  if (warningsDiv && warningsDiv.querySelector('.error')) {
+    alert('⛔ Scenario ' + scenario + ' ima greške u konfiguraciji!\nIspravite ih pre pokretanja.');
+    return;
+  }
+
   const name = document.getElementById(`scenario${scenario}_name`).value;
-  
+  const gv = id => { const el = document.getElementById(id); return el ? parseFloat(el.value) || 0 : 0; };
+  const stdFields = ['pl_std','pl_hidden','gd_std','gd_hidden','dm_std','dm_hidden'];
+  const origVals = {};
+  stdFields.forEach(f => {
+    const el = document.getElementById(f);
+    if (el) { origVals[f] = el.value; el.value = gv(`scenario${scenario}_${f}`); }
+  });
   const jpConfig = {
-    pl: {
-      base: parseFloat(document.getElementById(`scenario${scenario}_pl_base`).value),
-      min: parseFloat(document.getElementById(`scenario${scenario}_pl_min`).value),
-      max: parseFloat(document.getElementById(`scenario${scenario}_pl_max`).value)
-    },
-    gd: {
-      base: parseFloat(document.getElementById(`scenario${scenario}_gd_base`).value),
-      min: parseFloat(document.getElementById(`scenario${scenario}_gd_min`).value),
-      max: parseFloat(document.getElementById(`scenario${scenario}_gd_max`).value)
-    },
-    dm: {
-      base: parseFloat(document.getElementById(`scenario${scenario}_dm_base`).value),
-      min: parseFloat(document.getElementById(`scenario${scenario}_dm_min`).value),
-      max: parseFloat(document.getElementById(`scenario${scenario}_dm_max`).value)
-    }
+    pl: { base: gv(`scenario${scenario}_pl_base`), min: gv(`scenario${scenario}_pl_min`), max: gv(`scenario${scenario}_pl_max`) },
+    gd: { base: gv(`scenario${scenario}_gd_base`), min: gv(`scenario${scenario}_gd_min`), max: gv(`scenario${scenario}_gd_max`) },
+    dm: { base: gv(`scenario${scenario}_dm_base`), min: gv(`scenario${scenario}_dm_min`), max: gv(`scenario${scenario}_dm_max`) }
   };
-  
+
   document.getElementById(`scenario${scenario}_header`).textContent = name;
-  
-  const result = runSingleSimulation(multiplier, jpConfig);
+
+  const result = runSingleSimulation(1.0, jpConfig);
+  stdFields.forEach(f => { const el = document.getElementById(f); if (el && origVals[f] !== undefined) el.value = origVals[f]; });
+
+  // SAVE TO scenarioResults
+  scenarioResults[scenario] = result;
+
   const { jpState, jpRtp, totalRtp, baseGameRtp, monthlyTurnoverEur } = result;
-  
+
   const houseEdge = 1 - totalRtp;
   let jpTotalPaidOut = 0;
   jpState.forEach(st => jpTotalPaidOut += st.totalPaidOut);
-  
+
   const baseGameWins = monthlyTurnoverEur * baseGameRtp;
   const ggr = monthlyTurnoverEur - baseGameWins - jpTotalPaidOut;
-  
+
+  // Update comparison table
   document.getElementById(`scenario${scenario}_jpRtp`).textContent = (jpRtp * 100).toFixed(2);
   document.getElementById(`scenario${scenario}_totalRtp`).textContent = (totalRtp * 100).toFixed(2);
   document.getElementById(`scenario${scenario}_houseEdge`).textContent = (houseEdge * 100).toFixed(2);
   document.getElementById(`scenario${scenario}_ggr`).textContent = ggr.toLocaleString('en-US', {maximumFractionDigits: 0});
   document.getElementById(`scenario${scenario}_plDrops`).textContent = jpState[0].dropCount.toLocaleString();
   document.getElementById(`scenario${scenario}_plAvg`).textContent = (jpState[0].dropCount > 0 ? (jpState[0].totalPaidOut / jpState[0].dropCount) : 0).toFixed(2);
-  document.getElementById(`scenario${scenario}_plGap`).textContent = jpState[0].gap.toFixed(2);
+  if(document.getElementById(`scenario${scenario}_plGap`)) document.getElementById(`scenario${scenario}_plGap`).textContent = jpState[0].gap.toFixed(2);
   document.getElementById(`scenario${scenario}_gdDrops`).textContent = jpState[1].dropCount.toLocaleString();
   document.getElementById(`scenario${scenario}_gdAvg`).textContent = (jpState[1].dropCount > 0 ? (jpState[1].totalPaidOut / jpState[1].dropCount) : 0).toFixed(2);
-  document.getElementById(`scenario${scenario}_gdGap`).textContent = jpState[1].gap.toFixed(2);
+  if(document.getElementById(`scenario${scenario}_gdGap`)) document.getElementById(`scenario${scenario}_gdGap`).textContent = jpState[1].gap.toFixed(2);
   document.getElementById(`scenario${scenario}_dmDrops`).textContent = jpState[2].dropCount.toLocaleString();
   document.getElementById(`scenario${scenario}_dmAvg`).textContent = (jpState[2].dropCount > 0 ? (jpState[2].totalPaidOut / jpState[2].dropCount) : 0).toFixed(2);
-  document.getElementById(`scenario${scenario}_dmGap`).textContent = jpState[2].gap.toFixed(0);
-  
+  if(document.getElementById(`scenario${scenario}_dmGap`)) document.getElementById(`scenario${scenario}_dmGap`).textContent = jpState[2].gap.toFixed(0);
+
+  // REDRAW CHART WITH ALL SCENARIOS
+  drawRtpChart(currentResult.rtpPoints, {
+    A: scenarioResults.A ? scenarioResults.A.rtpPoints : null,
+    B: scenarioResults.B ? scenarioResults.B.rtpPoints : null,
+    C: scenarioResults.C ? scenarioResults.C.rtpPoints : null
+  });
+
+document.getElementById('downloadChartBtn').style.display = 'inline-block';
+
+
+  // Popuni liveStats: avg payout = (min+max)/2 UVIJEK, broj dropova iz simulacije
+  const elById = id => document.getElementById(id);
+  const lvConf = [
+    { lv: 'pl', avgPayout: Math.round((jpConfig.pl.min + jpConfig.pl.max) / 2) },
+    { lv: 'gd', avgPayout: Math.round((jpConfig.gd.min + jpConfig.gd.max) / 2) },
+    { lv: 'dm', avgPayout: Math.round((jpConfig.dm.min + jpConfig.dm.max) / 2) }
+  ];
+  lvConf.forEach(function(lc, i) {
+    var eVal = elById('ls' + scenario + '_' + lc.lv);
+    if (!eVal) return;
+    eVal.textContent = jpState[i].dropCount > 0
+      ? jpState[i].dropCount.toLocaleString() + '× @ ~' + lc.avgPayout + ' EUR'
+      : '—';
+  });
+  var rtpEl2 = elById('ls' + scenario + '_rtp');
+  if (rtpEl2) rtpEl2.textContent = (jpRtp * 100).toFixed(3) + '%';
+
   alert(`✅ ${name} scenario completed!\n\nJP RTP: ${(jpRtp * 100).toFixed(2)}%\nPlatinum: ${jpState[0].dropCount} dropova (GAP: ${jpState[0].gap.toFixed(2)} EUR)\nAvg Drop: ${(jpState[0].dropCount > 0 ? (jpState[0].totalPaidOut / jpState[0].dropCount) : 0).toFixed(2)} EUR`);
+
+  // Enable Excel export
+  document.getElementById('exportExcelBtn').disabled = false;
 }
 
-async function runMonteCarlo() {
-  if (!validateConfiguration()) {
-    alert('Molim te ispravi greške u konfiguraciji!');
-    return;
-  }
-  
-  showProgress();
-  
-  const numRuns = 100;
-  const results = [];
-  
-  for (let run = 0; run < numRuns; run++) {
-    document.getElementById('seed').value = '';
-    const result = runSingleSimulation();
-    results.push(result);
-    
-    updateProgress(run + 1, numRuns);
-    
-    if (run % 5 === 0) {
-      await new Promise(resolve => setTimeout(resolve, 1));
-    }
-  }
-  
-  const jpRtps = results.map(r => r.jpRtp * 100);
-  const avgRtp = jpRtps.reduce((a, b) => a + b, 0) / jpRtps.length;
-  const minRtp = Math.min(...jpRtps);
-  const maxRtp = Math.max(...jpRtps);
-  
-  const variance = jpRtps.reduce((sum, val) => sum + Math.pow(val - avgRtp, 2), 0) / jpRtps.length;
-  const stdDev = Math.sqrt(variance);
-  
-  const z = 1.96;
-  const marginError = z * (stdDev / Math.sqrt(numRuns));
-  const confLow = avgRtp - marginError;
-  const confHigh = avgRtp + marginError;
-  
-  const volatility = (stdDev / avgRtp) * 100;
-  
-  document.getElementById('mcAvgRtp').textContent = avgRtp.toFixed(3) + '%';
-  document.getElementById('mcMinRtp').textContent = minRtp.toFixed(3) + '%';
-  document.getElementById('mcMaxRtp').textContent = maxRtp.toFixed(3) + '%';
-  document.getElementById('mcStdDev').textContent = '±' + stdDev.toFixed(3) + '%';
-  document.getElementById('mcConfidence').textContent = `[${confLow.toFixed(2)}%, ${confHigh.toFixed(2)}%]`;
-  document.getElementById('mcVolatility').textContent = volatility.toFixed(2) + '%';
-  
-  const dropStats = {
-    'Platinum': [],
-    'Gold': [],
-    'Diamond': []
-  };
-  
-  results.forEach(r => {
-    r.jpState.forEach(st => {
-      dropStats[st.name].push(st.dropCount);
-    });
-  });
-  
-  const mcDropsBody = document.getElementById('mcDropsBody');
-  mcDropsBody.innerHTML = '';
-  
-  ['Platinum', 'Gold', 'Diamond'].forEach(name => {
-    const drops = dropStats[name];
-    const avg = drops.reduce((a, b) => a + b, 0) / drops.length;
-    const min = Math.min(...drops);
-    const max = Math.max(...drops);
-    const variance = drops.reduce((sum, val) => sum + Math.pow(val - avg, 2), 0) / drops.length;
-    const stdDev = Math.sqrt(variance);
-    
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td style="text-align:left;">${name}</td>
-      <td>${avg.toFixed(0)}</td>
-      <td>${min}</td>
-      <td>${max}</td>
-      <td>±${stdDev.toFixed(0)}</td>
-    `;
-    mcDropsBody.appendChild(tr);
-  });
-  
-  hideProgress();
-  document.getElementById('monteCarloResults').style.display = 'block';
-  displayResults(results[results.length - 1]);
-  
-  alert('✅ Monte Carlo simulacija završena (100 runs)!');
-}
+async function runMonteCarlo(){if(!validateConfiguration()){alert('Molim te ispravi greške u konfiguraciji!');return;}const iter=100;const pc=document.getElementById('progressContainer');const pb=document.getElementById('progressBar');const pp=document.getElementById('progressPercentage');const cr=document.getElementById('currentRun');const tr=document.getElementById('totalRuns');const ss=document.getElementById('simulationSpeed');const et=document.getElementById('estimatedTime');const el=document.getElementById('elapsedTime');const prb=document.getElementById('pauseResumeBtn');const csb=document.getElementById('cancelSimBtn');const pi=document.getElementById('pauseIcon');const pt=document.getElementById('pauseText');pc.style.display='block';prb.style.display='inline-block';csb.style.display='inline-block';let isPaused=false,isCancelled=false;const startTime=Date.now();let lastUpdate=startTime;prb.onclick=()=>{isPaused=!isPaused;pi.textContent=isPaused?'▶':'⏸';pt.textContent=isPaused?'Resume':'Pause';};csb.onclick=()=>{isCancelled=true;pc.style.display='none';prb.style.display='none';csb.style.display='none';alert('Simulacija prekinuta!');};tr.textContent=iter;const results=[];for(let run=0;run<iter;run++){while(isPaused&&!isCancelled)await new Promise(r=>setTimeout(r,100));if(isCancelled)return;document.getElementById('seed').value='';const result=runSingleSimulation();results.push(result);const curr=run+1;const pct=(curr/iter*100).toFixed(1);const now=Date.now();const elapsed=(now-startTime)/1000;const speed=curr/elapsed;const remaining=(iter-curr)/speed;pb.style.width=pct+'%';pp.textContent=pct+'%';cr.textContent=curr;if(now-lastUpdate>100||run%10===0){ss.textContent=`${speed.toFixed(0)} sim/s`;el.textContent=`${elapsed.toFixed(1)}s`;et.textContent=remaining>60?`${(remaining/60).toFixed(1)} min`:`${remaining.toFixed(0)}s`;lastUpdate=now;}if(run%5===0)await new Promise(r=>setTimeout(r,1));}setTimeout(()=>{pc.style.display='none';prb.style.display='none';csb.style.display='none';},1000);document.getElementById('monteCarloResults').style.display='block';const jpRtps=results.map(r=>r.jpRtp*100);const avgRtp=jpRtps.reduce((a,b)=>a+b,0)/jpRtps.length;const minRtp=Math.min(...jpRtps);const maxRtp=Math.max(...jpRtps);const variance=jpRtps.reduce((sum,val)=>sum+Math.pow(val-avgRtp,2),0)/jpRtps.length;const stdDev=Math.sqrt(variance);const z=1.96;const marginError=z*(stdDev/Math.sqrt(iter));const confLow=avgRtp-marginError;const confHigh=avgRtp+marginError;const volatility=(stdDev/avgRtp)*100;document.getElementById('mcAvgRtp').textContent=avgRtp.toFixed(3)+'%';document.getElementById('mcMinRtp').textContent=minRtp.toFixed(3)+'%';document.getElementById('mcMaxRtp').textContent=maxRtp.toFixed(3)+'%';document.getElementById('mcStdDev').textContent='±'+stdDev.toFixed(3)+'%';document.getElementById('mcConfidence').textContent=`[${confLow.toFixed(2)}%, ${confHigh.toFixed(2)}%]`;document.getElementById('mcVolatility').textContent=volatility.toFixed(2)+'%';const dropStats={'Platinum':[],'Gold':[],'Diamond':[]};results.forEach(r=>r.jpState.forEach(st=>dropStats[st.name].push(st.dropCount)));const mcDropsBody=document.getElementById('mcDropsBody');mcDropsBody.innerHTML='';['Platinum','Gold','Diamond'].forEach(name=>{const drops=dropStats[name];const avg=drops.reduce((a,b)=>a+b,0)/drops.length;const min=Math.min(...drops);const max=Math.max(...drops);const variance=drops.reduce((sum,val)=>sum+Math.pow(val-avg,2),0)/drops.length;const stdDev=Math.sqrt(variance);const tr=document.createElement('tr');tr.innerHTML=`<td style="text-align:left;">${name}</td><td>${avg.toFixed(0)}</td><td>${min}</td><td>${max}</td><td>±${stdDev.toFixed(0)}</td>`;mcDropsBody.appendChild(tr);});displayResults(results[results.length-1]);alert('✅ Monte Carlo simulacija završena (100 runs)!');}
 
 document.getElementById('runSimBtn').addEventListener('click', () => {
   if (!validateConfiguration()) {
@@ -2555,6 +2821,568 @@ document.getElementById('runMonteCarloBtn').addEventListener('click', runMonteCa
 });
 
 validateConfiguration();
+
+
+// ========================================
+// EXCEL EXPORT FUNKCIONALNOST
+// ========================================
+
+function exportToExcel() {
+  if (!currentResult) {
+    alert('⚠️ Prvo pokreni simulaciju!');
+    return;
+  }
+
+  const wb = XLSX.utils.book_new();
+
+  // ============ SHEET 1: Configuration ============
+  const configData = [
+    ['JP SIMULATOR - CONFIGURATION', '', '', ''],
+    ['Generated:', new Date().toLocaleString('sr-RS'), '', ''],
+    ['', '', '', ''],
+    ['BASIC PARAMETERS', '', '', ''],
+    ['Monthly Turnover (EUR)', formatTurnover(parseTurnover(document.getElementById('monthlyTurnoverEur').value)), '', ''],
+    ['Win/Bet Ratio %', document.getElementById('winBetRatioPercent').value + '%', '', ''],
+    ['Base Game RTP', (parseFloat(document.getElementById('winBetRatioPercent').value) / 100).toFixed(4), '', ''],
+    ['Granularity', document.getElementById('granularity').value + ' EUR', '', ''],
+    ['Seed', document.getElementById('seed').value || 'Random', '', ''],
+    ['', '', '', ''],
+    ['JACKPOT CONFIGURATION', 'Platinum', 'Gold', 'Diamond'],
+    ['Base Value (EUR)', document.getElementById('pl_base').value, document.getElementById('gd_base').value, document.getElementById('dm_base').value],
+    ['Min Drop Zone (EUR)', document.getElementById('pl_min').value, document.getElementById('gd_min').value, document.getElementById('dm_min').value],
+    ['Max Drop Zone (EUR)', document.getElementById('pl_max').value, document.getElementById('gd_max').value, document.getElementById('dm_max').value],
+    ['GAP (EUR)', (parseFloat(document.getElementById('pl_min').value) - parseFloat(document.getElementById('pl_base').value)).toFixed(2), (parseFloat(document.getElementById('gd_min').value) - parseFloat(document.getElementById('gd_base').value)).toFixed(2), (parseFloat(document.getElementById('dm_min').value) - parseFloat(document.getElementById('dm_base').value)).toFixed(2)],
+    ['Bet Requirement (EUR)', document.getElementById('pl_bet_req').value, document.getElementById('gd_bet_req').value, document.getElementById('dm_bet_req').value],
+    ['Standard Contribution %', document.getElementById('pl_std').value + '%', document.getElementById('gd_std').value + '%', document.getElementById('dm_std').value + '%'],
+    ['Hidden Contribution %', document.getElementById('pl_hidden').value + '%', document.getElementById('gd_hidden').value + '%', document.getElementById('dm_hidden').value + '%'],
+  ];
+
+  const ws1 = XLSX.utils.aoa_to_sheet(configData);
+  ws1['!cols'] = [{wch: 28}, {wch: 18}, {wch: 18}, {wch: 18}];
+  XLSX.utils.book_append_sheet(wb, ws1, 'Configuration');
+
+  // ============ SHEET 2: Results ============
+  const resultsData = [
+    ['SIMULATION RESULTS', '', ''],
+    ['', '', ''],
+    ['OVERALL METRICS', '', ''],
+    ['Base Game RTP', (currentResult.baseGameRtp * 100).toFixed(2) + '%', ''],
+    ['Jackpot RTP', (currentResult.jpRtp * 100).toFixed(2) + '%', ''],
+    ['Total RTP', (currentResult.totalRtp * 100).toFixed(2) + '%', ''],
+    ['House Edge', ((1 - currentResult.totalRtp) * 100).toFixed(2) + '%', ''],
+    ['', '', ''],
+    ['JACKPOT STATISTICS', 'Platinum', 'Gold', 'Diamond'],
+    ['Total Drops', currentResult.jpState[0].dropCount, currentResult.jpState[1].dropCount, currentResult.jpState[2].dropCount],
+    ['Total Payouts (EUR)', currentResult.jpState[0].totalPaidOut.toFixed(2), currentResult.jpState[1].totalPaidOut.toFixed(2), currentResult.jpState[2].totalPaidOut.toFixed(2)],
+    ['Average Payout (EUR)', (currentResult.jpState[0].dropCount > 0 ? currentResult.jpState[0].totalPaidOut / currentResult.jpState[0].dropCount : 0).toFixed(2), (currentResult.jpState[1].dropCount > 0 ? currentResult.jpState[1].totalPaidOut / currentResult.jpState[1].dropCount : 0).toFixed(2), (currentResult.jpState[2].dropCount > 0 ? currentResult.jpState[2].totalPaidOut / currentResult.jpState[2].dropCount : 0).toFixed(2)],
+    ['Standard Contrib (EUR)', currentResult.jpState[0].totalStdContrib.toFixed(2), currentResult.jpState[1].totalStdContrib.toFixed(2), currentResult.jpState[2].totalStdContrib.toFixed(2)],
+    ['Hidden Contrib (EUR)', currentResult.jpState[0].totalHiddenContrib.toFixed(2), currentResult.jpState[1].totalHiddenContrib.toFixed(2), currentResult.jpState[2].totalHiddenContrib.toFixed(2)],
+    ['', '', ''],
+    ['GGR ANALYSIS', '', ''],
+    ['Total JP Paid', (currentResult.jpState[0].totalPaidOut + currentResult.jpState[1].totalPaidOut + currentResult.jpState[2].totalPaidOut).toFixed(2) + ' EUR', ''],
+    ['Base Game Profit', (currentResult.monthlyTurnoverEur * (1 - currentResult.baseGameRtp)).toFixed(2) + ' EUR', ''],
+    ['GGR (Gross Gaming Revenue)', (currentResult.monthlyTurnoverEur - (currentResult.monthlyTurnoverEur * currentResult.baseGameRtp) - (currentResult.jpState[0].totalPaidOut + currentResult.jpState[1].totalPaidOut + currentResult.jpState[2].totalPaidOut)).toFixed(2) + ' EUR', ''],
+  ];
+
+  const ws2 = XLSX.utils.aoa_to_sheet(resultsData);
+  ws2['!cols'] = [{wch: 30}, {wch: 20}, {wch: 20}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'Results');
+
+  // ============ SHEET 3: Scenarios (ako postoje) ============
+  if (scenarioResults.A || scenarioResults.B || scenarioResults.C) {
+    const scenData = [
+      ['SCENARIO COMPARISON', '', '', '', ''],
+      ['', '', '', '', ''],
+      ['Metric', 'Current', 'Scenario A', 'Scenario B', 'Scenario C'],
+    ];
+
+    const addRow = (label, curr, a, b, c) => {
+      scenData.push([
+        label,
+        curr || '-',
+        a || '-',
+        b || '-',
+        c || '-'
+      ]);
+    };
+
+    addRow('JP RTP (%)', 
+      (currentResult.jpRtp * 100).toFixed(2) + '%',
+      scenarioResults.A ? (scenarioResults.A.jpRtp * 100).toFixed(2) + '%' : '-',
+      scenarioResults.B ? (scenarioResults.B.jpRtp * 100).toFixed(2) + '%' : '-',
+      scenarioResults.C ? (scenarioResults.C.jpRtp * 100).toFixed(2) + '%' : '-'
+    );
+
+    addRow('Total RTP (%)',
+      (currentResult.totalRtp * 100).toFixed(2) + '%',
+      scenarioResults.A ? (scenarioResults.A.totalRtp * 100).toFixed(2) + '%' : '-',
+      scenarioResults.B ? (scenarioResults.B.totalRtp * 100).toFixed(2) + '%' : '-',
+      scenarioResults.C ? (scenarioResults.C.totalRtp * 100).toFixed(2) + '%' : '-'
+    );
+
+    addRow('House Edge (%)',
+      ((1 - currentResult.totalRtp) * 100).toFixed(2) + '%',
+      scenarioResults.A ? ((1 - scenarioResults.A.totalRtp) * 100).toFixed(2) + '%' : '-',
+      scenarioResults.B ? ((1 - scenarioResults.B.totalRtp) * 100).toFixed(2) + '%' : '-',
+      scenarioResults.C ? ((1 - scenarioResults.C.totalRtp) * 100).toFixed(2) + '%' : '-'
+    );
+
+    scenData.push(['', '', '', '', '']);
+    scenData.push(['PLATINUM JACKPOT', '', '', '', '']);
+
+    addRow('Drops',
+      currentResult.jpState[0].dropCount,
+      scenarioResults.A ? scenarioResults.A.jpState[0].dropCount : '-',
+      scenarioResults.B ? scenarioResults.B.jpState[0].dropCount : '-',
+      scenarioResults.C ? scenarioResults.C.jpState[0].dropCount : '-'
+    );
+
+    addRow('Average Drop (EUR)',
+      (currentResult.jpState[0].dropCount > 0 ? currentResult.jpState[0].totalPaidOut / currentResult.jpState[0].dropCount : 0).toFixed(2),
+      scenarioResults.A && scenarioResults.A.jpState[0].dropCount > 0 ? (scenarioResults.A.jpState[0].totalPaidOut / scenarioResults.A.jpState[0].dropCount).toFixed(2) : '-',
+      scenarioResults.B && scenarioResults.B.jpState[0].dropCount > 0 ? (scenarioResults.B.jpState[0].totalPaidOut / scenarioResults.B.jpState[0].dropCount).toFixed(2) : '-',
+      scenarioResults.C && scenarioResults.C.jpState[0].dropCount > 0 ? (scenarioResults.C.jpState[0].totalPaidOut / scenarioResults.C.jpState[0].dropCount).toFixed(2) : '-'
+    );
+
+    scenData.push(['', '', '', '', '']); scenData.push(['GOLD JACKPOT', '', '', '', '']);
+    addRow('Drops', currentResult.jpState[1].dropCount, scenarioResults.A ? scenarioResults.A.jpState[1].dropCount : '-', scenarioResults.B ? scenarioResults.B.jpState[1].dropCount : '-', scenarioResults.C ? scenarioResults.C.jpState[1].dropCount : '-');
+    addRow('Average Drop (EUR)', currentResult.jpState[1].dropCount > 0 ? (currentResult.jpState[1].totalPaidOut/currentResult.jpState[1].dropCount).toFixed(2) : '-', scenarioResults.A && scenarioResults.A.jpState[1].dropCount > 0 ? (scenarioResults.A.jpState[1].totalPaidOut/scenarioResults.A.jpState[1].dropCount).toFixed(2) : '-', scenarioResults.B && scenarioResults.B.jpState[1].dropCount > 0 ? (scenarioResults.B.jpState[1].totalPaidOut/scenarioResults.B.jpState[1].dropCount).toFixed(2) : '-', scenarioResults.C && scenarioResults.C.jpState[1].dropCount > 0 ? (scenarioResults.C.jpState[1].totalPaidOut/scenarioResults.C.jpState[1].dropCount).toFixed(2) : '-');
+    scenData.push(['', '', '', '', '']); scenData.push(['DIAMOND JACKPOT', '', '', '', '']);
+    addRow('Drops', currentResult.jpState[2].dropCount, scenarioResults.A ? scenarioResults.A.jpState[2].dropCount : '-', scenarioResults.B ? scenarioResults.B.jpState[2].dropCount : '-', scenarioResults.C ? scenarioResults.C.jpState[2].dropCount : '-');
+    addRow('Average Drop (EUR)', currentResult.jpState[2].dropCount > 0 ? (currentResult.jpState[2].totalPaidOut/currentResult.jpState[2].dropCount).toFixed(2) : '-', scenarioResults.A && scenarioResults.A.jpState[2].dropCount > 0 ? (scenarioResults.A.jpState[2].totalPaidOut/scenarioResults.A.jpState[2].dropCount).toFixed(2) : '-', scenarioResults.B && scenarioResults.B.jpState[2].dropCount > 0 ? (scenarioResults.B.jpState[2].totalPaidOut/scenarioResults.B.jpState[2].dropCount).toFixed(2) : '-', scenarioResults.C && scenarioResults.C.jpState[2].dropCount > 0 ? (scenarioResults.C.jpState[2].totalPaidOut/scenarioResults.C.jpState[2].dropCount).toFixed(2) : '-');
+
+    const ws3 = XLSX.utils.aoa_to_sheet(scenData);
+    ws3['!cols'] = [{wch: 25}, {wch: 15}, {wch: 15}, {wch: 15}, {wch: 15}];
+    XLSX.utils.book_append_sheet(wb, ws3, 'Scenarios');
+  }
+
+  const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+  const filename = `JP_Simulation_${timestamp}.xlsx`;
+
+  XLSX.writeFile(wb, filename);
+
+  const scenCount = [scenarioResults.A, scenarioResults.B, scenarioResults.C].filter(x => x).length;
+  const msg = scenCount > 0 
+    ? `✅ Excel fajl exportovan sa ${scenCount} scenarija!` 
+    : `✅ Excel fajl exportovan!`;
+
+  alert(`${msg}\n\nFajl: ${filename}\n\nProveri folder Downloads.`);
+}
+
+// Event listener za Export dugme
+document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
+
+
+
+// ============ LIVE RATES SA POLLING ZA window.currencies ============
+const CORS_PROXY='https://corsproxy.io/?';
+const LIVE_RATES_CURRENCIES=['USD','GBP','RSD','CHF','JPY','CNY','TRY','INR','AUD','CAD','BRL','MXN','BTC','ETH','USDT','BNB','ADA','XRP','SOL','DOT','DOGE','LTC'];
+let cachedRates=null;
+const FALLBACK_RATES={USD:1.19,GBP:0.871,RSD:117.35,CHF:0.914,JPY:181.58,CNY:8.2,TRY:51.88,INR:107.56,AUD:1.67,CAD:1.62,BRL:6.15,MXN:20.43,BTC:56129,ETH:1641,USDT:0.842,BNB:514,ADA:0.221,XRP:1.15,SOL:66.4,DOT:1.07,DOGE:0.078,LTC:44.7};
+
+function waitForCurrencies(callback,maxAttempts=50){
+  let attempts=0;
+  console.log('⏳ Waiting for window.currencies...');
+  const check=setInterval(()=>{
+    attempts++;
+    if(typeof window.currencies!=='undefined'&&window.currencies){
+      clearInterval(check);
+      console.log(`✅ window.currencies ready! (${attempts} attempts, ${attempts*100}ms)`);
+      callback();
+    }else if(attempts>=maxAttempts){
+      clearInterval(check);
+      console.error(`❌ window.currencies NOT found after ${maxAttempts*100}ms!`);
+    }
+  },100);
+}
+
+function applyRatesToCurrencies(rates){
+  if(typeof window.currencies==='undefined'){
+    console.error('❌ window.currencies is STILL undefined!');
+    return 0;
+  }
+  let updateCount=0;
+  console.log('📦 Applying rates...');
+  Object.keys(rates).forEach(code=>{
+    if(window.currencies[code]){
+      if(rates[code]!==undefined&&rates[code]!==null){
+        const old=window.currencies[code].rate;
+        window.currencies[code].rate=rates[code];
+        updateCount++;
+        const diff=Math.abs(old-rates[code]);
+        console.log(`📊 ${code}: ${old.toFixed(2)} → ${rates[code].toFixed(2)} ${diff>0.01?'✅':'⚪'}`);
+      }
+    }
+  });
+  console.log(`✅ Updated ${updateCount}/${Object.keys(rates).length} currencies`);
+
+  console.log('🔄 Refreshing display...');
+  const convCurrency=document.getElementById('convCurrency');
+  if(convCurrency&&convCurrency.value){
+    console.log(`   Selection: ${convCurrency.value}`);
+    if(typeof updateRateDisplay==='function'){
+      try{updateRateDisplay();console.log('✅ updateRateDisplay() OK');}
+      catch(e){console.error('❌ updateRateDisplay() failed:',e.message);}
+    }
+    try{
+      convCurrency.dispatchEvent(new Event('change',{bubbles:true}));
+      console.log('✅ change event OK');
+    }catch(e){console.error('❌ change event failed:',e.message);}
+  }
+  return updateCount;
+}
+
+async function fetchLiveExchangeRates(){
+  const btn=document.getElementById('refreshRatesBtn');
+  const txt=document.getElementById('refreshText');
+  const ts=document.getElementById('ratesTimestamp');
+  console.log('🔄 Fetching live rates...');
+  if(btn){btn.disabled=true;txt.textContent='Loading...';}
+  try{
+    console.log('📡 FIAT API...');
+    const fiatAPI='https://api.exchangerate-api.com/v4/latest/EUR';
+    const fiatRes=await fetch(CORS_PROXY+encodeURIComponent(fiatAPI));
+    if(!fiatRes.ok)throw new Error('FIAT failed');
+    const fiatData=await fiatRes.json();
+    console.log('✅ FIAT OK');
+    console.log('📡 CRYPTO API...');
+    const cryptoAPI='https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,tether,binancecoin,cardano,ripple,solana,polkadot,dogecoin,litecoin&vs_currencies=eur';
+    const cryptoRes=await fetch(CORS_PROXY+encodeURIComponent(cryptoAPI));
+    if(!cryptoRes.ok)throw new Error('CRYPTO failed');
+    const cryptoData=await cryptoRes.json();
+    console.log('✅ CRYPTO OK');
+    const liveRates={
+      USD:fiatData.rates.USD,GBP:fiatData.rates.GBP,RSD:fiatData.rates.RSD,CHF:fiatData.rates.CHF,
+      JPY:fiatData.rates.JPY,CNY:fiatData.rates.CNY,TRY:fiatData.rates.TRY,INR:fiatData.rates.INR,
+      AUD:fiatData.rates.AUD,CAD:fiatData.rates.CAD,BRL:fiatData.rates.BRL,MXN:fiatData.rates.MXN,
+      BTC:cryptoData.bitcoin?.eur,ETH:cryptoData.ethereum?.eur,USDT:cryptoData.tether?.eur,
+      BNB:cryptoData.binancecoin?.eur,ADA:cryptoData.cardano?.eur,XRP:cryptoData.ripple?.eur,
+      SOL:cryptoData.solana?.eur,DOT:cryptoData.polkadot?.eur,DOGE:cryptoData.dogecoin?.eur,LTC:cryptoData.litecoin?.eur
+    };
+    console.log('✅ Live rates fetched!',liveRates);
+    cachedRates=liveRates;
+    applyRatesToCurrencies(liveRates);
+    const now=new Date();
+    const timeStr=now.toLocaleTimeString('sr-RS',{hour:'2-digit',minute:'2-digit'});
+    if(ts){ts.textContent=`✅ Live: ${timeStr}`;ts.style.color='var(--accent-green)';}
+    if(btn){btn.disabled=false;txt.textContent='Refresh';}
+    return liveRates;
+  }catch(err){
+    console.error('❌ FAILED:',err.message);
+    console.log('🔄 Using FALLBACK...');
+    applyRatesToCurrencies(FALLBACK_RATES);
+    if(ts){ts.textContent='⚠️ Fallback rates';ts.style.color='var(--accent-gold)';}
+    if(btn){btn.disabled=false;txt.textContent='Retry';}
+    return FALLBACK_RATES;
+  }
+}
+
+// ============ THEME ============
+(function(){
+  window.updateChartTheme=function(){
+    if(window.myRtpChart){
+      const isLight=document.body.classList.contains('light-mode');
+      const txtCol=isLight?'#2d3748':'#98a7c0';
+      const gridCol=isLight?'rgba(203,213,224,0.3)':'rgba(42,54,84,0.5)';
+      window.myRtpChart.options.scales.x.ticks.color=txtCol;
+      window.myRtpChart.options.scales.x.grid.color=gridCol;
+      window.myRtpChart.options.scales.y.ticks.color=txtCol;
+      window.myRtpChart.options.scales.y.grid.color=gridCol;
+      if(window.myRtpChart.options.plugins?.legend)window.myRtpChart.options.plugins.legend.labels.color=txtCol;
+      window.myRtpChart.update('none');
+    }
+  };
+  function initTheme(){
+    const toggle=document.getElementById('themeToggle');
+    const icon=document.getElementById('themeIcon');
+    const text=document.getElementById('themeText');
+    if(!toggle)return;
+    const saved=localStorage.getItem('jp-theme');
+    if(saved==='light'){
+      document.body.classList.add('light-mode');
+      icon.textContent='🌙';text.textContent='Dark Mode';
+      setTimeout(()=>window.updateChartTheme?.(),200);
+    }else{
+      icon.textContent='☀️';text.textContent='Light Mode';
+      if(!saved)localStorage.setItem('jp-theme','dark');
+    }
+    toggle.addEventListener('click',function(){
+      document.body.classList.toggle('light-mode');
+      const isLight=document.body.classList.contains('light-mode');
+      icon.textContent=isLight?'🌙':'☀️';
+      text.textContent=isLight?'Dark Mode':'Light Mode';
+      localStorage.setItem('jp-theme',isLight?'light':'dark');
+      window.updateChartTheme?.();
+    });
+  }
+  function initLiveRates(){
+    const btn=document.getElementById('refreshRatesBtn');
+    if(btn)btn.addEventListener('click',()=>{console.log('🔄 Manual refresh');fetchLiveExchangeRates();});
+    waitForCurrencies(()=>{console.log('🚀 Starting fetch...');fetchLiveExchangeRates();});
+    setInterval(fetchLiveExchangeRates,5*60*1000);
+    console.log('✅ Live rates system initialized');
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',function(){initTheme();initLiveRates();});
+  }else{
+    initTheme();initLiveRates();
+  }
+})();
+
+// ===== PNG DOWNLOAD =====
+function downloadChart() {
+  const canvas = document.getElementById('rtpChart');
+  const ctx = canvas.getContext('2d');
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const hasData = imageData.data.some((val, i) => i % 4 !== 3 && val !== 0);
+  if (!hasData) { alert('Nema podataka. Pokreni simulaciju!'); return; }
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}-${String(now.getMinutes()).padStart(2,'0')}`;
+  const link = document.createElement('a');
+  link.download = `JPRTPChart_${dateStr}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+// ===== SMART BUILDER =====
+
+// ===== SCENARIO LIVE STATS (ispravna formula sa BASE) =====
+(function() {
+  function calcLive(s) {
+    try {
+      var gv=function(id){var el=document.getElementById(id);return el?parseFloat(el.value)||0:0;};
+      var torEl=document.getElementById('monthlyTurnoverEur');
+      var T=torEl?(parseTurnover(torEl.value)||1000000):1000000;
+
+      var stdPl=gv('scenario'+s+'_pl_std')/100,  hidPl=gv('scenario'+s+'_pl_hidden')/100;
+      var stdGd=gv('scenario'+s+'_gd_std')/100,  hidGd=gv('scenario'+s+'_gd_hidden')/100;
+      var stdDm=gv('scenario'+s+'_dm_std')/100,  hidDm=gv('scenario'+s+'_dm_hidden')/100;
+
+      var avgPl=(gv('scenario'+s+'_pl_min')+gv('scenario'+s+'_pl_max'))/2;
+      var avgGd=(gv('scenario'+s+'_gd_min')+gv('scenario'+s+'_gd_max'))/2;
+      var avgDm=(gv('scenario'+s+'_dm_min')+gv('scenario'+s+'_dm_max'))/2;
+
+      var bPl=gv('scenario'+s+'_pl_base');
+      var bGd=gv('scenario'+s+'_gd_base');
+      var bDm=gv('scenario'+s+'_dm_base');
+
+      // GAP = raspon koji std treba da popuni od base do avgDrop
+      var gPl=avgPl-bPl, gGd=avgGd-bGd, gDm=avgDm-bDm;
+
+      // Drops = std akumulacija / GAP
+      var drPl=gPl>0?Math.round(stdPl*T/gPl):0;
+      var drGd=gGd>0?Math.round(stdGd*T/gGd):0;
+      var drDm=gDm>0?Math.round(stdDm*T/gDm):0;
+
+      // Avg payout = avgDrop + hiddenAcc pri dropu
+      var payPl=gPl>0?avgPl+(stdPl>0?(hidPl/stdPl)*gPl:0):avgPl;
+      var payGd=gGd>0?avgGd+(stdGd>0?(hidGd/stdGd)*gGd:0):avgGd;
+      var payDm=gDm>0?avgDm+(stdDm>0?(hidDm/stdDm)*gDm:0):avgDm;
+
+      var jpRtp=(drPl*payPl+drGd*payGd+drDm*payDm)/T*100;
+
+      var fmt=function(dr,pay){return dr+'× @ ~'+pay.toFixed(0)+' EUR';};
+      var se=function(id){return document.getElementById(id);};
+      if(se('ls'+s+'_pl'))se('ls'+s+'_pl').textContent=avgPl>0?fmt(drPl,payPl):'—';
+      if(se('ls'+s+'_gd'))se('ls'+s+'_gd').textContent=avgGd>0?fmt(drGd,payGd):'—';
+      if(se('ls'+s+'_dm'))se('ls'+s+'_dm').textContent=avgDm>0?fmt(drDm,payDm):'—';
+      if(se('ls'+s+'_rtp'))se('ls'+s+'_rtp').textContent=jpRtp>0?jpRtp.toFixed(3)+'%':'—';
+    }catch(e){}
+  }
+  function attachListeners(s){
+    var fields=['pl_std','pl_hidden','pl_min','pl_max','pl_base','gd_std','gd_hidden','gd_min','gd_max','gd_base','dm_std','dm_hidden','dm_min','dm_max','dm_base'];
+    fields.forEach(function(f){var el=document.getElementById('scenario'+s+'_'+f);if(el)el.addEventListener('input',function(){calcLive(s);});});
+    var tor=document.getElementById('monthlyTurnoverEur');
+    if(tor)tor.addEventListener('input',function(){['A','B','C'].forEach(function(x){calcLive(x);});});
+  }
+  function init(){['A','B','C'].forEach(function(s){attachListeners(s);calcLive(s);});}
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
+})();
+// ===== END LIVE STATS =====
+
+
+// =============================================
+// SCENARIO CONTRIBUTION TOTALS & VALIDATION
+// =============================================
+
+// Smart decimal formatter - uklanja nepotrebne nule
+function fmtPct(val) {
+  if (val === 0) return '0%';
+  // Ako je ceo broj ili ima do 2 decimale, koristi to
+  if (val >= 1) return val.toFixed(val % 1 === 0 ? 0 : 2) + '%';
+  // Za manje vrednosti, nađi pravu preciznost (maks 4 decimale, ali bez trailing nula)
+  var s = parseFloat(val.toFixed(4)).toString();
+  return s + '%';
+}
+
+function fmtRate(val) {
+  if (val === 0) return '0';
+  var s = parseFloat(val.toFixed(6)).toString();
+  return s + ' EUR/EUR';
+}
+
+function updateAllScenarioContribs(letter) {
+  var levels = [
+    { prefix: 'pl', idPfx: 'pl' },
+    { prefix: 'gd', idPfx: 'gd' },
+    { prefix: 'dm', idPfx: 'dm' }
+  ];
+
+  levels.forEach(function(lv) {
+    var std    = parseFloat(document.getElementById('scenario' + letter + '_' + lv.prefix + '_std').value)    || 0;
+    var hidden = parseFloat(document.getElementById('scenario' + letter + '_' + lv.prefix + '_hidden').value) || 0;
+    var total  = std + hidden;
+
+    var elStd = document.getElementById('scs_' + letter + '_' + lv.idPfx + '_std');
+    var elHid = document.getElementById('scs_' + letter + '_' + lv.idPfx + '_hid');
+    var elTot = document.getElementById('scs_' + letter + '_' + lv.idPfx + '_tot');
+
+    if (elStd) elStd.textContent = 'Std ' + fmtPct(std);
+    if (elHid) elHid.textContent = 'Hidden ' + fmtPct(hidden);
+    if (elTot) elTot.textContent = '= ' + fmtPct(total);
+  });
+  var ts=0,th=0; ['pl','gd','dm'].forEach(function(lv){ts+=(parseFloat(document.getElementById('scenario'+letter+'_'+lv+'_std').value)||0);th+=(parseFloat(document.getElementById('scenario'+letter+'_'+lv+'_hidden').value)||0);});
+  var eTS=document.getElementById('scs_'+letter+'_total_std');
+  var eTH=document.getElementById('scs_'+letter+'_total_hid');
+  var eTT=document.getElementById('scs_'+letter+'_total_tot');
+  if(eTS)eTS.textContent='Std '+fmtPct(ts);
+  if(eTH)eTH.textContent='Hidden '+fmtPct(th);
+  if(eTT)eTT.textContent='= '+fmtPct(ts+th);
+  validateScenarioConfig(letter);
+
+  // Analitička live procena - prikazuje aproksimaciju pre pokretanja simulacije
+  var tStr = (document.getElementById('monthlyTurnoverEur') || {}).value || '0';
+  var monthlyT = parseFloat(tStr.replace(/,/g,'')) || 0;
+  if (monthlyT > 0) {
+    var lsLevs = [
+      {p:'pl', ls:'ls'+letter+'_pl'},
+      {p:'gd', ls:'ls'+letter+'_gd'},
+      {p:'dm', ls:'ls'+letter+'_dm'}
+    ];
+    var totalEstPaid = 0;
+    lsLevs.forEach(function(lv) {
+      var std  = (parseFloat(document.getElementById('scenario'+letter+'_'+lv.p+'_std').value)||0)/100;
+      var base = parseFloat(document.getElementById('scenario'+letter+'_'+lv.p+'_base').value)||0;
+      var mn   = parseFloat(document.getElementById('scenario'+letter+'_'+lv.p+'_min').value)||0;
+      var mx   = parseFloat(document.getElementById('scenario'+letter+'_'+lv.p+'_max').value)||0;
+      var elv  = document.getElementById(lv.ls);
+      if (!elv) return;
+      if (std <= 0 || mx <= base) { elv.textContent = '—'; return; }
+      // Payout je uvek izmedju min i max - hidden ne menja iznos isplate
+      var avgPayout  = (mn + mx) / 2;
+      var cycleLen   = (avgPayout - base) / std;
+      if (cycleLen <= 0) { elv.textContent = '—'; return; }
+      var estDrops   = Math.round(monthlyT / cycleLen);
+      totalEstPaid  += estDrops * avgPayout;
+      elv.textContent = '~' + estDrops.toLocaleString() + '× @ ~' + Math.round(avgPayout) + ' EUR';
+    });
+    var rtpEst = (totalEstPaid / monthlyT * 100).toFixed(3) + '%';
+    var rtpElEst = document.getElementById('ls'+letter+'_rtp');
+    if (rtpElEst) rtpElEst.textContent = rtpEst;
+  }
+}
+
+function validateScenarioConfig(letter) {
+  var levels = [
+    { name: 'Platinum', prefix: 'pl' },
+    { name: 'Gold',     prefix: 'gd' },
+    { name: 'Diamond',  prefix: 'dm' }
+  ];
+  var warnings = [];
+  var hasErrors = false;
+
+  levels.forEach(function(lv) {
+    var stdPct    = (parseFloat(document.getElementById('scenario' + letter + '_' + lv.prefix + '_std').value)    || 0) / 100;
+    var hiddenPct = (parseFloat(document.getElementById('scenario' + letter + '_' + lv.prefix + '_hidden').value) || 0) / 100;
+    var base      = parseFloat(document.getElementById('scenario' + letter + '_' + lv.prefix + '_base').value) || 0;
+    var min       = parseFloat(document.getElementById('scenario' + letter + '_' + lv.prefix + '_min').value)  || 0;
+    var max       = parseFloat(document.getElementById('scenario' + letter + '_' + lv.prefix + '_max').value)  || 0;
+
+    if (base > min) {
+      warnings.push({ type: 'error',
+        message: '<strong>' + lv.name + ':</strong> Base Value (' + base.toFixed(2) +
+          ' EUR) ne može biti VEĆI od Min Drop Zone (' + min.toFixed(2) + ' EUR)!'
+      });
+      hasErrors = true;
+    }
+
+    if (max > 0 && min >= max) {
+      warnings.push({ type: 'error',
+        message: '<strong>' + lv.name + ':</strong> Min Drop Zone (' + min.toFixed(2) +
+          ' EUR) mora biti MANJI od Max Drop Zone (' + max.toFixed(2) + ' EUR)!'
+      });
+      hasErrors = true;
+    }
+
+    if (stdPct > 0 && hiddenPct > 0 && max > base) {
+      var maxCycleTurnover  = (max - base) / stdPct;
+      var hiddenAccumulated = maxCycleTurnover * hiddenPct;
+      var nextJpStart       = base + hiddenAccumulated;
+
+      if (nextJpStart > max) {
+        var overflow    = nextJpStart - max;
+        var overflowPct = (overflow / max) * 100;
+        warnings.push({ type: 'error',
+          message: '<strong>' + lv.name + ' – HIDDEN OVERFLOW!</strong><br>' +
+            'Ako JP padne na Max (' + max.toFixed(2) + ' EUR), hidden doprinos = ' +
+            hiddenAccumulated.toFixed(2) + ' EUR.<br>' +
+            'Sledeći JP bi počeo sa <strong>' + nextJpStart.toFixed(2) +
+            ' EUR</strong> → <strong>' + overflow.toFixed(2) +
+            ' EUR iznad Max-a</strong> (' + overflowPct.toFixed(1) + '%)!<br>' +
+            '<em>REŠENJE: Smanji Hidden % ili povećaj Max vrednost.</em>'
+        });
+        hasErrors = true;
+      } else if (nextJpStart > max * 0.95) {
+        warnings.push({ type: 'warning',
+          message: '<strong>' + lv.name + ' – UPOZORENJE:</strong> Hidden doprinos (' +
+            hiddenAccumulated.toFixed(2) + ' EUR) je blizu Max-a. Sledeći JP bi počeo sa ' +
+            nextJpStart.toFixed(2) + ' EUR (' +
+            ((nextJpStart / max) * 100).toFixed(1) + '% od Max-a).'
+        });
+      }
+    }
+  });
+
+  // Prikaži/sakrij warnings
+  var warningsDiv = document.getElementById('scWarnings_' + letter);
+  if (warningsDiv) {
+    warningsDiv.innerHTML = '';
+    warnings.forEach(function(w) {
+      var div = document.createElement('div');
+      div.className = w.type;
+      div.innerHTML = (w.type === 'error' ? '🚫 ' : '⚠️ ') + w.message;
+      warningsDiv.appendChild(div);
+    });
+  }
+
+  // Disable/enable Run dugme na osnovu grešaka
+  var runBtn = document.getElementById('runScenarioBtn_' + letter);
+  if (runBtn) {
+    runBtn.disabled = hasErrors;
+    runBtn.title = hasErrors
+      ? '⛔ Ispravite greške pre pokretanja simulacije'
+      : '';
+    // Vizuelni feedback - tekst
+    var scenName = (document.getElementById('scenario' + letter + '_name') || {}).value || ('Scenario ' + letter);
+    runBtn.textContent = hasErrors
+      ? '⛔ Greška – ne može se pokrenuti'
+      : '▶ Run Scenario ' + letter;
+  }
+}
+
+// Inicijalizacija pri učitavanju stranice
+(function initScenarioContribs() {
+  function run() {
+    ['A','B','C'].forEach(function(l) { updateAllScenarioContribs(l); });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    setTimeout(run, 0);
+  }
+})();
+
+
 </script>
 
 </body>
