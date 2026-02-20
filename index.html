@@ -1832,6 +1832,7 @@ function enforceBaseMinConstraint(prefix) {
   const base = parseFloat(baseInput.value) || 0;
   const min = parseFloat(minInput.value) || 0;
   
+  if (min === 0) return;
   if (base > min) {
     alert(`⚠️ GREŠKA!\n\nBase Value (${base}) ne može biti VEĆI od Min Drop Zone (${min})!\n\nPostavljam Base = Min.`);
     baseInput.value = min.toFixed(2);
@@ -1877,7 +1878,7 @@ function updateGapWarnings() {
   const plGap = plMin - plBase;
   
   const plWarning = document.getElementById('pl_gap_warning');
-  if (plGap <= 0) {
+  if (plGap <= 0 && (plMin > 0 || plBase > 0)) {
     plWarning.style.display = 'block';
   } else {
     plWarning.style.display = 'none';
@@ -2444,6 +2445,8 @@ function validateConfiguration() {
     const min = parseFloat(document.getElementById(`${level.prefix}_min`).value) || 0;
     const max = parseFloat(document.getElementById(`${level.prefix}_max`).value) || 0;
     const stdPct = (parseFloat(document.getElementById(`${level.prefix}_std`).value) || 0) / 100;
+    // Preskači validaciju ako polja nisu popunjena
+    if (base === 0 && min === 0 && max === 0) return;
     const hiddenPct = (parseFloat(document.getElementById(`${level.prefix}_hidden`).value) || 0) / 100;
     
     if (base > min) {
@@ -2843,7 +2846,7 @@ function exportToExcel() {
     ['BASIC PARAMETERS', '', '', ''],
     ['Monthly Turnover (EUR)', formatTurnover(parseTurnover(document.getElementById('monthlyTurnoverEur').value)), '', ''],
     ['Win/Bet Ratio %', document.getElementById('winBetRatioPercent').value + '%', '', ''],
-    ['Base Game RTP', (parseFloat(document.getElementById('winBetRatioPercent').value) / 100).toFixed(4), '', ''],
+    ['Base Game RTP', (parseFloat(document.getElementById('winBetRatioPercent').value) || 0/ 100).toFixed(4), '', ''],
     ['Granularity', document.getElementById('granularity').value + ' EUR', '', ''],
     ['Seed', document.getElementById('seed').value || 'Random', '', ''],
     ['', '', '', ''],
@@ -2851,7 +2854,7 @@ function exportToExcel() {
     ['Base Value (EUR)', document.getElementById('pl_base').value, document.getElementById('gd_base').value, document.getElementById('dm_base').value],
     ['Min Drop Zone (EUR)', document.getElementById('pl_min').value, document.getElementById('gd_min').value, document.getElementById('dm_min').value],
     ['Max Drop Zone (EUR)', document.getElementById('pl_max').value, document.getElementById('gd_max').value, document.getElementById('dm_max').value],
-    ['GAP (EUR)', (parseFloat(document.getElementById('pl_min').value) - parseFloat(document.getElementById('pl_base').value)).toFixed(2), (parseFloat(document.getElementById('gd_min').value) - parseFloat(document.getElementById('gd_base').value)).toFixed(2), (parseFloat(document.getElementById('dm_min').value) - parseFloat(document.getElementById('dm_base').value)).toFixed(2)],
+    ['GAP (EUR)', (parseFloat(document.getElementById('pl_min').value) || 0- parseFloat(document.getElementById('pl_base').value) || 0).toFixed(2), (parseFloat(document.getElementById('gd_min').value) || 0- parseFloat(document.getElementById('gd_base').value) || 0).toFixed(2), (parseFloat(document.getElementById('dm_min').value) || 0- parseFloat(document.getElementById('dm_base').value) || 0).toFixed(2)],
     ['Bet Requirement (EUR)', document.getElementById('pl_bet_req').value, document.getElementById('gd_bet_req').value, document.getElementById('dm_bet_req').value],
     ['Standard Contribution %', document.getElementById('pl_std').value + '%', document.getElementById('gd_std').value + '%', document.getElementById('dm_std').value + '%'],
     ['Hidden Contribution %', document.getElementById('pl_hidden').value + '%', document.getElementById('gd_hidden').value + '%', document.getElementById('dm_hidden').value + '%'],
@@ -3387,3 +3390,4 @@ function validateScenarioConfig(letter) {
 
 </body>
 </html>
+
