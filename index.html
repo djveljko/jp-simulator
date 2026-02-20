@@ -2445,18 +2445,18 @@ function validateConfiguration() {
     const min = parseFloat(document.getElementById(`${level.prefix}_min`).value) || 0;
     const max = parseFloat(document.getElementById(`${level.prefix}_max`).value) || 0;
     const stdPct = (parseFloat(document.getElementById(`${level.prefix}_std`).value) || 0) / 100;
-    // Preskači validaciju ako polja nisu popunjena
-    if (base === 0 && min === 0 && max === 0) return;
     const hiddenPct = (parseFloat(document.getElementById(`${level.prefix}_hidden`).value) || 0) / 100;
     
-    if (base > min) {
+    if (base === 0 && min === 0 && max === 0) return;
+    
+    if (base > min && min > 0) {
       warnings.push({
         type: 'error',
         message: `<strong>${level.name}:</strong> Base Value (${base.toFixed(2)}) ne može biti VEĆI od Min Drop Zone (${min.toFixed(2)})!`
       });
     }
     
-    if (min >= max) {
+    if (min >= max && max > 0) {
       warnings.push({
         type: 'error',
         message: `<strong>${level.name}:</strong> Min Drop Zone (${min.toFixed(2)}) mora biti manji od Max Drop Zone (${max.toFixed(2)})!`
@@ -2518,20 +2518,20 @@ const effectiveMultiplier = jpConfig ? 1.0 : multiplier;
        base: jpConfig.pl.base,
        minDrop: jpConfig.pl.min,
        maxDrop: jpConfig.pl.max,
-       stdPct: ((parseFloat(document.getElementById(`${sourcePrefix}pl_std`).value)||0)/100) * effectiveMultiplier,
-       hidPct: ((parseFloat(document.getElementById(`${sourcePrefix}pl_hidden`).value)||0)/100) * effectiveMultiplier},
+       stdPct: ((parseFloat(document.getElementById('pl_std').value)||0)/100) * effectiveMultiplier,
+       hidPct: ((parseFloat(document.getElementById('pl_hidden').value)||0)/100) * effectiveMultiplier},
       {name: 'Gold', 
        base: jpConfig.gd.base,
        minDrop: jpConfig.gd.min,
        maxDrop: jpConfig.gd.max,
-       stdPct: ((parseFloat(document.getElementById(`${sourcePrefix}gd_std`).value)||0)/100) * effectiveMultiplier,
-       hidPct: ((parseFloat(document.getElementById(`${sourcePrefix}gd_hidden`).value)||0)/100) * effectiveMultiplier},
+       stdPct: ((parseFloat(document.getElementById('gd_std').value)||0)/100) * effectiveMultiplier,
+       hidPct: ((parseFloat(document.getElementById('gd_hidden').value)||0)/100) * effectiveMultiplier},
       {name: 'Diamond', 
        base: jpConfig.dm.base,
        minDrop: jpConfig.dm.min,
        maxDrop: jpConfig.dm.max,
-       stdPct: ((parseFloat(document.getElementById(`${sourcePrefix}dm_std`).value)||0)/100) * effectiveMultiplier,
-       hidPct: ((parseFloat(document.getElementById(`${sourcePrefix}dm_hidden`).value)||0)/100) * effectiveMultiplier}
+       stdPct: ((parseFloat(document.getElementById('dm_std').value)||0)/100) * effectiveMultiplier,
+       hidPct: ((parseFloat(document.getElementById('dm_hidden').value)||0)/100) * effectiveMultiplier}
     ];
   } else {
     levels = [
@@ -2539,20 +2539,20 @@ const effectiveMultiplier = jpConfig ? 1.0 : multiplier;
        base: parseFloat(document.getElementById('pl_base').value)||0,
        minDrop: parseFloat(document.getElementById('pl_min').value)||0,
        maxDrop: parseFloat(document.getElementById('pl_max').value)||0,
-       stdPct: ((parseFloat(document.getElementById(`${sourcePrefix}pl_std`).value)||0)/100) * multiplier,
-       hidPct: ((parseFloat(document.getElementById(`${sourcePrefix}pl_hidden`).value)||0)/100) * multiplier},
+       stdPct: ((parseFloat(document.getElementById('pl_std').value)||0)/100) * multiplier,
+       hidPct: ((parseFloat(document.getElementById('pl_hidden').value)||0)/100) * multiplier},
       {name: 'Gold', 
        base: parseFloat(document.getElementById('gd_base').value)||0,
        minDrop: parseFloat(document.getElementById('gd_min').value)||0,
        maxDrop: parseFloat(document.getElementById('gd_max').value)||0,
-       stdPct: ((parseFloat(document.getElementById(`${sourcePrefix}gd_std`).value)||0)/100) * multiplier,
-       hidPct: ((parseFloat(document.getElementById(`${sourcePrefix}gd_hidden`).value)||0)/100) * multiplier},
+       stdPct: ((parseFloat(document.getElementById('gd_std').value)||0)/100) * multiplier,
+       hidPct: ((parseFloat(document.getElementById('gd_hidden').value)||0)/100) * multiplier},
       {name: 'Diamond', 
        base: parseFloat(document.getElementById('dm_base').value)||0,
        minDrop: parseFloat(document.getElementById('dm_min').value)||0,
        maxDrop: parseFloat(document.getElementById('dm_max').value)||0,
-       stdPct: ((parseFloat(document.getElementById(`${sourcePrefix}dm_std`).value)||0)/100) * multiplier,
-       hidPct: ((parseFloat(document.getElementById(`${sourcePrefix}dm_hidden`).value)||0)/100) * multiplier}
+       stdPct: ((parseFloat(document.getElementById('dm_std').value)||0)/100) * multiplier,
+       hidPct: ((parseFloat(document.getElementById('dm_hidden').value)||0)/100) * multiplier}
     ];
   }
 
@@ -2800,9 +2800,22 @@ document.getElementById('downloadChartBtn').style.display = 'inline-block';
   document.getElementById('exportExcelBtn').disabled = false;
 }
 
-async function runMonteCarlo(){if(!validateConfiguration()){alert('Molim te ispravi greške u konfiguraciji!');return;}const iter=100;const pc=document.getElementById('progressContainer');const pb=document.getElementById('progressBar');const pp=document.getElementById('progressPercentage');const cr=document.getElementById('currentRun');const tr=document.getElementById('totalRuns');const ss=document.getElementById('simulationSpeed');const et=document.getElementById('estimatedTime');const el=document.getElementById('elapsedTime');const prb=document.getElementById('pauseResumeBtn');const csb=document.getElementById('cancelSimBtn');const pi=document.getElementById('pauseIcon');const pt=document.getElementById('pauseText');pc.style.display='block';prb.style.display='inline-block';csb.style.display='inline-block';let isPaused=false,isCancelled=false;const startTime=Date.now();let lastUpdate=startTime;prb.onclick=()=>{isPaused=!isPaused;pi.textContent=isPaused?'▶':'⏸';pt.textContent=isPaused?'Resume':'Pause';};csb.onclick=()=>{isCancelled=true;pc.style.display='none';prb.style.display='none';csb.style.display='none';alert('Simulacija prekinuta!');};tr.textContent=iter;const results=[];for(let run=0;run<iter;run++){while(isPaused&&!isCancelled)await new Promise(r=>setTimeout(r,100));if(isCancelled)return;document.getElementById('seed').value='';const result=runSingleSimulation();results.push(result);const curr=run+1;const pct=(curr/iter*100).toFixed(1);const now=Date.now();const elapsed=(now-startTime)/1000;const speed=curr/elapsed;const remaining=(iter-curr)/speed;pb.style.width=pct+'%';pp.textContent=pct+'%';cr.textContent=curr;if(now-lastUpdate>100||run%10===0){ss.textContent=`${speed.toFixed(0)} sim/s`;el.textContent=`${elapsed.toFixed(1)}s`;et.textContent=remaining>60?`${(remaining/60).toFixed(1)} min`:`${remaining.toFixed(0)}s`;lastUpdate=now;}if(run%5===0)await new Promise(r=>setTimeout(r,1));}setTimeout(()=>{pc.style.display='none';prb.style.display='none';csb.style.display='none';},1000);document.getElementById('monteCarloResults').style.display='block';const jpRtps=results.map(r=>r.jpRtp*100);const avgRtp=jpRtps.reduce((a,b)=>a+b,0)/jpRtps.length;const minRtp=Math.min(...jpRtps);const maxRtp=Math.max(...jpRtps);const variance=jpRtps.reduce((sum,val)=>sum+Math.pow(val-avgRtp,2),0)/jpRtps.length;const stdDev=Math.sqrt(variance);const z=1.96;const marginError=z*(stdDev/Math.sqrt(iter));const confLow=avgRtp-marginError;const confHigh=avgRtp+marginError;const volatility=(stdDev/avgRtp)*100;document.getElementById('mcAvgRtp').textContent=avgRtp.toFixed(3)+'%';document.getElementById('mcMinRtp').textContent=minRtp.toFixed(3)+'%';document.getElementById('mcMaxRtp').textContent=maxRtp.toFixed(3)+'%';document.getElementById('mcStdDev').textContent='±'+stdDev.toFixed(3)+'%';document.getElementById('mcConfidence').textContent=`[${confLow.toFixed(2)}%, ${confHigh.toFixed(2)}%]`;document.getElementById('mcVolatility').textContent=volatility.toFixed(2)+'%';const dropStats={'Platinum':[],'Gold':[],'Diamond':[]};results.forEach(r=>r.jpState.forEach(st=>dropStats[st.name].push(st.dropCount)));const mcDropsBody=document.getElementById('mcDropsBody');mcDropsBody.innerHTML='';['Platinum','Gold','Diamond'].forEach(name=>{const drops=dropStats[name];const avg=drops.reduce((a,b)=>a+b,0)/drops.length;const min=Math.min(...drops);const max=Math.max(...drops);const variance=drops.reduce((sum,val)=>sum+Math.pow(val-avg,2),0)/drops.length;const stdDev=Math.sqrt(variance);const tr=document.createElement('tr');tr.innerHTML=`<td style="text-align:left;">${name}</td><td>${avg.toFixed(0)}</td><td>${min}</td><td>${max}</td><td>±${stdDev.toFixed(0)}</td>`;mcDropsBody.appendChild(tr);});displayResults(results[results.length-1]);alert('✅ Monte Carlo simulacija završena (100 runs)!');}
+async function runMonteCarlo(){const _tv=parseTurnover(document.getElementById('monthlyTurnoverEur').value);if(!_tv||_tv<=0){alert('⚠️ Unesi mesečni turnover pre pokretanja!');return;}if(!validateConfiguration()){alert('Molim te ispravi greške u konfiguraciji!');return;}const iter=100;const pc=document.getElementById('progressContainer');const pb=document.getElementById('progressBar');const pp=document.getElementById('progressPercentage');const cr=document.getElementById('currentRun');const tr=document.getElementById('totalRuns');const ss=document.getElementById('simulationSpeed');const et=document.getElementById('estimatedTime');const el=document.getElementById('elapsedTime');const prb=document.getElementById('pauseResumeBtn');const csb=document.getElementById('cancelSimBtn');const pi=document.getElementById('pauseIcon');const pt=document.getElementById('pauseText');pc.style.display='block';prb.style.display='inline-block';csb.style.display='inline-block';let isPaused=false,isCancelled=false;const startTime=Date.now();let lastUpdate=startTime;prb.onclick=()=>{isPaused=!isPaused;pi.textContent=isPaused?'▶':'⏸';pt.textContent=isPaused?'Resume':'Pause';};csb.onclick=()=>{isCancelled=true;pc.style.display='none';prb.style.display='none';csb.style.display='none';alert('Simulacija prekinuta!');};tr.textContent=iter;const results=[];for(let run=0;run<iter;run++){while(isPaused&&!isCancelled)await new Promise(r=>setTimeout(r,100));if(isCancelled)return;document.getElementById('seed').value='';const result=runSingleSimulation();results.push(result);const curr=run+1;const pct=(curr/iter*100).toFixed(1);const now=Date.now();const elapsed=(now-startTime)/1000;const speed=curr/elapsed;const remaining=(iter-curr)/speed;pb.style.width=pct+'%';pp.textContent=pct+'%';cr.textContent=curr;if(now-lastUpdate>100||run%10===0){ss.textContent=`${speed.toFixed(0)} sim/s`;el.textContent=`${elapsed.toFixed(1)}s`;et.textContent=remaining>60?`${(remaining/60).toFixed(1)} min`:`${remaining.toFixed(0)}s`;lastUpdate=now;}if(run%5===0)await new Promise(r=>setTimeout(r,1));}setTimeout(()=>{pc.style.display='none';prb.style.display='none';csb.style.display='none';},1000);document.getElementById('monteCarloResults').style.display='block';const jpRtps=results.map(r=>r.jpRtp*100);const avgRtp=jpRtps.reduce((a,b)=>a+b,0)/jpRtps.length;const minRtp=Math.min(...jpRtps);const maxRtp=Math.max(...jpRtps);const variance=jpRtps.reduce((sum,val)=>sum+Math.pow(val-avgRtp,2),0)/jpRtps.length;const stdDev=Math.sqrt(variance);const z=1.96;const marginError=z*(stdDev/Math.sqrt(iter));const confLow=avgRtp-marginError;const confHigh=avgRtp+marginError;const volatility=(stdDev/avgRtp)*100;document.getElementById('mcAvgRtp').textContent=avgRtp.toFixed(3)+'%';document.getElementById('mcMinRtp').textContent=minRtp.toFixed(3)+'%';document.getElementById('mcMaxRtp').textContent=maxRtp.toFixed(3)+'%';document.getElementById('mcStdDev').textContent='±'+stdDev.toFixed(3)+'%';document.getElementById('mcConfidence').textContent=`[${confLow.toFixed(2)}%, ${confHigh.toFixed(2)}%]`;document.getElementById('mcVolatility').textContent=volatility.toFixed(2)+'%';const dropStats={'Platinum':[],'Gold':[],'Diamond':[]};results.forEach(r=>r.jpState.forEach(st=>dropStats[st.name].push(st.dropCount)));const mcDropsBody=document.getElementById('mcDropsBody');mcDropsBody.innerHTML='';['Platinum','Gold','Diamond'].forEach(name=>{const drops=dropStats[name];const avg=drops.reduce((a,b)=>a+b,0)/drops.length;const min=Math.min(...drops);const max=Math.max(...drops);const variance=drops.reduce((sum,val)=>sum+Math.pow(val-avg,2),0)/drops.length;const stdDev=Math.sqrt(variance);const tr=document.createElement('tr');tr.innerHTML=`<td style="text-align:left;">${name}</td><td>${avg.toFixed(0)}</td><td>${min}</td><td>${max}</td><td>±${stdDev.toFixed(0)}</td>`;mcDropsBody.appendChild(tr);});displayResults(results[results.length-1]);alert('✅ Monte Carlo simulacija završena (100 runs)!');}
 
 document.getElementById('runSimBtn').addEventListener('click', () => {
+  const _tv = parseTurnover(document.getElementById('monthlyTurnoverEur').value);
+  if (!_tv || _tv <= 0) {
+    alert('⚠️ Unesi mesečni turnover (EUR) pre pokretanja simulacije!');
+    document.getElementById('monthlyTurnoverEur').focus();
+    return;
+  }
+  const _plOk = (parseFloat(document.getElementById('pl_min').value)||0) > 0;
+  const _gdOk = (parseFloat(document.getElementById('gd_min').value)||0) > 0;
+  const _dmOk = (parseFloat(document.getElementById('dm_min').value)||0) > 0;
+  if (!_plOk && !_gdOk && !_dmOk) {
+    alert('⚠️ Konfiguriši bar jedan JP nivo (Min Drop Zone mora biti > 0)!');
+    return;
+  }
   if (!validateConfiguration()) {
     alert('Molim te ispravi greške u konfiguraciji!');
     return;
@@ -2846,7 +2859,7 @@ function exportToExcel() {
     ['BASIC PARAMETERS', '', '', ''],
     ['Monthly Turnover (EUR)', formatTurnover(parseTurnover(document.getElementById('monthlyTurnoverEur').value)), '', ''],
     ['Win/Bet Ratio %', document.getElementById('winBetRatioPercent').value + '%', '', ''],
-    ['Base Game RTP', (parseFloat(document.getElementById('winBetRatioPercent').value) || 0/ 100).toFixed(4), '', ''],
+    ['Base Game RTP', (parseFloat(document.getElementById('winBetRatioPercent').value) / 100).toFixed(4), '', ''],
     ['Granularity', document.getElementById('granularity').value + ' EUR', '', ''],
     ['Seed', document.getElementById('seed').value || 'Random', '', ''],
     ['', '', '', ''],
@@ -2854,7 +2867,7 @@ function exportToExcel() {
     ['Base Value (EUR)', document.getElementById('pl_base').value, document.getElementById('gd_base').value, document.getElementById('dm_base').value],
     ['Min Drop Zone (EUR)', document.getElementById('pl_min').value, document.getElementById('gd_min').value, document.getElementById('dm_min').value],
     ['Max Drop Zone (EUR)', document.getElementById('pl_max').value, document.getElementById('gd_max').value, document.getElementById('dm_max').value],
-    ['GAP (EUR)', (parseFloat(document.getElementById('pl_min').value) || 0- parseFloat(document.getElementById('pl_base').value) || 0).toFixed(2), (parseFloat(document.getElementById('gd_min').value) || 0- parseFloat(document.getElementById('gd_base').value) || 0).toFixed(2), (parseFloat(document.getElementById('dm_min').value) || 0- parseFloat(document.getElementById('dm_base').value) || 0).toFixed(2)],
+    ['GAP (EUR)', (parseFloat(document.getElementById('pl_min').value) - parseFloat(document.getElementById('pl_base').value)).toFixed(2), (parseFloat(document.getElementById('gd_min').value) - parseFloat(document.getElementById('gd_base').value)).toFixed(2), (parseFloat(document.getElementById('dm_min').value) - parseFloat(document.getElementById('dm_base').value)).toFixed(2)],
     ['Bet Requirement (EUR)', document.getElementById('pl_bet_req').value, document.getElementById('gd_bet_req').value, document.getElementById('dm_bet_req').value],
     ['Standard Contribution %', document.getElementById('pl_std').value + '%', document.getElementById('gd_std').value + '%', document.getElementById('dm_std').value + '%'],
     ['Hidden Contribution %', document.getElementById('pl_hidden').value + '%', document.getElementById('gd_hidden').value + '%', document.getElementById('dm_hidden').value + '%'],
@@ -3390,4 +3403,3 @@ function validateScenarioConfig(letter) {
 
 </body>
 </html>
-
