@@ -990,6 +990,8 @@ body.light-mode .tip::after {
     @media (max-width: 768px){ .custom-currency-grid{grid-template-columns:1fr!important} }
     .rev-table td input, .rev-table td select{margin-bottom:0;min-width:90px}
     .rev-table td{text-align:left}
+    .eur-hint{display:none;font-size:0.72rem;color:var(--accent-blue);margin:-0.55rem 0 0.6rem 0.2rem;font-weight:500}
+    .scenario-input-small + .eur-hint{margin:0.15rem 0 0.2rem 0.2rem}
   </style>
   <!-- SheetJS Library za Excel export -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -1052,6 +1054,15 @@ body.light-mode .tip::after {
           <option value="base">Od Base - novo lansiranje</option>
         </select>
       </div>
+      <div class="inline">
+        <label for="cfgCurrency">Valuta JP konfiguracije <span class="tip" data-tip="Valuta u kojoj unosiš Base, Min, Max i Bet Requirement (glavna konfiguracija i scenariji), npr. kako stoje u postojećem JP-u. Simulacija, Total Bet i svi rezultati ostaju u EUR. Iznosi se preračunavaju po trenutnom kursu.">ⓘ</span></label>
+        <select id="cfgCurrency"><option value="EUR">EUR - Euro</option></select>
+        <div id="cfgCurPrefixWrap" style="display:none;">
+          <label for="cfgCurPrefix">Crypto jedinica</label>
+          <select id="cfgCurPrefix"><option value="1">1x (cela valuta)</option><option value="0.001" selected>milli (m)</option><option value="0.000001">micro (μ)</option></select>
+        </div>
+        <div class="small-note" id="cfgCurInfo" style="margin-top:-0.4rem;"></div>
+      </div>
     </div>
     <div class="info-box" id="iterationInfo">
       <span class="info-label">Broj koraka po mesecu:</span>
@@ -1068,19 +1079,19 @@ body.light-mode .tip::after {
         <h2>Platinum JP</h2>
         <span class="jp-tag platinum">Platinum</span>
       </div>
-      <label>Base Value (EUR) <span class="tip" data-tip="Minimalna početna vrednost JP-a posle dropa. Sledeći JP kreće od Base + skupljeni hidden. JP nikad ne može biti ispod ove vrednosti.">ⓘ</span></label>
+      <label>Base Value (<span class="cfg-cur">EUR</span>) <span class="tip" data-tip="Minimalna početna vrednost JP-a posle dropa. Sledeći JP kreće od Base + skupljeni hidden. JP nikad ne može biti ispod ove vrednosti.">ⓘ</span></label>
 
       <input type="number" id="pl_base" value="" placeholder="npr. 10" step="0.01">
-      <label>Min Drop Zone (EUR) <span class="tip" data-tip="Najniži mogući iznos na koji JP može da padne. Hit point se bira nasumično između Min i Max. GAP = Min - Base: veći GAP znači da JP mora više da naraste pre pada.">ⓘ</span></label>
+      <label>Min Drop Zone (<span class="cfg-cur">EUR</span>) <span class="tip" data-tip="Najniži mogući iznos na koji JP može da padne. Hit point se bira nasumično između Min i Max. GAP = Min - Base: veći GAP znači da JP mora više da naraste pre pada.">ⓘ</span></label>
 
       <input type="number" id="pl_min" value="" placeholder="npr. 15" step="0.01">
-      <label>Max Drop Zone (EUR) <span class="tip" data-tip="Najviši mogući iznos na koji JP može da padne. Ako JP dostigne Max, pad je zagarantovan. Raspon Min-Max određuje prosečan iznos isplate.">ⓘ</span></label>
+      <label>Max Drop Zone (<span class="cfg-cur">EUR</span>) <span class="tip" data-tip="Najviši mogući iznos na koji JP može da padne. Ako JP dostigne Max, pad je zagarantovan. Raspon Min-Max određuje prosečan iznos isplate.">ⓘ</span></label>
 
       <input type="number" id="pl_max" value="" placeholder="npr. 35" step="0.01">
       <div class="warning-box" id="pl_gap_warning" style="display:none;">
         ⚠️ <strong>GAP = 0 EUR</strong> → JP kreće od Min zone i može pasti odmah po resetu! Za ređe dropove, povećaj Min.
       </div>
-      <label>Bet Requirement (EUR - samo za info) <span class="tip" data-tip="Minimalni iznos opklade da bi igrač bio kvalifikovan za ovaj JP nivo. Samo informativno - ne utiče na simulaciju.">ⓘ</span></label>
+      <label>Bet Requirement (<span class="cfg-cur">EUR</span> - samo za info) <span class="tip" data-tip="Minimalni iznos opklade da bi igrač bio kvalifikovan za ovaj JP nivo. Samo informativno - ne utiče na simulaciju.">ⓘ</span></label>
 
       <input type="number" id="pl_bet_req" value="" placeholder="npr. 0.05" step="0.01">
       <label>Standard Contribution [%] <span class="tip" data-tip="Vidljivi procenat svake opklade koji puni JP fond. Direktno određuje brzinu rasta JP-a i JP RTP doprinos. Npr. 0.27% znači 0.0027 EUR po svakom 1 EUR opklade.">ⓘ</span></label>
@@ -1096,19 +1107,19 @@ body.light-mode .tip::after {
         <h2>Gold JP</h2>
         <span class="jp-tag gold">Gold</span>
       </div>
-      <label>Base Value (EUR) <span class="tip" data-tip="Minimalna početna vrednost JP-a posle dropa. Sledeći JP kreće od Base + skupljeni hidden. JP nikad ne može biti ispod ove vrednosti.">ⓘ</span></label>
+      <label>Base Value (<span class="cfg-cur">EUR</span>) <span class="tip" data-tip="Minimalna početna vrednost JP-a posle dropa. Sledeći JP kreće od Base + skupljeni hidden. JP nikad ne može biti ispod ove vrednosti.">ⓘ</span></label>
 
       <input type="number" id="gd_base" value="" placeholder="npr. 15" step="0.01">
-      <label>Min Drop Zone (EUR) <span class="tip" data-tip="Najniži mogući iznos na koji JP može da padne. Hit point se bira nasumično između Min i Max. GAP = Min - Base: veći GAP znači da JP mora više da naraste pre pada.">ⓘ</span></label>
+      <label>Min Drop Zone (<span class="cfg-cur">EUR</span>) <span class="tip" data-tip="Najniži mogući iznos na koji JP može da padne. Hit point se bira nasumično između Min i Max. GAP = Min - Base: veći GAP znači da JP mora više da naraste pre pada.">ⓘ</span></label>
 
       <input type="number" id="gd_min" value="" placeholder="npr. 40" step="0.01">
-      <label>Max Drop Zone (EUR) <span class="tip" data-tip="Najviši mogući iznos na koji JP može da padne. Ako JP dostigne Max, pad je zagarantovan. Raspon Min-Max određuje prosečan iznos isplate.">ⓘ</span></label>
+      <label>Max Drop Zone (<span class="cfg-cur">EUR</span>) <span class="tip" data-tip="Najviši mogući iznos na koji JP može da padne. Ako JP dostigne Max, pad je zagarantovan. Raspon Min-Max određuje prosečan iznos isplate.">ⓘ</span></label>
 
       <input type="number" id="gd_max" value="" placeholder="npr. 110" step="0.01">
       <div class="info-box" id="gd_gap_info">
         📊 <strong>GAP:</strong> <span id="gd_gap_value">25.5 EUR</span>
       </div>
-      <label>Bet Requirement (EUR - samo za info) <span class="tip" data-tip="Minimalni iznos opklade da bi igrač bio kvalifikovan za ovaj JP nivo. Samo informativno - ne utiče na simulaciju.">ⓘ</span></label>
+      <label>Bet Requirement (<span class="cfg-cur">EUR</span> - samo za info) <span class="tip" data-tip="Minimalni iznos opklade da bi igrač bio kvalifikovan za ovaj JP nivo. Samo informativno - ne utiče na simulaciju.">ⓘ</span></label>
 
       <input type="number" id="gd_bet_req" value="" placeholder="npr. 0.40" step="0.01">
       <label>Standard Contribution [%] <span class="tip" data-tip="Vidljivi procenat svake opklade koji puni JP fond. Direktno određuje brzinu rasta JP-a i JP RTP doprinos. Npr. 0.27% znači 0.0027 EUR po svakom 1 EUR opklade.">ⓘ</span></label>
@@ -1124,19 +1135,19 @@ body.light-mode .tip::after {
         <h2>Diamond JP</h2>
         <span class="jp-tag diamond">Diamond</span>
       </div>
-      <label>Base Value (EUR) <span class="tip" data-tip="Minimalna početna vrednost JP-a posle dropa. Sledeći JP kreće od Base + skupljeni hidden. JP nikad ne može biti ispod ove vrednosti.">ⓘ</span></label>
+      <label>Base Value (<span class="cfg-cur">EUR</span>) <span class="tip" data-tip="Minimalna početna vrednost JP-a posle dropa. Sledeći JP kreće od Base + skupljeni hidden. JP nikad ne može biti ispod ove vrednosti.">ⓘ</span></label>
 
       <input type="number" id="dm_base" value="" placeholder="npr. 350" step="0.01">
-      <label>Min Drop Zone (EUR) <span class="tip" data-tip="Najniži mogući iznos na koji JP može da padne. Hit point se bira nasumično između Min i Max. GAP = Min - Base: veći GAP znači da JP mora više da naraste pre pada.">ⓘ</span></label>
+      <label>Min Drop Zone (<span class="cfg-cur">EUR</span>) <span class="tip" data-tip="Najniži mogući iznos na koji JP može da padne. Hit point se bira nasumično između Min i Max. GAP = Min - Base: veći GAP znači da JP mora više da naraste pre pada.">ⓘ</span></label>
 
       <input type="number" id="dm_min" value="" placeholder="npr. 600" step="0.01">
-      <label>Max Drop Zone (EUR) <span class="tip" data-tip="Najviši mogući iznos na koji JP može da padne. Ako JP dostigne Max, pad je zagarantovan. Raspon Min-Max određuje prosečan iznos isplate.">ⓘ</span></label>
+      <label>Max Drop Zone (<span class="cfg-cur">EUR</span>) <span class="tip" data-tip="Najviši mogući iznos na koji JP može da padne. Ako JP dostigne Max, pad je zagarantovan. Raspon Min-Max određuje prosečan iznos isplate.">ⓘ</span></label>
 
       <input type="number" id="dm_max" value="" placeholder="npr. 1000" step="0.01">
       <div class="info-box" id="dm_gap_info">
         📊 <strong>GAP:</strong> <span id="dm_gap_value">212.5 EUR</span>
       </div>
-      <label>Bet Requirement (EUR - samo za info) <span class="tip" data-tip="Minimalni iznos opklade da bi igrač bio kvalifikovan za ovaj JP nivo. Samo informativno - ne utiče na simulaciju.">ⓘ</span></label>
+      <label>Bet Requirement (<span class="cfg-cur">EUR</span> - samo za info) <span class="tip" data-tip="Minimalni iznos opklade da bi igrač bio kvalifikovan za ovaj JP nivo. Samo informativno - ne utiče na simulaciju.">ⓘ</span></label>
 
       <input type="number" id="dm_bet_req" value="" placeholder="npr. 1.00" step="0.01">
       <label>Standard Contribution [%] <span class="tip" data-tip="Vidljivi procenat svake opklade koji puni JP fond. Direktno određuje brzinu rasta JP-a i JP RTP doprinos. Npr. 0.27% znači 0.0027 EUR po svakom 1 EUR opklade.">ⓘ</span></label>
@@ -1374,9 +1385,9 @@ body.light-mode .tip::after {
             <div class="sc-contrib-item"><label>Hidden (%):</label>
               <input type="number" class="scenario-input-small" id="scenarioA_pl_hidden" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 0.01" step="0.01" min="0"></div>
           </div>
-          <label style="font-size:11px;">Base (EUR):</label><input type="number" class="scenario-input-small" id="scenarioA_pl_base" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 10" step="0.1">
-          <label style="font-size:11px;">Min (EUR):</label><input type="number" class="scenario-input-small" id="scenarioA_pl_min" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 15" step="0.1">
-          <label style="font-size:11px;">Max (EUR):</label><input type="number" class="scenario-input-small" id="scenarioA_pl_max" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 35" step="0.1">
+          <label style="font-size:11px;">Base (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioA_pl_base" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 10" step="0.1">
+          <label style="font-size:11px;">Min (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioA_pl_min" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 15" step="0.1">
+          <label style="font-size:11px;">Max (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioA_pl_max" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 35" step="0.1">
         </div>
         <div class="jp-mini-section"><h4>🟡 Gold</h4>
           <div class="sc-contrib-row">
@@ -1385,9 +1396,9 @@ body.light-mode .tip::after {
             <div class="sc-contrib-item"><label>Hidden (%):</label>
               <input type="number" class="scenario-input-small" id="scenarioA_gd_hidden" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 0.01" step="0.01" min="0"></div>
           </div>
-          <label style="font-size:11px;">Base (EUR):</label><input type="number" class="scenario-input-small" id="scenarioA_gd_base" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 15" step="0.1">
-          <label style="font-size:11px;">Min (EUR):</label><input type="number" class="scenario-input-small" id="scenarioA_gd_min" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 40" step="0.1">
-          <label style="font-size:11px;">Max (EUR):</label><input type="number" class="scenario-input-small" id="scenarioA_gd_max" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 110" step="0.1">
+          <label style="font-size:11px;">Base (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioA_gd_base" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 15" step="0.1">
+          <label style="font-size:11px;">Min (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioA_gd_min" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 40" step="0.1">
+          <label style="font-size:11px;">Max (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioA_gd_max" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 110" step="0.1">
         </div>
         <div class="jp-mini-section"><h4>💎 Diamond</h4>
           <div class="sc-contrib-row">
@@ -1396,9 +1407,9 @@ body.light-mode .tip::after {
             <div class="sc-contrib-item"><label>Hidden (%):</label>
               <input type="number" class="scenario-input-small" id="scenarioA_dm_hidden" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 0.01" step="0.01" min="0"></div>
           </div>
-          <label style="font-size:11px;">Base (EUR):</label><input type="number" class="scenario-input-small" id="scenarioA_dm_base" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 350" step="1">
-          <label style="font-size:11px;">Min (EUR):</label><input type="number" class="scenario-input-small" id="scenarioA_dm_min" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 600" step="1">
-          <label style="font-size:11px;">Max (EUR):</label><input type="number" class="scenario-input-small" id="scenarioA_dm_max" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 1000" step="1">
+          <label style="font-size:11px;">Base (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioA_dm_base" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 350" step="1">
+          <label style="font-size:11px;">Min (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioA_dm_min" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 600" step="1">
+          <label style="font-size:11px;">Max (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioA_dm_max" oninput="updateAllScenarioContribs('A')" value="" placeholder="npr. 1000" step="1">
         </div>
         <div class="sc-contrib-summary" id="scContribSummary_A">
           <div class="scs-title">⚡ Pregled kontribucija po nivou</div>
@@ -1467,9 +1478,9 @@ body.light-mode .tip::after {
             <div class="sc-contrib-item"><label>Hidden (%):</label>
               <input type="number" class="scenario-input-small" id="scenarioB_pl_hidden" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 0.01" step="0.01" min="0"></div>
           </div>
-          <label style="font-size:11px;">Base (EUR):</label><input type="number" class="scenario-input-small" id="scenarioB_pl_base" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 10" step="0.1">
-          <label style="font-size:11px;">Min (EUR):</label><input type="number" class="scenario-input-small" id="scenarioB_pl_min" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 15" step="0.1">
-          <label style="font-size:11px;">Max (EUR):</label><input type="number" class="scenario-input-small" id="scenarioB_pl_max" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 35" step="0.1">
+          <label style="font-size:11px;">Base (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioB_pl_base" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 10" step="0.1">
+          <label style="font-size:11px;">Min (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioB_pl_min" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 15" step="0.1">
+          <label style="font-size:11px;">Max (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioB_pl_max" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 35" step="0.1">
         </div>
         <div class="jp-mini-section"><h4>🟡 Gold</h4>
           <div class="sc-contrib-row">
@@ -1478,9 +1489,9 @@ body.light-mode .tip::after {
             <div class="sc-contrib-item"><label>Hidden (%):</label>
               <input type="number" class="scenario-input-small" id="scenarioB_gd_hidden" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 0.01" step="0.01" min="0"></div>
           </div>
-          <label style="font-size:11px;">Base (EUR):</label><input type="number" class="scenario-input-small" id="scenarioB_gd_base" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 15" step="0.1">
-          <label style="font-size:11px;">Min (EUR):</label><input type="number" class="scenario-input-small" id="scenarioB_gd_min" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 40" step="0.1">
-          <label style="font-size:11px;">Max (EUR):</label><input type="number" class="scenario-input-small" id="scenarioB_gd_max" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 110" step="0.1">
+          <label style="font-size:11px;">Base (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioB_gd_base" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 15" step="0.1">
+          <label style="font-size:11px;">Min (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioB_gd_min" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 40" step="0.1">
+          <label style="font-size:11px;">Max (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioB_gd_max" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 110" step="0.1">
         </div>
         <div class="jp-mini-section"><h4>💎 Diamond</h4>
           <div class="sc-contrib-row">
@@ -1489,9 +1500,9 @@ body.light-mode .tip::after {
             <div class="sc-contrib-item"><label>Hidden (%):</label>
               <input type="number" class="scenario-input-small" id="scenarioB_dm_hidden" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 0.01" step="0.01" min="0"></div>
           </div>
-          <label style="font-size:11px;">Base (EUR):</label><input type="number" class="scenario-input-small" id="scenarioB_dm_base" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 350" step="1">
-          <label style="font-size:11px;">Min (EUR):</label><input type="number" class="scenario-input-small" id="scenarioB_dm_min" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 600" step="1">
-          <label style="font-size:11px;">Max (EUR):</label><input type="number" class="scenario-input-small" id="scenarioB_dm_max" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 1000" step="1">
+          <label style="font-size:11px;">Base (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioB_dm_base" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 350" step="1">
+          <label style="font-size:11px;">Min (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioB_dm_min" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 600" step="1">
+          <label style="font-size:11px;">Max (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioB_dm_max" oninput="updateAllScenarioContribs('B')" value="" placeholder="npr. 1000" step="1">
         </div>
         <div class="sc-contrib-summary" id="scContribSummary_B">
           <div class="scs-title">⚡ Pregled kontribucija po nivou</div>
@@ -1560,9 +1571,9 @@ body.light-mode .tip::after {
             <div class="sc-contrib-item"><label>Hidden (%):</label>
               <input type="number" class="scenario-input-small" id="scenarioC_pl_hidden" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 0.01" step="0.01" min="0"></div>
           </div>
-          <label style="font-size:11px;">Base (EUR):</label><input type="number" class="scenario-input-small" id="scenarioC_pl_base" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 10" step="0.1">
-          <label style="font-size:11px;">Min (EUR):</label><input type="number" class="scenario-input-small" id="scenarioC_pl_min" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 15" step="0.1">
-          <label style="font-size:11px;">Max (EUR):</label><input type="number" class="scenario-input-small" id="scenarioC_pl_max" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 35" step="0.1">
+          <label style="font-size:11px;">Base (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioC_pl_base" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 10" step="0.1">
+          <label style="font-size:11px;">Min (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioC_pl_min" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 15" step="0.1">
+          <label style="font-size:11px;">Max (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioC_pl_max" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 35" step="0.1">
         </div>
         <div class="jp-mini-section"><h4>🟡 Gold</h4>
           <div class="sc-contrib-row">
@@ -1571,9 +1582,9 @@ body.light-mode .tip::after {
             <div class="sc-contrib-item"><label>Hidden (%):</label>
               <input type="number" class="scenario-input-small" id="scenarioC_gd_hidden" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 0.01" step="0.01" min="0"></div>
           </div>
-          <label style="font-size:11px;">Base (EUR):</label><input type="number" class="scenario-input-small" id="scenarioC_gd_base" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 15" step="0.1">
-          <label style="font-size:11px;">Min (EUR):</label><input type="number" class="scenario-input-small" id="scenarioC_gd_min" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 40" step="0.1">
-          <label style="font-size:11px;">Max (EUR):</label><input type="number" class="scenario-input-small" id="scenarioC_gd_max" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 110" step="0.1">
+          <label style="font-size:11px;">Base (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioC_gd_base" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 15" step="0.1">
+          <label style="font-size:11px;">Min (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioC_gd_min" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 40" step="0.1">
+          <label style="font-size:11px;">Max (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioC_gd_max" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 110" step="0.1">
         </div>
         <div class="jp-mini-section"><h4>💎 Diamond</h4>
           <div class="sc-contrib-row">
@@ -1582,9 +1593,9 @@ body.light-mode .tip::after {
             <div class="sc-contrib-item"><label>Hidden (%):</label>
               <input type="number" class="scenario-input-small" id="scenarioC_dm_hidden" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 0.01" step="0.01" min="0"></div>
           </div>
-          <label style="font-size:11px;">Base (EUR):</label><input type="number" class="scenario-input-small" id="scenarioC_dm_base" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 350" step="1">
-          <label style="font-size:11px;">Min (EUR):</label><input type="number" class="scenario-input-small" id="scenarioC_dm_min" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 600" step="1">
-          <label style="font-size:11px;">Max (EUR):</label><input type="number" class="scenario-input-small" id="scenarioC_dm_max" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 1000" step="1">
+          <label style="font-size:11px;">Base (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioC_dm_base" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 350" step="1">
+          <label style="font-size:11px;">Min (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioC_dm_min" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 600" step="1">
+          <label style="font-size:11px;">Max (<span class="cfg-cur">EUR</span>):</label><input type="number" class="scenario-input-small" id="scenarioC_dm_max" oninput="updateAllScenarioContribs('C')" value="" placeholder="npr. 1000" step="1">
         </div>
         <div class="sc-contrib-summary" id="scContribSummary_C">
           <div class="scs-title">⚡ Pregled kontribucija po nivou</div>
@@ -2059,7 +2070,6 @@ const I18N = {
 "Broj koraka po mesecu:": "Steps per month:",
 "Očekivani JP RTP (analitički):": "Expected JP RTP (analytical):",
 "→ JP kreće od Min zone i može pasti odmah po resetu! Za ređe dropove, povećaj Min.": "→ The JP starts at the Min zone and can drop right after a reset! For less frequent drops, raise Min.",
-"Bet Requirement (EUR - samo za info)": "Bet Requirement (EUR - info only)",
 "Pokreni simulaciju": "Run simulation",
 "Monte Carlo: broj serija": "Monte Carlo: number of series",
 "Meseci po seriji": "Months per series",
@@ -2251,7 +2261,12 @@ const I18N = {
 "Serije × meseci": "Series × months",
 "Std kontribucija / mes (EUR)": "Std contribution / mo (EUR)",
 "📊 Grafikon – JP RTP tokom simulacije": "📊 Chart – JP RTP during the simulation",
-"Drops/mes": "Drops/mo"
+"Drops/mes": "Drops/mo",
+"- samo za info)": "- info only)",
+"Valuta JP konfiguracije": "JP configuration currency",
+"Valuta u kojoj unosiš Base, Min, Max i Bet Requirement (glavna konfiguracija i scenariji), npr. kako stoje u postojećem JP-u. Simulacija, Total Bet i svi rezultati ostaju u EUR. Iznosi se preračunavaju po trenutnom kursu.": "Currency in which you enter Base, Min, Max and Bet Requirement (main configuration and scenarios), e.g. as they are set in an existing JP. The simulation, Total Bet and all results stay in EUR. Amounts are converted at the current exchange rate.",
+"Crypto jedinica": "Crypto unit",
+"1x (cela valuta)": "1x (whole unit)"
 };
 let I18N_REV = null;
 function i18nNorm(s) { return String(s).replace(/\s+/g, ' ').trim(); }
@@ -2416,12 +2431,12 @@ function updateGapWarnings() {
   const gdBase = parseFloat(document.getElementById('gd_base').value) || 0;
   const gdMin = parseFloat(document.getElementById('gd_min').value) || 0;
   const gdGap = gdMin - gdBase;
-  document.getElementById('gd_gap_value').textContent = gdGap.toFixed(2) + ' EUR';
+  document.getElementById('gd_gap_value').textContent = gdGap.toFixed(2) + ' ' + cfgUnitLabel();
 
   const dmBase = parseFloat(document.getElementById('dm_base').value) || 0;
   const dmMin = parseFloat(document.getElementById('dm_min').value) || 0;
   const dmGap = dmMin - dmBase;
-  document.getElementById('dm_gap_value').textContent = dmGap.toFixed(2) + ' EUR';
+  document.getElementById('dm_gap_value').textContent = dmGap.toFixed(2) + ' ' + cfgUnitLabel();
 }
 
 ['pl', 'gd', 'dm'].forEach(prefix => {
@@ -2686,10 +2701,11 @@ function generateCurrencyTable(code, tbodyId, sourcePrefix) {
     { name: 'Diamond', k: 'dm' }
   ].map(d => ({
     name: d.name,
-    base: parseFloat(document.getElementById(`${sourcePrefix}${d.k}_base`).value) || 0,
-    min: parseFloat(document.getElementById(`${sourcePrefix}${d.k}_min`).value) || 0,
-    max: parseFloat(document.getElementById(`${sourcePrefix}${d.k}_max`).value) || 0,
-    betReq: parseFloat(document.getElementById(`${d.k}_bet_req`).value) || 0,
+    // polja su u valuti konfiguracije -> prvo u EUR
+    base: toEur(parseFloat(document.getElementById(`${sourcePrefix}${d.k}_base`).value) || 0),
+    min: toEur(parseFloat(document.getElementById(`${sourcePrefix}${d.k}_min`).value) || 0),
+    max: toEur(parseFloat(document.getElementById(`${sourcePrefix}${d.k}_max`).value) || 0),
+    betReq: toEur(parseFloat(document.getElementById(`${d.k}_bet_req`).value) || 0),
     std: parseFloat(document.getElementById(`${sourcePrefix}${d.k}_std`).value) || 0,
     hidden: parseFloat(document.getElementById(`${sourcePrefix}${d.k}_hidden`).value) || 0
   }));
@@ -2793,9 +2809,11 @@ function numVal(id) {
 // prefix '' = glavna konfiguracija, 'scenarioA_' / 'scenarioB_' / 'scenarioC_' = scenariji
 function readJpConfig(prefix) {
   return LEVEL_DEFS.map(d => {
-    const base = numVal(prefix + d.key + '_base');
-    const min = numVal(prefix + d.key + '_min');
-    const max = numVal(prefix + d.key + '_max');
+    // Iznosi se unose u valuti konfiguracije, a simulacija radi u EUR
+    const f = cfgFactorToEur();
+    const base = numVal(prefix + d.key + '_base') * f;
+    const min = numVal(prefix + d.key + '_min') * f;
+    const max = numVal(prefix + d.key + '_max') * f;
     const std = numVal(prefix + d.key + '_std') / 100;
     const hid = numVal(prefix + d.key + '_hidden') / 100;
     // Nivo je aktivan samo ako ima Max i vidljivu kontribuciju (inače JP nikad ne raste)
@@ -3103,7 +3121,7 @@ function displayResults(result) {
     totalHidContrib += st.totalHiddenContrib;
     const tr = document.createElement('tr');
     const cells = st.active
-      ? [st.name, fmtDrops(st.dropCount), fmtEur(st.avgPayout), fmtEur(st.totalPaidOut), fmtDrops(st.expectedDrops) + fmtEvery(st.expectedDrops)]
+      ? [st.name, fmtDrops(st.dropCount), fmtEurNat(st.avgPayout), fmtEur(st.totalPaidOut), fmtDrops(st.expectedDrops) + fmtEvery(st.expectedDrops)]
       : [st.name, '-', '-', '-', t('nije aktivan', 'not active')];
     cells.forEach((v, i) => {
       const td = document.createElement('td');
@@ -3207,8 +3225,8 @@ function displayMcStats(agg) {
       '±' + fmtDrops(l.dropsStd),
       (l.pAtLeastOne * 100).toFixed(1) + '%',
       l.dropsAvg > 0 && l.dropsAvg < 1 ? l.monthsPerDrop.toFixed(1) : (l.dropsAvg >= 1 ? '< 1' : '-'),
-      fmtEur(l.avgPayout),
-      fmtEur(l.maxPayout)
+      fmtEurNat(l.avgPayout),
+      fmtEurNat(l.maxPayout)
     ] : [l.name, '-', '-', '-', '-', '-', '-', '-', '-'];
     cells.forEach((v, i) => {
       const td = document.createElement('td');
@@ -3719,6 +3737,7 @@ function exportToExcel() {
     [tr('Mesečni Total Bet (EUR)'), glob.T],
     [tr('Win/Bet Ratio (%)'), r4(glob.baseGameRtp * 100)],
     [tr('Granularity (EUR)'), glob.g],
+    [t('Valuta JP konfiguracije', 'JP configuration currency'), cfgCurrencyDesc()],
     [tr('Seed (poslednji korišćen)'), lastBaseSeed !== null ? lastBaseSeed : ''],
     [tr('Početno stanje JP-a'), startModeLabel(glob.startMode)],
     [tr('Monte Carlo serija'), getMcSettings().runs],
@@ -3731,7 +3750,7 @@ function exportToExcel() {
     const lv = readJpConfig(e.prefix);
     lv.forEach(l => {
       const a = analyticLevel(l, 1);
-      cfg.push([e.label, l.name, l.base, l.min, l.max, r2(l.min - l.base), r4(l.std * 100), r4(l.hid * 100), numVal(l.key + '_bet_req'), a ? r4(a.rtp * 100) : '']);
+      cfg.push([e.label, l.name, l.base, l.min, l.max, r2(l.min - l.base), r4(l.std * 100), r4(l.hid * 100), r4(toEur(numVal(l.key + '_bet_req'))), a ? r4(a.rtp * 100) : '']);
     });
   });
   const ws1 = XLSX.utils.aoa_to_sheet(cfg);
@@ -4494,7 +4513,7 @@ function renderReverse(res) {
     if (o.skip) cells = [o.name, '-', '-', '-', '-', '-', '-', '-', t('nije zadat', 'not set')];
     else {
       totalRtp += o.rtp; totalContrib += o.stdPct + o.hidPct;
-      cells = [o.name, fmtEur(o.base), fmtEur(o.min), fmtEur(o.max), o.stdPct + '%', o.hidPct + '%',
+      cells = [o.name, fmtEurNat(o.base), fmtEurNat(o.min), fmtEurNat(o.max), o.stdPct + '%', o.hidPct + '%',
         fmtDrops(o.drops) + fmtEvery(o.drops), fmtEur(o.avgHit), o.rtp.toFixed(3) + '%'];
     }
     cells.forEach((c, i) => { const td = document.createElement('td'); td.textContent = c; if (i === 0) td.style.textAlign = 'left'; tr.appendChild(td); });
@@ -4513,7 +4532,8 @@ function applyReverse(target) {
   lastReverse.out.forEach(o => {
     if (o.skip) return;
     const set = (f, v) => { const el = document.getElementById(prefix + o.key + '_' + f); if (el) el.value = v; };
-    set('base', o.base); set('min', o.min); set('max', o.max);
+    // predlog je u EUR -> upisuje se u valuti konfiguracije
+    set('base', fromEurNice(o.base)); set('min', fromEurNice(o.min)); set('max', fromEurNice(o.max));
     set('std', o.stdPct); set('hidden', o.hidPct);
   });
   if (target === 'current') {
@@ -4686,6 +4706,206 @@ updateReverseMode();
 
 
 // =====================================================================
+// VALUTA JP KONFIGURACIJE
+// Base / Min / Max / Bet Requirement se unose u izabranoj valuti
+// (npr. RSD), a simulacija, Total Bet i svi rezultati ostaju u EUR.
+// =====================================================================
+
+const CFG_AMOUNT_RE = /^(scenario[ABC]_)?(pl|gd|dm)_(base|min|max|bet_req)$/;
+
+function cfgCur() {
+  const el = document.getElementById('cfgCurrency');
+  return el && el.value ? el.value : 'EUR';
+}
+function cfgPrefix() {
+  const el = document.getElementById('cfgCurPrefix');
+  return el ? (parseFloat(el.value) || 1) : 1;
+}
+// Koliko EUR vredi 1 jedinica valute konfiguracije
+function cfgFactorToEur() {
+  const code = cfgCur();
+  if (code === 'EUR') return 1;
+  const cur = currencies[code];
+  if (!cur || !(cur.rate > 0)) return 1;
+  return cur.type === 'crypto' ? cur.rate * cfgPrefix() : 1 / cur.rate;
+}
+function toEur(v) { return v * cfgFactorToEur(); }
+function fromEur(v) { return v / cfgFactorToEur(); }
+function cfgUnitLabel() {
+  const code = cfgCur();
+  if (code === 'EUR') return 'EUR';
+  const cur = currencies[code];
+  if (cur && cur.type === 'crypto') {
+    const p = cfgPrefix();
+    return (p === 0.001 ? 'm' : p === 0.000001 ? 'μ' : '') + code;
+  }
+  return code;
+}
+function cfgCurrencyDesc() {
+  const code = cfgCur();
+  if (code === 'EUR') return 'EUR';
+  const f = cfgFactorToEur();
+  return `${cfgUnitLabel()} (1 EUR = ${(1 / f).toLocaleString('en-US', { maximumFractionDigits: 6 })} ${cfgUnitLabel()})`;
+}
+
+// Prikaz iznosa u valuti konfiguracije
+function nativeDecimals(v) {
+  const a = Math.abs(v);
+  if (a === 0) return 0;
+  const code = cfgCur();
+  const cur = currencies[code];
+  if (cur && cur.type === 'crypto') return a >= 100 ? 0 : a >= 1 ? 2 : Math.min(8, -Math.floor(Math.log10(a)) + 2);
+  if (ZERO_DECIMAL_CURRENCIES.includes(code)) return 0;
+  return a >= 100 ? 0 : 2;
+}
+function fmtNative(v) {
+  const d = nativeDecimals(v);
+  return v.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: d });
+}
+// EUR iznos + ekvivalent u valuti konfiguracije (ako nije EUR)
+function fmtEurNat(vEur) {
+  const base = fmtEur(vEur);
+  if (cfgCur() === 'EUR' || !vEur) return base;
+  return `${base} (${fmtNative(fromEur(vEur))} ${cfgUnitLabel()})`;
+}
+// EUR -> valuta konfiguracije, zaokruženo na 4 značajne cifre (za upis u polja)
+function fromEurNice(vEur) {
+  if (cfgCur() === 'EUR') return vEur;
+  const v = fromEur(vEur);
+  if (v <= 0) return 0;
+  let step = Math.pow(10, Math.floor(Math.log10(v)) - 3);
+  if (ZERO_DECIMAL_CURRENCIES.includes(cfgCur()) && step < 1) step = 1;
+  return parseFloat((Math.round(v / step) * step).toFixed(step < 1 ? Math.round(-Math.log10(step)) : 0));
+}
+
+function populateCfgCurrency() {
+  const sel = document.getElementById('cfgCurrency');
+  if (!sel) return;
+  const prev = sel.value || 'EUR';
+  sel.innerHTML = '';
+  const add = (parent, code, label) => { const o = document.createElement('option'); o.value = code; o.textContent = label; parent.appendChild(o); };
+  add(sel, 'EUR', 'EUR - Euro');
+  const groups = [
+    ['Fiat', c => !currencies[c].custom && currencies[c].type === 'fiat' && c !== 'EUR'],
+    ['Crypto', c => !currencies[c].custom && currencies[c].type === 'crypto'],
+    ['Custom', c => currencies[c].custom]
+  ];
+  groups.forEach(([lbl, fn]) => {
+    const codes = Object.keys(currencies).filter(fn).sort();
+    if (!codes.length) return;
+    const g = document.createElement('optgroup'); g.label = lbl;
+    codes.forEach(c => add(g, c, `${c} - ${currencies[c].name}`));
+    sel.appendChild(g);
+  });
+  sel.value = currencies[prev] || prev === 'EUR' ? prev : 'EUR';
+}
+
+// "≈ X EUR" ispod svakog polja sa iznosom
+function ensureEurHints() {
+  document.querySelectorAll('input[id]').forEach(inp => {
+    if (!CFG_AMOUNT_RE.test(inp.id) || document.getElementById('eurhint_' + inp.id)) return;
+    const h = document.createElement('div');
+    h.className = 'eur-hint';
+    h.id = 'eurhint_' + inp.id;
+    inp.insertAdjacentElement('afterend', h);
+    inp.addEventListener('input', () => updateEurHint(inp));
+  });
+}
+function updateEurHint(inp) {
+  const h = document.getElementById('eurhint_' + inp.id);
+  if (!h) return;
+  const v = parseFloat(inp.value);
+  if (cfgCur() === 'EUR' || !isFinite(v) || inp.value === '') { h.textContent = ''; h.style.display = 'none'; return; }
+  const e = toEur(v);
+  h.textContent = '≈ ' + e.toLocaleString('en-US', { maximumFractionDigits: e < 10 ? 4 : 2 }) + ' EUR';
+  h.style.display = 'block';
+}
+
+function updateCfgCurrencyUI() {
+  const code = cfgCur();
+  const cur = currencies[code];
+  const isCrypto = !!(cur && cur.type === 'crypto');
+  const pw = document.getElementById('cfgCurPrefixWrap');
+  if (pw) pw.style.display = isCrypto ? 'block' : 'none';
+  const unit = cfgUnitLabel();
+  document.querySelectorAll('.cfg-cur').forEach(el => { el.textContent = unit; });
+  const info = document.getElementById('cfgCurInfo');
+  if (info) {
+    if (code === 'EUR') info.textContent = t('Iznosi se unose u EUR.', 'Amounts are entered in EUR.');
+    else {
+      const src = ratesState && ((cur.type === 'crypto' && ratesState.crypto) || (cur.type !== 'crypto' && ratesState.fiat)) ? t('live kurs', 'live rate') : t('ugrađeni kurs', 'built-in rate');
+      const f = cfgFactorToEur();
+      const pair = f < 1 ? `1 EUR = ${(1 / f).toLocaleString('en-US', { maximumFractionDigits: 4 })} ${unit}` : `1 ${unit} = ${(f).toLocaleString('en-US', { maximumFractionDigits: 4 })} EUR`;
+      info.textContent = t(`${pair} (${src}). Total Bet i svi rezultati su u EUR; ispod polja je EUR ekvivalent.`,
+                           `${pair} (${src}). Total Bet and all results are in EUR; the EUR equivalent is shown under each field.`);
+    }
+  }
+  document.querySelectorAll('input[id]').forEach(inp => { if (CFG_AMOUNT_RE.test(inp.id)) updateEurHint(inp); });
+}
+
+function refreshAfterCfgCurrencyChange() {
+  updateCfgCurrencyUI();
+  try { updateGapWarnings(); } catch (e) {}
+  validateConfiguration();
+  updateMainAnalytic();
+  ['A', 'B', 'C'].forEach(l => updateAllScenarioContribs(l));
+}
+
+let lastCfgFactor = 1;
+function onCfgCurrencyChange() {
+  const newF = cfgFactorToEur();
+  const oldF = lastCfgFactor;
+  const fields = Array.from(document.querySelectorAll('input[id]')).filter(i => CFG_AMOUNT_RE.test(i.id) && i.value !== '');
+  if (fields.length && Math.abs(newF - oldF) > 1e-15) {
+    const ok = confirm(t(
+      `Polja već imaju iznose.\n\nOK = preračunaj postojeće iznose u ${cfgUnitLabel()} (isti JP, druga valuta).\nCancel = ostavi iste brojeve (unosiš vrednosti u ${cfgUnitLabel()}).`,
+      `The fields already contain amounts.\n\nOK = convert the existing amounts to ${cfgUnitLabel()} (same JP, different currency).\nCancel = keep the same numbers (you are entering values in ${cfgUnitLabel()}).`));
+    if (ok) {
+      fields.forEach(i => {
+        const eur = (parseFloat(i.value) || 0) * oldF;
+        const v = eur / newF;
+        let step = v > 0 ? Math.pow(10, Math.floor(Math.log10(v)) - 3) : 1;
+        if (ZERO_DECIMAL_CURRENCIES.includes(cfgCur()) && step < 1) step = 1;
+        i.value = v > 0 ? parseFloat((Math.round(v / step) * step).toFixed(step < 1 ? Math.round(-Math.log10(step)) : 0)) : 0;
+      });
+    }
+  }
+  lastCfgFactor = newF;
+  refreshAfterCfgCurrencyChange();
+}
+
+(function initCfgCurrency() {
+  populateCfgCurrency();
+  ensureEurHints();
+  const sel = document.getElementById('cfgCurrency');
+  const pre = document.getElementById('cfgCurPrefix');
+  sel.addEventListener('change', () => {
+    const cur = currencies[cfgCur()];
+    if (cur && cur.type === 'crypto' && pre) pre.value = cur.rate > 100 ? '0.001' : '1';
+    onCfgCurrencyChange();
+  });
+  if (pre) pre.addEventListener('change', onCfgCurrencyChange);
+  // nova custom valuta -> osveži i listu valuta konfiguracije
+  const origPop = populateCurrencySelect;
+  populateCurrencySelect = function () { origPop(); populateCfgCurrency(); };
+  // novi kursevi -> osveži EUR ekvivalente (rezultati ostaju dok se ponovo ne pokrene simulacija)
+  const origApply = applyRatesToCurrencies;
+  applyRatesToCurrencies = function (rates) { const n = origApply(rates); lastCfgFactor = cfgFactorToEur(); updateCfgCurrencyUI(); return n; };
+  // učitavanje konfiguracije -> osveži prikaz valute
+  const origRefresh = refreshAfterLoad;
+  refreshAfterLoad = function () {
+    const cur = currencies[cfgCur()];
+    if (!cur && cfgCur() !== 'EUR') document.getElementById('cfgCurrency').value = 'EUR';
+    lastCfgFactor = cfgFactorToEur();
+    origRefresh();
+    refreshAfterCfgCurrencyChange();
+  };
+  lastCfgFactor = cfgFactorToEur();
+  updateCfgCurrencyUI();
+})();
+
+
+// =====================================================================
 // PROMENA JEZIKA: prevod statičkog teksta + ponovni prikaz dinamičkih delova
 // (računanje se ne ponavlja, samo se postojeći rezultati ponovo ispisuju)
 // =====================================================================
@@ -4717,6 +4937,7 @@ function rerenderDynamic() {
   safe(updateRateDisplay);
   safe(updateCryptoEquivalent);
   safe(renderRatesStatus);
+  safe(updateCfgCurrencyUI);
   ['allMcStatus', 'sensStatus', 'revApplied'].forEach(id => safe(() => setText(id, '')));
 }
 
