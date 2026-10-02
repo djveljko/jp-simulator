@@ -77,8 +77,21 @@ Za prvi test:
 | Simulation Granularity | Veličina jednog koraka u EUR (preporuka 1). Utiče samo na preciznost iznosa dropa, ne na brzinu |
 | Random seed | Prazno = novi slučajan seed. Upisan seed daje identičan rezultat pri svakom pokretanju |
 | Početno stanje JP-a | **Zagrejan** = JP već radi (steady state). **Od Base** = novo lansiranje, JP kreće od Base |
+| Valuta JP konfiguracije | Valuta u kojoj se unose Base, Min, Max i Bet Requirement (vidi ispod). Podrazumevano EUR |
 
 Ispod parametara se odmah vide **očekivani JP RTP (analitički)**, očekivani broj dropova po nivou i seed korišćen u poslednjem pokretanju.
+
+### Valuta JP konfiguracije
+
+Kada se menja postojeći JP koji nije u EUR (npr. RSD), iznosi se ne moraju ručno konvertovati:
+
+1. U **Valuta JP konfiguracije** izaberi valutu (fiat, kripto ili custom). Kod kripto valuta bira se i jedinica (1x, milli, micro).
+2. Base, Min, Max i Bet Requirement (glavna konfiguracija i scenariji) upiši tačno kako stoje u postojećem JP-u.
+3. Ispod svakog polja se odmah vidi ekvivalent u EUR, a pored izbora valute kurs koji se koristi (live ili ugrađeni).
+
+**Total Bet, simulacija i svi rezultati ostaju u EUR**, kao u reportima. Kod iznosa dropova u zagradi je prikazana i originalna valuta, npr. `24.91 (2,923 RSD)`. Rezultati su isti kao da je konfiguracija ručno preračunata u EUR.
+
+Ako polja već imaju iznose pri promeni valute, alat pita da li da ih preračuna (isti JP u drugoj valuti) ili da ostavi iste brojeve. Predlog obrnutog kalkulatora se upisuje u izabranoj valuti. Kurs se uzima u trenutku računanja, pa se EUR ekvivalent može malo pomeriti kad se kursevi osveže.
 
 ### 2. Parametri JP nivoa
 
@@ -287,6 +300,10 @@ Vrednosti se izvoze kao brojevi, pa se u Excel-u mogu dalje računati.
 ---
 
 ## Istorija izmena
+
+### v3.2
+
+- **Valuta JP konfiguracije:** Base, Min, Max i Bet Requirement se unose u originalnoj valuti postojećeg JP-a, uz EUR ekvivalent ispod svakog polja. Total Bet, simulacija i rezultati ostaju u EUR.
 
 ### v3.1
 
