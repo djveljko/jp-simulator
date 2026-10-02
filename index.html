@@ -999,6 +999,7 @@ body.light-mode .tip::after {
     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 1600px; margin: 0 auto;">
       <h1 style="margin: 0; font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; color: var(--accent-gold);">🎰 Jackpot Simulator</h1>
       <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; justify-content: flex-end;">
+        <button id="langToggle" class="secondary" style="padding: 0.5rem 0.9rem; font-size: 0.85rem;" title="Promeni jezik / Change language">🌐 EN</button>
         <button id="saveCfgBtn" class="secondary" style="padding: 0.5rem 0.9rem; font-size: 0.85rem;" title="Sačuvaj sve parametre i scenarije u JSON fajl">💾 Sačuvaj</button>
         <button id="loadCfgBtn" class="secondary" style="padding: 0.5rem 0.9rem; font-size: 0.85rem;" title="Učitaj konfiguraciju iz JSON fajla">📂 Učitaj</button>
         <button id="lastSessionBtn" class="secondary" style="padding: 0.5rem 0.9rem; font-size: 0.85rem;" title="Vrati poslednje unete vrednosti iz ovog browsera">↩ Poslednja sesija</button>
@@ -1924,9 +1925,9 @@ body.light-mode .tip::after {
     <h2>💱 Konvertor valuta - Svi Scenariji</h2>
 
     <div class="warning-box">
-      ⚠️ <strong>VAŽNO:</strong> Exchange rates su ažurirani za <strong>12. februar 2026</strong>.<br>
+      ⚠️ <strong>VAŽNO:</strong> Kursevi se učitavaju uživo (status je u zaglavlju). Ako live kursevi nisu dostupni, koriste se ugrađeni kursevi iz februara 2026.<br>
       Za crypto valute preporučujemo korišćenje <strong>milli/micro prefiksa</strong> radi čitljivosti.<br>
-      <strong>➕ Dodaj Custom Valutu</strong> ako trebaš ažurniji ili specifičniji rate!
+      <strong>➕ Dodaj Custom Valutu</strong> ako ti treba specifičan kurs.
     </div>
 
     <div class="custom-currency-box">
@@ -1996,7 +1997,7 @@ body.light-mode .tip::after {
         <h4>📋 Current Configuration (Main Setup)</h4>
         <table>
           <thead>
-            <tr><th>JP Level</th><th>Standard %</th><th>Hidden %</th><th>Base Value</th><th>Min</th><th>Max</th><th>Min Bet</th></tr>
+            <tr><th>JP Nivo</th><th>Standard %</th><th>Hidden %</th><th>Base Value</th><th>Min</th><th>Max</th><th>Min Bet</th></tr>
           </thead>
           <tbody id="convTableCurrent"></tbody>
         </table>
@@ -2006,7 +2007,7 @@ body.light-mode .tip::after {
         <h4 id="convScenarioA_title">📋 Scenario A</h4>
         <table>
           <thead>
-            <tr><th>JP Level</th><th>Standard %</th><th>Hidden %</th><th>Base Value</th><th>Min</th><th>Max</th><th>Min Bet</th></tr>
+            <tr><th>JP Nivo</th><th>Standard %</th><th>Hidden %</th><th>Base Value</th><th>Min</th><th>Max</th><th>Min Bet</th></tr>
           </thead>
           <tbody id="convTableA"></tbody>
         </table>
@@ -2016,7 +2017,7 @@ body.light-mode .tip::after {
         <h4 id="convScenarioB_title">📋 Scenario B</h4>
         <table>
           <thead>
-            <tr><th>JP Level</th><th>Standard %</th><th>Hidden %</th><th>Base Value</th><th>Min</th><th>Max</th><th>Min Bet</th></tr>
+            <tr><th>JP Nivo</th><th>Standard %</th><th>Hidden %</th><th>Base Value</th><th>Min</th><th>Max</th><th>Min Bet</th></tr>
           </thead>
           <tbody id="convTableB"></tbody>
         </table>
@@ -2026,7 +2027,7 @@ body.light-mode .tip::after {
         <h4 id="convScenarioC_title">📋 Scenario C</h4>
         <table>
           <thead>
-            <tr><th>JP Level</th><th>Standard %</th><th>Hidden %</th><th>Base Value</th><th>Min</th><th>Max</th><th>Min Bet</th></tr>
+            <tr><th>JP Nivo</th><th>Standard %</th><th>Hidden %</th><th>Base Value</th><th>Min</th><th>Max</th><th>Min Bet</th></tr>
           </thead>
           <tbody id="convTableC"></tbody>
         </table>
@@ -2036,6 +2037,266 @@ body.light-mode .tip::after {
 </div>
 
 <script>
+// =====================================================================
+// I18N (srpski / engleski)
+// Statički tekst stranice se prevodi preko rečnika (srpski -> engleski),
+// a dinamički tekst iz koda preko t('srpski', 'engleski').
+// =====================================================================
+let LANG = 'sr';
+try { if (localStorage.getItem('jp-lang') === 'en') LANG = 'en'; } catch (e) {}
+const I18N = {
+"💾 Sačuvaj": "💾 Save",
+"📂 Učitaj": "📂 Load",
+"↩ Poslednja sesija": "↩ Last session",
+"Globalni parametri": "Global parameters",
+"Win/Bet Ratio (bez JP) [%]": "Win/Bet Ratio (excl. JP) [%]",
+"Mesečni Total Bet (EUR)": "Monthly Total Bet (EUR)",
+"Simulation Granularity (EUR po iteraciji)": "Simulation Granularity (EUR per step)",
+"Random seed (opciono)": "Random seed (optional)",
+"Početno stanje JP-a": "JP starting state",
+"Zagrejan - JP već radi (steady state)": "Warmed up - JP already running (steady state)",
+"Od Base - novo lansiranje": "From Base - new launch",
+"Broj koraka po mesecu:": "Steps per month:",
+"Očekivani JP RTP (analitički):": "Expected JP RTP (analytical):",
+"→ JP kreće od Min zone i može pasti odmah po resetu! Za ređe dropove, povećaj Min.": "→ The JP starts at the Min zone and can drop right after a reset! For less frequent drops, raise Min.",
+"Bet Requirement (EUR - samo za info)": "Bet Requirement (EUR - info only)",
+"Pokreni simulaciju": "Run simulation",
+"Monte Carlo: broj serija": "Monte Carlo: number of series",
+"Meseci po seriji": "Months per series",
+"Prag mesečnog JP RTP (%)": "Monthly JP RTP threshold (%)",
+"Prag mesečne JP isplate (EUR)": "Monthly JP payout threshold (EUR)",
+"⏳ Monte Carlo Simulation u toku...": "⏳ Monte Carlo simulation running...",
+"Serije": "Series",
+"Brzina": "Speed",
+"Preostalo vreme": "Time remaining",
+"Ukupno vreme": "Elapsed time",
+"Prosečan JP RTP": "Average JP RTP",
+"Mesečni raspon (P5 - P95)": "Monthly range (P5 - P95)",
+"Raspon za ceo period (P5 - P95)": "Range for the whole period (P5 - P95)",
+"Minimum JP RTP (mesec)": "Minimum JP RTP (month)",
+"Maximum JP RTP (mesec)": "Maximum JP RTP (month)",
+"Std Deviation (mesec)": "Std Deviation (month)",
+"95% CI proseka": "95% CI of the mean",
+"Volatilnost": "Volatility",
+"Mesečni raspon: 90% simuliranih meseci ima JP RTP u ovom rasponu. Raspon za ceo period: isto, ali za prosek cele serije (npr. godine). 95% CI proseka: koliko je precizno izračunat sam prosek.": "Monthly range: 90% of simulated months have a JP RTP in this range. Range for the whole period: the same, but for the average of a whole series (e.g. a year). 95% CI of the mean: how precisely the average itself is estimated.",
+"Dropovi po mesecu": "Drops per month",
+"JP Nivo": "JP Level",
+"Prosek/mes": "Average/mo",
+"Meseci sa ≥1 dropom": "Months with ≥1 drop",
+"Meseci između dropova": "Months between drops",
+"Prosečan drop": "Average drop",
+"Najveći drop": "Largest drop",
+"⚠️ Rizik i najgori mesec": "⚠️ Risk and worst month",
+"Meseci sa JP RTP iznad praga": "Months with JP RTP above threshold",
+"Meseci sa JP isplatom iznad praga": "Months with JP payout above threshold",
+"Najgori mesec (max JP RTP)": "Worst month (max JP RTP)",
+"P99 mesečni JP RTP": "P99 monthly JP RTP",
+"Najgori period (JP RTP)": "Worst period (JP RTP)",
+"Najveća mesečna JP isplata": "Largest monthly JP payout",
+"Najveći pojedinačni drop": "Largest single drop",
+"P99 = 99% meseci ima JP RTP ispod ove vrednosti. Pragovi se podešavaju iznad dugmadi za pokretanje i rezultati se odmah preračunavaju, bez ponovnog pokretanja.": "P99 = 99% of months have a JP RTP below this value. Thresholds are set above the run buttons and results update instantly, without re-running.",
+"Metrika": "Metric",
+"Vrednost": "Value",
+"Base game RTP (bez JP)": "Base game RTP (excl. JP)",
+"JP RTP doprinos": "JP RTP contribution",
+"JP RTP očekivano (analitički)": "JP RTP expected (analytical)",
+"Ukupan RTP (base + JP)": "Total RTP (base + JP)",
+"💰 Ukupna Kontribucija (mesečno)": "💰 Total Contribution (monthly)",
+"Tip": "Type",
+"Iznos (EUR)": "Amount (EUR)",
+"% od bet-a": "% of bet",
+"Standard Kontribucija": "Standard Contribution",
+"Hidden Kontribucija": "Hidden Contribution",
+"UKUPNO": "TOTAL",
+"💵 GGR & Profitabilnost": "💵 GGR & Profitability",
+"Total Paid Out (JP isplate)": "Total Paid Out (JP payouts)",
+"Base Game Profit (bez JP)": "Base Game Profit (excl. JP)",
+"JP statistika (mesečni nivo)": "JP statistics (monthly)",
+"JP nivo": "JP level",
+"# Dropova": "# Drops",
+"Ukupno isplaćeno": "Total paid out",
+"Očekivano/mes": "Expected/mo",
+"Nema podataka": "No data",
+"Naziv:": "Name:",
+"⚡ Pregled kontribucija po nivou": "⚡ Contribution overview by level",
+"∑ Ukupno": "∑ Total",
+"📊 Live procena (mesečno, analitički)": "📊 Live estimate (monthly, analytical)",
+"Procenjeni JP RTP:": "Estimated JP RTP:",
+"🎲 Monte Carlo za sve (Current + A + B + C)": "🎲 Monte Carlo for all (Current + A + B + C)",
+"Gornji deo tabele: jedan simulirani mesec. Donji deo: Monte Carlo prosek. Svi koriste isti seed, pa razlike dolaze od konfiguracije, a ne od slučajnosti.": "Top part of the table: one simulated month. Bottom part: Monte Carlo average. All use the same seed, so differences come from the configuration, not from chance.",
+"📅 Jedan mesec (single run)": "📅 One month (single run)",
+"🎲 Monte Carlo (pokreni MC)": "🎲 Monte Carlo (run MC)",
+"JP RTP prosek (%)": "JP RTP average (%)",
+"JP RTP mesečno P5 - P95": "JP RTP monthly P5 - P95",
+"JP RTP za period P5 - P95": "JP RTP for period P5 - P95",
+"GGR prosek/mes (EUR)": "GGR average/mo (EUR)",
+"⚪ Platinum drops/mes": "⚪ Platinum drops/mo",
+"🟡 Gold drops/mes": "🟡 Gold drops/mo",
+"💎 Diamond drops/mes": "💎 Diamond drops/mo",
+"⚠️ Meseci sa JP RTP iznad praga": "⚠️ Months with JP RTP above threshold",
+"⚠️ Najgori mesec JP RTP": "⚠️ Worst month JP RTP",
+"⚠️ Najveći pojedinačni drop (EUR)": "⚠️ Largest single drop (EUR)",
+"X osa:": "X axis:",
+"Procesirani Total Bet (EUR) |": "Processed Total Bet (EUR) |",
+"Y osa:": "Y axis:",
+"kumulativni JP RTP (%) | Isprekidana linija: očekivani JP RTP (analitički). Kod Monte Carlo prikazana je prva serija kroz sve mesece.": "cumulative JP RTP (%) | Dashed line: expected JP RTP (analytical). For Monte Carlo the first series across all months is shown.",
+"🎯 Obrnuti kalkulator (cilj → konfiguracija)": "🎯 Reverse calculator (target → configuration)",
+"Zadaš šta želiš (ukupni JP RTP ili prosečan drop, i koliko često JP pada), a kalkulator predloži Base, Min, Max, Std i Hidden. Koristi mesečni Total Bet iz globalnih parametara i isti model kao simulacija (hidden puni sledeći JP, hit point uniformno između Min i Max).": "Set what you want (total JP RTP or average drop, and how often the JP drops) and the calculator proposes Base, Min, Max, Std and Hidden. It uses the monthly Total Bet from the global parameters and the same model as the simulation (hidden feeds the next JP, hit point uniform between Min and Max).",
+"Šta zadaješ": "What you set",
+"Ciljni ukupni JP RTP + učestalost": "Target total JP RTP + frequency",
+"Ciljni prosečan drop + učestalost": "Target average drop + frequency",
+"Ciljni ukupni JP RTP (%)": "Target total JP RTP (%)",
+"Hidden udeo u kontribuciji (%)": "Hidden share of contribution (%)",
+"Zaokruži Base/Min/Max na lepe iznose": "Round Base/Min/Max to nice amounts",
+"Nivo": "Level",
+"Udeo u JP RTP (%)": "Share of JP RTP (%)",
+"Prosečan drop (EUR)": "Average drop (EUR)",
+"Učestalost": "Frequency",
+"Jedinica": "Unit",
+"Min/Max zona ± (%)": "Min/Max zone ± (%)",
+"Base (% od Min)": "Base (% of Min)",
+"dropova mesečno": "drops per month",
+"meseci po dropu": "months per drop",
+"Ako nivo ne želiš da računaš, ostavi mu učestalost praznu.": "To skip a level, leave its frequency empty.",
+"🎯 Izračunaj predlog": "🎯 Calculate proposal",
+"RTP nivoa": "Level RTP",
+"⬆ Primeni na Current": "⬆ Apply to Current",
+"📈 Analiza osetljivosti": "📈 Sensitivity analysis",
+"Menja se jedan parametar jednog JP nivoa, sve ostalo ostaje kao u izabranoj konfiguraciji. Linija je dugoročni (analitički) rezultat. Ako uključiš Monte Carlo, senka pokazuje mesečni raspon JP RTP-a (P5 - P95).": "One parameter of one JP level changes, everything else stays as in the selected configuration. The line is the long-run (analytical) result. With Monte Carlo enabled, the shaded area shows the monthly JP RTP range (P5 - P95).",
+"Konfiguracija": "Configuration",
+"Parametar": "Parameter",
+"Od": "From",
+"Do": "To",
+"Broj tačaka": "Number of points",
+"Dodaj Monte Carlo raspon": "Add Monte Carlo range",
+"MC serija po tački": "MC series per point",
+"📈 Pokreni analizu": "📈 Run analysis",
+"↔ Predloži opseg": "↔ Suggest range",
+"💱 Konvertor valuta - Svi Scenariji": "💱 Currency converter - All scenarios",
+"VAŽNO:": "IMPORTANT:",
+"Kursevi se učitavaju uživo (status je u zaglavlju). Ako live kursevi nisu dostupni, koriste se ugrađeni kursevi iz februara 2026.": "Exchange rates are loaded live (status is in the header). If live rates are unavailable, built-in rates from February 2026 are used.",
+"Za crypto valute preporučujemo korišćenje": "For crypto currencies we recommend using",
+"milli/micro prefiksa": "milli/micro prefixes",
+"radi čitljivosti.": "for readability.",
+"➕ Dodaj Custom Valutu": "➕ Add Custom Currency",
+"ako ti treba specifičan kurs.": "if you need a specific rate.",
+"Currency Code (3-5 slova)": "Currency Code (3-5 letters)",
+"Exchange Rate prema EUR": "Exchange rate vs EUR",
+"➕ Dodaj": "➕ Add",
+"Rate = koliko te valute za 1 EUR (1 EUR = 1.19 USD)": "Rate = units of the currency per 1 EUR (1 EUR = 1.19 USD)",
+"Rate = koliko EUR košta 1 coin (1 BTC = 57,710 EUR)": "Rate = price of 1 coin in EUR (1 BTC = 57,710 EUR)",
+"₿ Crypto Prefix (za jake valute)": "₿ Crypto Prefix (for high-value currencies)",
+"Izaberi prefix multiplier:": "Choose prefix multiplier:",
+"None (1x) - Cela valuta": "None (1x) - Whole unit",
+"milli (0.001x) - Hiljaditi deo (1 mBTC, 1 mETH)": "milli (0.001x) - One thousandth (1 mBTC, 1 mETH)",
+"micro (0.000001x) - Milioniti deo (1 μBTC, 1 μETH)": "micro (0.000001x) - One millionth (1 μBTC, 1 μETH)",
+"Primer:": "Example:",
+"Ekvivalent u EUR:": "Equivalent in EUR:",
+"Izaberi valutu (Top 50 Fiat + Top 10 Crypto)": "Choose currency (Top 50 Fiat + Top 10 Crypto)",
+"💰 Generiši tabele za SVE scenarije": "💰 Generate tables for ALL scenarios",
+"Sačuvaj sve parametre i scenarije u JSON fajl": "Save all parameters and scenarios to a JSON file",
+"Učitaj konfiguraciju iz JSON fajla": "Load a configuration from a JSON file",
+"Vrati poslednje unete vrednosti iz ovog browsera": "Restore the last entered values from this browser",
+"Procenat turnover-a koji se vraća igračima iz base game-a (bez JP). Tipično 94-97%. Npr. 96.5% znači da od 100 EUR opklada, 96.50 EUR ide igračima.": "Share of Total Bet returned to players by the base game (excl. JP). Typically 94-97%. E.g. 96.5% means that out of 100 EUR wagered, 96.50 EUR goes back to players.",
+"Ukupan iznos svih opklada (Total Bet) u mesecu u EUR. Osnova za sve RTP i GGR kalkulacije. Veći Total Bet = stabilniji mesečni rezultati.": "Total amount of all bets (Total Bet) in a month, in EUR. Basis for all RTP and GGR calculations. Higher Total Bet = more stable monthly results.",
+"Veličina jednog koraka u EUR. JP raste u koracima od granularity × kontribucija. Manji broj = precizniji iznos dropa. Simulacija je event-based, pa brzina ne zavisi od ove vrednosti. Preporučeno: 1 EUR.": "Size of one step in EUR. The JP grows in steps of granularity × contribution. Smaller = more precise drop amount. The simulation is event-based, so speed does not depend on this value. Recommended: 1 EUR.",
+"Fiksirani seed daje identične rezultate pri svakom pokretanju. Prazno = novi random seed (prikazuje se ispod, pa ga možeš prepisati). Scenariji koriste isti seed kao poslednja glavna simulacija, radi fer poređenja.": "A fixed seed gives identical results on every run. Empty = a new random seed (shown below, so you can copy it). Scenarios use the same seed as the last main simulation, for a fair comparison.",
+"Zagrejan: JP je već u radu (simulira se zagrevanje od ~10 ciklusa), pa prvi mesec nije pristrasan. Od Base: JP kreće od Base vrednosti kao kod novog lansiranja, pa prvi mesec ima manje dropova (posebno Diamond).": "Warmed up: the JP is already running (a ~10-cycle warm-up is simulated), so the first month is not biased. From Base: the JP starts at the Base value as with a new launch, so the first month has fewer drops (especially Diamond).",
+"Minimalna početna vrednost JP-a posle dropa. Sledeći JP kreće od Base + skupljeni hidden. JP nikad ne može biti ispod ove vrednosti.": "Minimum starting value of the JP after a drop. The next JP starts at Base + accumulated hidden. The JP can never be below this value.",
+"Najniži mogući iznos na koji JP može da padne. Hit point se bira nasumično između Min i Max. GAP = Min - Base: veći GAP znači da JP mora više da naraste pre pada.": "Lowest amount at which the JP can drop. The hit point is chosen randomly between Min and Max. GAP = Min - Base: a larger GAP means the JP must grow more before it can drop.",
+"Najviši mogući iznos na koji JP može da padne. Ako JP dostigne Max, pad je zagarantovan. Raspon Min-Max određuje prosečan iznos isplate.": "Highest amount at which the JP can drop. If the JP reaches Max, a drop is guaranteed. The Min-Max range determines the average payout.",
+"Minimalni iznos opklade da bi igrač bio kvalifikovan za ovaj JP nivo. Samo informativno - ne utiče na simulaciju.": "Minimum bet for a player to qualify for this JP level. Info only - it does not affect the simulation.",
+"Vidljivi procenat svake opklade koji puni JP fond. Direktno određuje brzinu rasta JP-a i JP RTP doprinos. Npr. 0.27% znači 0.0027 EUR po svakom 1 EUR opklade.": "Visible share of each bet that feeds the JP. Directly sets how fast the JP grows and its JP RTP contribution. E.g. 0.27% means 0.0027 EUR per 1 EUR bet.",
+"Skrivena kontribucija koja se tokom ciklusa skuplja u rezervu i ne prikazuje se igraču. Posle dropa sledeći JP kreće od Base + skupljena rezerva, a rezerva se vraća na 0. Time se ciklusi skraćuju (više dropova), a prosečna isplata ostaje u Min-Max zoni.": "Hidden contribution collected in a reserve during the cycle and not shown to the player. After a drop the next JP starts at Base + the collected reserve, and the reserve resets to 0. This shortens cycles (more drops) while the average payout stays in the Min-Max zone.",
+"Koliko nezavisnih serija se simulira. Više serija = pouzdaniji prosek i raspon.": "How many independent series are simulated. More series = a more reliable average and range.",
+"Unutar jedne serije meseci idu jedan za drugim: JP vrednost i hidden rezerva se prenose u sledeći mesec, kao u stvarnosti. Npr. 12 = jedna godina rada.": "Within one series the months follow each other: the JP value and the hidden reserve carry over to the next month, as in reality. E.g. 12 = one year of operation.",
+"Koliko meseci (u %) ima JP RTP iznad ovog praga. Npr. 1.0 = koliko često JP mesečno isplati više od 1% Total Bet-a.": "Share of months (in %) with a JP RTP above this threshold. E.g. 1.0 = how often the JP pays out more than 1% of Total Bet in a month.",
+"Koliko meseci (u %) ukupna JP isplata prelazi ovaj iznos. Korisno za planiranje troška.": "Share of months (in %) in which the total JP payout exceeds this amount. Useful for cost planning.",
+"Koji deo ukupne kontribucije nivoa ide u hidden rezervu. Npr. 10% = od 0.30% ukupno, 0.27% je Std, a 0.03% Hidden.": "Which part of the level's total contribution goes to the hidden reserve. E.g. 10% = of 0.30% in total, 0.27% is Std and 0.03% is Hidden.",
+"Min i Max oko prosečnog dropa. 40% = Min je 60% proseka, Max je 140% proseka.": "Min and Max around the average drop. 40% = Min is 60% of the average, Max is 140% of the average.",
+"Base kao procenat Min vrednosti. Manji procenat = veći GAP, isti broj dropova traži veću kontribuciju.": "Base as a percentage of Min. A lower percentage = a larger GAP, so the same number of drops needs a higher contribution.",
+"Broj serija po tački. Meseci po seriji se uzimaju iz Monte Carlo podešavanja gore.": "Number of series per point. Months per series are taken from the Monte Carlo settings above.",
+"95% CI proseka - donja (%)": "95% CI of the mean - lower (%)",
+"95% CI proseka - gornja (%)": "95% CI of the mean - upper (%)",
+"Drops / mes": "Drops / mo",
+"Drops / mes (prosek)": "Drops / mo (average)",
+"Drops / mes max": "Drops / mo max",
+"Drops / mes min": "Drops / mo min",
+"GGR prosek / mes (EUR)": "GGR average / mo (EUR)",
+"GLOBALNI PARAMETRI": "GLOBAL PARAMETERS",
+"Hidden kontribucija / mes (EUR)": "Hidden contribution / mo (EUR)",
+"Isplaćeno / mes (EUR)": "Paid out / mo (EUR)",
+"JP RTP P5 mesečno (%)": "JP RTP P5 monthly (%)",
+"JP RTP P5 za ceo period (%)": "JP RTP P5 whole period (%)",
+"JP RTP P95 mesečno (%)": "JP RTP P95 monthly (%)",
+"JP RTP P95 za ceo period (%)": "JP RTP P95 whole period (%)",
+"JP RTP max mesec (%)": "JP RTP max month (%)",
+"JP RTP min mesec (%)": "JP RTP min month (%)",
+"JP RTP očekivano (%)": "JP RTP expected (%)",
+"JP RTP očekivano, analitički (%)": "JP RTP expected, analytical (%)",
+"JP RTP std dev mesečno (%)": "JP RTP std dev monthly (%)",
+"Monte Carlo serija": "Monte Carlo series",
+"Najgori mesec JP RTP (%)": "Worst month JP RTP (%)",
+"Najgori period JP RTP (%)": "Worst period JP RTP (%)",
+"Najveća mesečna JP isplata (EUR)": "Largest monthly JP payout (EUR)",
+"Najveći drop (EUR)": "Largest drop (EUR)",
+"Najveći pojedinačni drop (EUR)": "Largest single drop (EUR)",
+"Očekivano drops (analitički)": "Expected drops (analytical)",
+"Očekivano drops / mes (analitički)": "Expected drops / mo (analytical)",
+"P(≥1 drop u mesecu) (%)": "P(≥1 drop in a month) (%)",
+"P99 mesečni JP RTP (%)": "P99 monthly JP RTP (%)",
+"Prosečno meseci između dropova": "Average months between drops",
+"SIMULATION RESULTS (mesečno)": "SIMULATION RESULTS (monthly)",
+"Seed (poslednji korišćen)": "Seed (last used)",
+"Serije × meseci": "Series × months",
+"Std kontribucija / mes (EUR)": "Std contribution / mo (EUR)",
+"📊 Grafikon – JP RTP tokom simulacije": "📊 Chart – JP RTP during the simulation",
+"Drops/mes": "Drops/mo"
+};
+let I18N_REV = null;
+function i18nNorm(s) { return String(s).replace(/\s+/g, ' ').trim(); }
+function t(sr, en) { return LANG === 'en' ? en : sr; }
+const tt = t; // alias za mesta gde je "t" zauzeto lokalnom promenljivom
+function tr(sr) {
+  if (LANG !== 'en') return sr;
+  const v = I18N[i18nNorm(sr)];
+  return v !== undefined ? v : sr;
+}
+function uiLocale() { return LANG === 'en' ? 'en-GB' : 'sr-RS'; }
+
+function translateStaticDom(lang) {
+  if (!I18N_REV) { I18N_REV = {}; Object.keys(I18N).forEach(k => { I18N_REV[I18N[k]] = k; }); }
+  const map = lang === 'en' ? I18N : I18N_REV;
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+    acceptNode: n => (n.parentElement && /^(SCRIPT|STYLE|TEXTAREA)$/.test(n.parentElement.tagName)) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT
+  });
+  let n;
+  while ((n = walker.nextNode())) {
+    const raw = n.nodeValue;
+    const k = i18nNorm(raw);
+    if (!k) continue;
+    const v = map[k];
+    if (v !== undefined && v !== k) {
+      n.nodeValue = raw.match(/^\s*/)[0] + v + raw.match(/\s*$/)[0];
+    }
+  }
+  document.querySelectorAll('[data-tip],[placeholder],[title],optgroup[label]').forEach(el => {
+    ['data-tip', 'placeholder', 'title', 'label'].forEach(a => {
+      if (!el.hasAttribute(a)) return;
+      const k = i18nNorm(el.getAttribute(a));
+      if (!k) return;
+      let v = map[k];
+      if (v === undefined && a === 'placeholder') {
+        if (lang === 'en' && k.startsWith('npr. ')) v = 'e.g. ' + k.slice(5);
+        else if (lang !== 'en' && k.startsWith('e.g. ')) v = 'npr. ' + k.slice(5);
+      }
+      if (v !== undefined) el.setAttribute(a, v);
+    });
+  });
+  document.documentElement.lang = lang === 'en' ? 'en' : 'sr';
+}
+
+
 // Scenario results storage
 let scenarioResults = { A: null, B: null, C: null };   // single run po scenariju
 let scenarioMC = { A: null, B: null, C: null };        // Monte Carlo po scenariju
@@ -2102,7 +2363,7 @@ function enforceBaseMinConstraint(prefix) {
 
   if (min === 0) return;
   if (base > min) {
-    alert(`⚠️ GREŠKA!\n\nBase Value (${base}) ne može biti VEĆI od Min Drop Zone (${min})!\n\nPostavljam Base = Min.`);
+    alert(t(`⚠️ GREŠKA!\n\nBase Value (${base}) ne može biti VEĆI od Min Drop Zone (${min})!\n\nPostavljam Base = Min.`, `⚠️ ERROR!\n\nBase Value (${base}) cannot be GREATER than Min Drop Zone (${min})!\n\nSetting Base = Min.`));
     baseInput.value = min.toFixed(2);
   }
 
@@ -2261,7 +2522,7 @@ function updateRateDisplay() {
     if (prefixName) {
       displayText = `1 ${prefixName}${code} = ${formattedRate} EUR | Base: 1 ${code} = ${currency.rate.toLocaleString('en-US', {maximumFractionDigits: 2})} EUR`;
     } else {
-      displayText = `1 ${code} = ${currency.rate.toLocaleString('en-US', {maximumFractionDigits: 2})} EUR (1 coin košta toliko EUR)`;
+      displayText = `1 ${code} = ${currency.rate.toLocaleString('en-US', {maximumFractionDigits: 2})} EUR ${t('(1 coin košta toliko EUR)', '(price of 1 coin in EUR)')}`;
     }
   } else {
     displayText = `1 EUR = ${currency.rate.toLocaleString('en-US', {maximumFractionDigits: 4})} ${code}`;
@@ -2299,7 +2560,7 @@ document.getElementById('cryptoPrefix').addEventListener('change', function() {
 
   if (currency && currency.type === 'crypto' && this.value === '1' && currency.rate > 1000) {
     const currencyName = code === 'BTC' ? 'Bitcoin' : code === 'ETH' ? 'Ethereum' : code;
-    alert(`⚠️ UPOZORENJE!\n\n${currencyName} je JAKO skupa valuta (${currency.rate.toLocaleString('en-US', {maximumFractionDigits: 2})} EUR).\n\nKorišćenje "None (1x)" će generisati MALE DECIMALNE BROJEVE koji mogu biti teški za čitanje!\n\n💡 PREPORUKA: Koristi "milli (0.001x)" prefix za čitljivije vrednosti.`);
+    alert(t(`⚠️ UPOZORENJE!\n\n${currencyName} je JAKO skupa valuta (${currency.rate.toLocaleString('en-US', {maximumFractionDigits: 2})} EUR).\n\nKorišćenje "None (1x)" će generisati MALE DECIMALNE BROJEVE koji mogu biti teški za čitanje!\n\n💡 PREPORUKA: Koristi "milli (0.001x)" prefix za čitljivije vrednosti.`, `⚠️ WARNING!\n\n${currencyName} is a VERY expensive currency (${currency.rate.toLocaleString('en-US', {maximumFractionDigits: 2})} EUR).\n\nUsing "None (1x)" will produce SMALL DECIMAL NUMBERS that can be hard to read!\n\n💡 RECOMMENDATION: Use the "milli (0.001x)" prefix for more readable values.`));
   }
 
   updateCryptoEquivalent();
@@ -2337,17 +2598,17 @@ document.getElementById('addCustomCurrencyBtn').addEventListener('click', () => 
 
   const ctype = (document.getElementById('customCurrencyType') || {}).value === 'crypto' ? 'crypto' : 'fiat';
   if (!code || code.length < 3 || code.length > 5) {
-    alert('⚠️ Unesi validan currency code (3-5 slova, npr. TRY, BRL, USDC)');
+    alert(t('⚠️ Unesi validan currency code (3-5 slova, npr. TRY, BRL, USDC)', '⚠️ Enter a valid currency code (3-5 letters, e.g. TRY, BRL, USDC)'));
     return;
   }
 
   if (!rate || rate <= 0) {
-    alert('⚠️ Unesi validan exchange rate (npr. 35.50)');
+    alert(t('⚠️ Unesi validan exchange rate (npr. 35.50)', '⚠️ Enter a valid exchange rate (e.g. 35.50)'));
     return;
   }
 
   if (currencies[code]) {
-    const overwrite = confirm(`Valuta ${code} već postoji sa rate-om ${currencies[code].rate}.\n\nŽeliš da je zamenjiš sa ${rate}?`);
+    const overwrite = confirm(t(`Valuta ${code} već postoji sa rate-om ${currencies[code].rate}.\n\nŽeliš da je zamenjiš sa ${rate}?`, `Currency ${code} already exists with rate ${currencies[code].rate}.\n\nReplace it with ${rate}?`));
     if (!overwrite) return;
   }
 
@@ -2363,7 +2624,7 @@ document.getElementById('addCustomCurrencyBtn').addEventListener('click', () => 
 
   updateRateDisplay();
 
-  alert(`✅ Custom valuta ${code} dodana sa rate-om ${rate}!\n\nSada je možeš izabrati iz dropdown-a.`);
+  alert(t(`✅ Custom valuta ${code} dodana sa rate-om ${rate}!\n\nSada je možeš izabrati iz dropdown-a.`, `✅ Custom currency ${code} added with rate ${rate}!\n\nYou can now select it from the dropdown.`));
 });
 
 document.getElementById('customCurrencyCode').addEventListener('input', (e) => {
@@ -2558,7 +2819,7 @@ function readGlobals() {
 }
 
 function startModeLabel(mode) {
-  return mode === 'base' ? 'od Base (novo lansiranje)' : 'zagrejan (JP već radi)';
+  return mode === 'base' ? t('od Base (novo lansiranje)', 'from Base (new launch)') : t('zagrejan (JP već radi)', 'warmed up (JP already running)');
 }
 
 // Analitički (steady-state) očekivane vrednosti po nivou.
@@ -2817,7 +3078,7 @@ function fmtDrops(v) {
 }
 function fmtEvery(drops) {
   if (!drops || drops <= 0 || drops >= 1) return '';
-  return ' (1 na ~' + (1 / drops).toFixed(1) + ' mes)';
+  return t(' (1 na ~', ' (1 per ~') + (1 / drops).toFixed(1) + t(' mes)', ' mo)');
 }
 
 function colId(ent, field) {
@@ -2843,7 +3104,7 @@ function displayResults(result) {
     const tr = document.createElement('tr');
     const cells = st.active
       ? [st.name, fmtDrops(st.dropCount), fmtEur(st.avgPayout), fmtEur(st.totalPaidOut), fmtDrops(st.expectedDrops) + fmtEvery(st.expectedDrops)]
-      : [st.name, '-', '-', '-', 'nije aktivan'];
+      : [st.name, '-', '-', '-', t('nije aktivan', 'not active')];
     cells.forEach((v, i) => {
       const td = document.createElement('td');
       td.textContent = v;
@@ -2879,8 +3140,10 @@ function displayResults(result) {
   setText('ggrMarginCell', ggrMargin.toFixed(2) + ' %');
 
   const note = result.source === 'mc'
-    ? `Izvor: Monte Carlo PROSEK po mesecu (${result.mcRuns} serija × ${result.mcMonths} meseci, seed ${result.seed}, početno stanje: ${startModeLabel(result.startMode)}). Raspon i volatilnost su u Monte Carlo sekciji.`
-    : `Izvor: jedan simulirani mesec (seed ${result.seed}, početno stanje: ${startModeLabel(result.startMode)}). Za prosek i raspon pokreni Monte Carlo.`;
+    ? t(`Izvor: Monte Carlo PROSEK po mesecu (${result.mcRuns} serija × ${result.mcMonths} meseci, seed ${result.seed}, početno stanje: ${startModeLabel(result.startMode)}). Raspon i volatilnost su u Monte Carlo sekciji.`,
+        `Source: Monte Carlo AVERAGE per month (${result.mcRuns} series × ${result.mcMonths} months, seed ${result.seed}, starting state: ${startModeLabel(result.startMode)}). Range and volatility are in the Monte Carlo section.`)
+    : t(`Izvor: jedan simulirani mesec (seed ${result.seed}, početno stanje: ${startModeLabel(result.startMode)}). Za prosek i raspon pokreni Monte Carlo.`,
+        `Source: one simulated month (seed ${result.seed}, starting state: ${startModeLabel(result.startMode)}). Run Monte Carlo for the average and range.`);
   ['resultSourceNote', 'resultSourceNote2'].forEach(id => setText(id, note));
 
   document.getElementById('scenarioSection').style.display = 'block';
@@ -2912,23 +3175,23 @@ function fillComparisonMC(ent, agg) {
   ['pl', 'gd', 'dm'].forEach((k, i) => {
     const l = agg.levels[i];
     setText(colId(ent, 'mc_' + k), l.active
-      ? fmtDrops(l.dropsAvg) + '/mes · ' + (l.pAtLeastOne * 100).toFixed(0) + '% meseci'
+      ? fmtDrops(l.dropsAvg) + t('/mes · ', '/mo · ') + (l.pAtLeastOne * 100).toFixed(0) + t('% meseci', '% of months')
       : '-');
   });
-  setText('cmpMcHeader', `🎲 Monte Carlo (${agg.settings.runs} serija × ${agg.settings.months} meseci)`);
+  setText('cmpMcHeader', t(`🎲 Monte Carlo (${agg.settings.runs} serija × ${agg.settings.months} meseci)`, `🎲 Monte Carlo (${agg.settings.runs} series × ${agg.settings.months} months)`));
   fillComparisonRisk(ent, agg);
 }
 
 function displayMcStats(agg) {
   const r = agg.rtp;
-  setText('mcTitle', `🎲 Monte Carlo Analysis (${agg.settings.runs} serija × ${agg.settings.months} meseci = ${agg.n.toLocaleString('en-US')} meseci)`);
+  setText('mcTitle', t(`🎲 Monte Carlo Analysis (${agg.settings.runs} serija × ${agg.settings.months} meseci = ${agg.n.toLocaleString('en-US')} meseci)`, `🎲 Monte Carlo Analysis (${agg.settings.runs} series × ${agg.settings.months} months = ${agg.n.toLocaleString('en-US')} months)`));
   setText('mcAvgRtp', r.avg.toFixed(3) + '%');
   setText('mcMinRtp', r.min.toFixed(3) + '%');
   setText('mcMaxRtp', r.max.toFixed(3) + '%');
   setText('mcStdDev', '±' + r.std.toFixed(3) + '%');
   setText('mcRange', `${r.p5.toFixed(2)}% - ${r.p95.toFixed(2)}%`);
   setText('mcPeriodRange', `${r.periodP5.toFixed(2)}% - ${r.periodP95.toFixed(2)}%`);
-  setText('mcPeriodLabel', `Raspon za ${agg.settings.months} mes. (P5 - P95)`);
+  setText('mcPeriodLabel', t(`Raspon za ${agg.settings.months} mes. (P5 - P95)`, `Range over ${agg.settings.months} mo. (P5 - P95)`));
   setText('mcConfidence', agg.settings.runs > 1 ? `[${r.ciLow.toFixed(3)}%, ${r.ciHigh.toFixed(3)}%]` : '-');
   setText('mcVolatility', r.volatility.toFixed(2) + '%');
 
@@ -2967,7 +3230,7 @@ const SCEN_COLORS = { A: '#10b981', B: '#fb923c', C: '#ef4444' };
 let scenarioChart = { A: null, B: null, C: null };
 
 function srcTag(res) {
-  return res.source === 'mc' ? ` (MC ${res.mcMonths} mes)` : ' (1 mes)';
+  return res.source === 'mc' ? ` (MC ${res.mcMonths} ${t('mes', 'mo')})` : t(' (1 mes)', ' (1 mo)');
 }
 
 function drawChartAll() {
@@ -3077,7 +3340,7 @@ function drawRtpChart(series) {
       ctx.save(); ctx.setLineDash([4, 3]); ctx.strokeStyle = s.color; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.moveTo(legendX, legendY - 7); ctx.lineTo(legendX + 20, legendY - 7); ctx.stroke(); ctx.restore();
       ctx.fillStyle = C.title;
-      ctx.fillText('Očekivano (analitički)', legendX + 25, legendY);
+      ctx.fillText(t('Očekivano (analitički)', 'Expected (analytical)'), legendX + 25, legendY);
       legendY += 20;
     }
   });
@@ -3127,15 +3390,15 @@ function validateLevels(levels) {
     if (base === 0 && min === 0 && max === 0 && std === 0 && hid === 0) return;
 
     if (base > min) {
-      warnings.push({ type: 'error', message: `<strong>${name}:</strong> Base Value (${base.toFixed(2)}) ne može biti VEĆI od Min Drop Zone (${min.toFixed(2)})!` });
+      warnings.push({ type: 'error', message: t(`<strong>${name}:</strong> Base Value (${base.toFixed(2)}) ne može biti VEĆI od Min Drop Zone (${min.toFixed(2)})!`, `<strong>${name}:</strong> Base Value (${base.toFixed(2)}) cannot be GREATER than Min Drop Zone (${min.toFixed(2)})!`) });
     }
     if (max > 0 && min >= max) {
-      warnings.push({ type: 'error', message: `<strong>${name}:</strong> Min Drop Zone (${min.toFixed(2)}) mora biti manji od Max Drop Zone (${max.toFixed(2)})!` });
+      warnings.push({ type: 'error', message: t(`<strong>${name}:</strong> Min Drop Zone (${min.toFixed(2)}) mora biti manji od Max Drop Zone (${max.toFixed(2)})!`, `<strong>${name}:</strong> Min Drop Zone (${min.toFixed(2)}) must be lower than Max Drop Zone (${max.toFixed(2)})!`) });
     }
     if (max <= 0) {
-      warnings.push({ type: 'warning', message: `<strong>${name}:</strong> Max Drop Zone nije unet, nivo se preskače u simulaciji.` });
+      warnings.push({ type: 'warning', message: t(`<strong>${name}:</strong> Max Drop Zone nije unet, nivo se preskače u simulaciji.`, `<strong>${name}:</strong> Max Drop Zone is not set, the level is skipped in the simulation.`) });
     } else if (std <= 0) {
-      warnings.push({ type: 'warning', message: `<strong>${name}:</strong> Standard Contribution = 0, JP ne raste i nivo se preskače u simulaciji.` });
+      warnings.push({ type: 'warning', message: t(`<strong>${name}:</strong> Standard Contribution = 0, JP ne raste i nivo se preskače u simulaciji.`, `<strong>${name}:</strong> Standard Contribution = 0, the JP does not grow and the level is skipped in the simulation.`) });
     }
 
     if (std > 0 && hid > 0 && max > base) {
@@ -3144,12 +3407,15 @@ function validateLevels(levels) {
       const hiddenAcc = worstCycle * hid;
       const nextStart = base + hiddenAcc;
       if (nextStart >= max) {
-        warnings.push({ type: 'error', message: `<strong>${name} - HIDDEN OVERFLOW!</strong><br>
+        warnings.push({ type: 'error', message: t(`<strong>${name} - HIDDEN OVERFLOW!</strong><br>
           Ako JP padne na Max (${max.toFixed(2)} EUR), hidden rezerva bude ${hiddenAcc.toFixed(2)} EUR.<br>
           Sledeći JP bi krenuo od ${nextStart.toFixed(2)} EUR, što je <strong>${(nextStart - max).toFixed(2)} EUR preko Max-a</strong> (pao bi odmah, iznad Max-a).<br>
-          <strong>REŠENJE:</strong> Smanji Hidden % ili povećaj Max vrednost.` });
+          <strong>REŠENJE:</strong> Smanji Hidden % ili povećaj Max vrednost.`, `<strong>${name} - HIDDEN OVERFLOW!</strong><br>
+          If the JP drops at Max (${max.toFixed(2)} EUR), the hidden reserve is ${hiddenAcc.toFixed(2)} EUR.<br>
+          The next JP would start at ${nextStart.toFixed(2)} EUR, which is <strong>${(nextStart - max).toFixed(2)} EUR above Max</strong> (it would drop immediately, above Max).<br>
+          <strong>FIX:</strong> Lower Hidden % or raise the Max value.`) });
       } else if (nextStart > min) {
-        warnings.push({ type: 'warning', message: `<strong>${name} - UPOZORENJE:</strong> Posle velikog dropa sledeći JP može krenuti od ${nextStart.toFixed(2)} EUR (Base + hidden ${hiddenAcc.toFixed(2)} EUR), što je iznad Min (${min.toFixed(2)}). Ako je novi hit point ispod toga, JP pada odmah po resetu.` });
+        warnings.push({ type: 'warning', message: t(`<strong>${name} - UPOZORENJE:</strong> Posle velikog dropa sledeći JP može krenuti od ${nextStart.toFixed(2)} EUR (Base + hidden ${hiddenAcc.toFixed(2)} EUR), što je iznad Min (${min.toFixed(2)}). Ako je novi hit point ispod toga, JP pada odmah po resetu.`, `<strong>${name} - WARNING:</strong> After a large drop the next JP can start at ${nextStart.toFixed(2)} EUR (Base + hidden ${hiddenAcc.toFixed(2)} EUR), which is above Min (${min.toFixed(2)}). If the new hit point is below that, the JP drops right after the reset.`) });
       }
     }
   });
@@ -3181,10 +3447,10 @@ function validateScenarioConfig(letter) {
   [runBtn, mcBtn].forEach(b => {
     if (!b || b.dataset.busy === '1') return;
     b.disabled = v.hasErrors;
-    b.title = v.hasErrors ? '⛔ Ispravite greške pre pokretanja simulacije' : '';
+    b.title = v.hasErrors ? t('⛔ Ispravite greške pre pokretanja simulacije', '⛔ Fix the errors before running the simulation') : '';
   });
-  if (runBtn) runBtn.textContent = v.hasErrors ? '⛔ Greška - ne može se pokrenuti' : '▶ Run Scenario ' + letter;
-  if (mcBtn) mcBtn.textContent = v.hasErrors ? '⛔ Greška' : '🎲 MC Scenario ' + letter;
+  if (runBtn) runBtn.textContent = v.hasErrors ? t('⛔ Greška - ne može se pokrenuti', '⛔ Error - cannot run') : '▶ Run Scenario ' + letter;
+  if (mcBtn) mcBtn.textContent = v.hasErrors ? t('⛔ Greška', '⛔ Error') : '🎲 MC Scenario ' + letter;
   return !v.hasErrors;
 }
 
@@ -3198,7 +3464,7 @@ function updateMainAnalytic() {
   const parts = [];
   levels.forEach(lv => {
     const a = analyticLevel(lv, T || 0);
-    if (a && T > 0) parts.push(`${lv.name}: ~${fmtDrops(a.drops)}/mes${fmtEvery(a.drops)}`);
+    if (a && T > 0) parts.push(`${lv.name}: ~${fmtDrops(a.drops)}${t('/mes', '/mo')}${fmtEvery(a.drops)}`);
   });
   el.textContent = (analyticTotalRtp(levels) * 100).toFixed(3) + '%' + (parts.length ? '  |  ' + parts.join('  ·  ') : '');
 }
@@ -3211,23 +3477,23 @@ function resolveSeed(glob) {
   return glob.seed !== null ? glob.seed : randomSeed();
 }
 function showUsedSeed(seed) {
-  setText('usedSeedInfo', `Korišćen seed: ${seed} (upiši ga u polje Random seed da ponoviš isti rezultat)`);
+  setText('usedSeedInfo', t(`Korišćen seed: ${seed} (upiši ga u polje Random seed da ponoviš isti rezultat)`, `Seed used: ${seed} (enter it in the Random seed field to reproduce the same result)`));
 }
 
 function checkMainInputs() {
   const glob = readGlobals();
   if (!glob.T || glob.T <= 0) {
-    alert('⚠️ Unesi mesečni Total Bet (EUR) pre pokretanja simulacije!');
+    alert(t('⚠️ Unesi mesečni Total Bet (EUR) pre pokretanja simulacije!', '⚠️ Enter the monthly Total Bet (EUR) before running the simulation!'));
     document.getElementById('monthlyTurnoverEur').focus();
     return null;
   }
-  if (Math.floor(glob.T / glob.g) < 1) { alert('⚠️ Granularity je veći od mesečnog Total Bet-a!'); return null; }
+  if (Math.floor(glob.T / glob.g) < 1) { alert(t('⚠️ Granularity je veći od mesečnog Total Bet-a!', '⚠️ Granularity is larger than the monthly Total Bet!')); return null; }
   const levels = readJpConfig('');
   if (!levels.some(l => l.active)) {
-    alert('⚠️ Konfiguriši bar jedan JP nivo (Min, Max i Standard Contribution moraju biti uneti)!');
+    alert(t('⚠️ Konfiguriši bar jedan JP nivo (Min, Max i Standard Contribution moraju biti uneti)!', '⚠️ Configure at least one JP level (Min, Max and Standard Contribution are required)!'));
     return null;
   }
-  if (!validateConfiguration()) { alert('Molim te ispravi greške u konfiguraciji!'); return null; }
+  if (!validateConfiguration()) { alert(t('Molim te ispravi greške u konfiguraciji!', 'Please fix the configuration errors!')); return null; }
   return { glob, levels };
 }
 
@@ -3283,21 +3549,21 @@ async function runMonteCarlo(opts) {
     const speed = elapsed > 0 ? curr / elapsed : 0;
     const remaining = speed > 0 ? (total - curr) / speed : 0;
     pb.style.width = pct + '%'; pp.textContent = pct + '%'; cr.textContent = curr;
-    ss.textContent = `${speed.toFixed(0)} serija/s`;
+    ss.textContent = `${speed.toFixed(0)} ${t('serija/s', 'series/s')}`;
     el.textContent = `${elapsed.toFixed(1)}s`;
     et.textContent = remaining > 60 ? `${(remaining / 60).toFixed(1)} min` : `${remaining.toFixed(0)}s`;
   }, control);
 
   setTimeout(() => { pc.style.display = 'none'; prb.style.display = 'none'; csb.style.display = 'none'; }, agg ? 800 : 0);
   mcBtn.disabled = false;
-  if (!agg) { alert('Simulacija prekinuta!'); return null; }
+  if (!agg) { alert(t('Simulacija prekinuta!', 'Simulation cancelled!')); return null; }
 
   currentMC = agg;
   currentResult = agg.result;
   displayMcStats(agg);
   fillComparisonMC('current', agg);
   displayResults(agg.result);
-  if (!opts.silent) alert(`✅ Monte Carlo završen (${settings.runs} serija × ${settings.months} meseci)!\n\nProsečan JP RTP: ${agg.rtp.avg.toFixed(3)}%\nMesečni raspon (P5 - P95): ${agg.rtp.p5.toFixed(2)}% - ${agg.rtp.p95.toFixed(2)}%`);
+  if (!opts.silent) alert(t(`✅ Monte Carlo završen (${settings.runs} serija × ${settings.months} meseci)!\n\nProsečan JP RTP: ${agg.rtp.avg.toFixed(3)}%\nMesečni raspon (P5 - P95): ${agg.rtp.p5.toFixed(2)}% - ${agg.rtp.p95.toFixed(2)}%`, `✅ Monte Carlo finished (${settings.runs} series × ${settings.months} months)!\n\nAverage JP RTP: ${agg.rtp.avg.toFixed(3)}%\nMonthly range (P5 - P95): ${agg.rtp.p5.toFixed(2)}% - ${agg.rtp.p95.toFixed(2)}%`));
   return agg;
 }
 
@@ -3315,14 +3581,14 @@ function updateScenarioHeader(letter) {
 
 function prepareScenario(letter, quiet) {
   if (!validateScenarioConfig(letter)) {
-    if (!quiet) alert('⛔ Scenario ' + letter + ' ima greške u konfiguraciji!\nIspravite ih pre pokretanja.');
+    if (!quiet) alert(t('⛔ Scenario ' + letter + ' ima greške u konfiguraciji!\nIspravite ih pre pokretanja.', '⛔ Scenario ' + letter + ' has configuration errors!\nFix them before running.'));
     return null;
   }
   const glob = readGlobals();
-  if (!glob.T || glob.T <= 0) { if (!quiet) alert('⚠️ Unesi mesečni Total Bet (EUR)!'); return null; }
+  if (!glob.T || glob.T <= 0) { if (!quiet) alert(t('⚠️ Unesi mesečni Total Bet (EUR)!', '⚠️ Enter the monthly Total Bet (EUR)!')); return null; }
   const levels = readJpConfig('scenario' + letter + '_');
   if (!levels.some(l => l.active)) {
-    if (!quiet) alert('⚠️ Scenario ' + letter + ' nema nijedan aktivan JP nivo (Min, Max i Std moraju biti uneti).');
+    if (!quiet) alert(t('⚠️ Scenario ' + letter + ' nema nijedan aktivan JP nivo (Min, Max i Std moraju biti uneti).', '⚠️ Scenario ' + letter + ' has no active JP level (Min, Max and Std are required).'));
     return null;
   }
   // Isti seed kao glavna simulacija -> isti niz hit point-ova (fer poređenje scenarija)
@@ -3331,7 +3597,7 @@ function prepareScenario(letter, quiet) {
 }
 
 function runScenario(letter) {
-  if (!currentResult) { alert('⚠️ Prvo pokreni glavnu simulaciju!'); return; }
+  if (!currentResult) { alert(t('⚠️ Prvo pokreni glavnu simulaciju!', '⚠️ Run the main simulation first!')); return; }
   const p = prepareScenario(letter, false);
   if (!p) return;
   const result = runSingleSimulation(p.levels, p.glob, p.seed);
@@ -3342,25 +3608,30 @@ function runScenario(letter) {
   drawChartAll();
   document.getElementById('exportExcelBtn').disabled = false;
   const pl = result.jpState[0];
-  alert(`✅ ${scenarioName(letter)} scenario completed!\n\nJP RTP: ${(result.jpRtp * 100).toFixed(3)}%\nPlatinum: ${fmtDrops(pl.dropCount)} dropova (GAP: ${pl.gap.toFixed(2)} EUR)\nAvg Drop: ${pl.avgPayout.toFixed(2)} EUR`);
+  alert(`✅ ${scenarioName(letter)} scenario completed!\n\nJP RTP: ${(result.jpRtp * 100).toFixed(3)}%\nPlatinum: ${fmtDrops(pl.dropCount)} ${t('dropova', 'drops')} (GAP: ${pl.gap.toFixed(2)} EUR)\nAvg Drop: ${pl.avgPayout.toFixed(2)} EUR`);
+}
+
+function scMcStatusText(agg) {
+  return t(`✅ MC: JP RTP ${agg.rtp.avg.toFixed(3)}% (mesečno P5 - P95: ${agg.rtp.p5.toFixed(2)}% - ${agg.rtp.p95.toFixed(2)}%)`,
+           `✅ MC: JP RTP ${agg.rtp.avg.toFixed(3)}% (monthly P5 - P95: ${agg.rtp.p5.toFixed(2)}% - ${agg.rtp.p95.toFixed(2)}%)`);
 }
 
 async function runScenarioMonteCarlo(letter, quiet) {
   const p = prepareScenario(letter, quiet);
   const status = document.getElementById('scMcStatus_' + letter);
-  if (!p) { if (quiet && status) status.textContent = '⏭ Preskočeno (nema aktivnih nivoa ili ima grešaka)'; return null; }
+  if (!p) { if (quiet && status) status.textContent = t('⏭ Preskočeno (nema aktivnih nivoa ili ima grešaka)', '⏭ Skipped (no active levels or has errors)'); return null; }
   const settings = getMcSettings();
   const btn = document.getElementById('runScenarioMcBtn_' + letter);
   if (btn) { btn.disabled = true; btn.dataset.busy = '1'; }
   const agg = await runMonteCarloCore(p.levels, p.glob, p.seed, settings, (c, t) => {
-    if (status) status.textContent = `⏳ Monte Carlo: ${c}/${t} serija`;
+    if (status) status.textContent = `⏳ Monte Carlo: ${c}/${t} ${tt('serija', 'series')}`;
   });
   if (btn) { btn.dataset.busy = '0'; btn.disabled = false; }
   scenarioMC[letter] = agg;
   scenarioChart[letter] = agg.result;
   updateScenarioHeader(letter);
   fillComparisonMC(letter, agg);
-  if (status) status.textContent = `✅ MC: JP RTP ${agg.rtp.avg.toFixed(3)}% (mesečno P5 - P95: ${agg.rtp.p5.toFixed(2)}% - ${agg.rtp.p95.toFixed(2)}%)`;
+  if (status) status.textContent = scMcStatusText(agg);
   drawChartAll();
   document.getElementById('exportExcelBtn').disabled = false;
   return agg;
@@ -3378,7 +3649,7 @@ async function runAllMonteCarlo() {
     await runScenarioMonteCarlo(l, true);
   }
   btn.disabled = false;
-  if (status) status.textContent = '✅ Završeno: Current + scenariji (isti seed za sve, fer poređenje).';
+  if (status) status.textContent = t('✅ Završeno: Current + scenariji (isti seed za sve, fer poređenje).', '✅ Done: Current + scenarios (same seed for all, fair comparison).');
 }
 document.getElementById('runAllMcBtn').addEventListener('click', runAllMonteCarlo);
 
@@ -3402,7 +3673,7 @@ function updateLiveEstimate(letter) {
       paid += a.paid;
       el.textContent = `~${fmtDrops(a.drops)}× @ ~${Math.round(a.avgHit)} EUR${fmtEvery(a.drops)}`;
     } else {
-      el.textContent = `@ ~${Math.round(a.avgHit)} EUR (unesi Total Bet)`;
+      el.textContent = `@ ~${Math.round(a.avgHit)} EUR ${t('(unesi Total Bet)', '(enter Total Bet)')}`;
     }
   });
   const rtpEl = document.getElementById('ls' + letter + '_rtp');
@@ -3429,7 +3700,7 @@ function r4(v) { return Math.round(v * 10000) / 10000; }
 function r2(v) { return Math.round(v * 100) / 100; }
 
 function exportToExcel() {
-  if (!currentResult) { alert('⚠️ Prvo pokreni simulaciju!'); return; }
+  if (!currentResult) { alert(t('⚠️ Prvo pokreni simulaciju!', '⚠️ Run the simulation first!')); return; }
   const wb = XLSX.utils.book_new();
   const glob = readGlobals();
   const ents = [
@@ -3441,20 +3712,20 @@ function exportToExcel() {
 
   // ---- Sheet 1: Configuration ----
   const cfg = [
-    ['JP SIMULATOR - CONFIGURATION'],
-    ['Generated', new Date().toLocaleString('sr-RS')],
+    [tr('JP SIMULATOR - CONFIGURATION')],
+    [tr('Generated'), new Date().toLocaleString(uiLocale())],
     [],
-    ['GLOBALNI PARAMETRI'],
-    ['Mesečni Total Bet (EUR)', glob.T],
-    ['Win/Bet Ratio (%)', r4(glob.baseGameRtp * 100)],
-    ['Granularity (EUR)', glob.g],
-    ['Seed (poslednji korišćen)', lastBaseSeed !== null ? lastBaseSeed : ''],
-    ['Početno stanje JP-a', startModeLabel(glob.startMode)],
-    ['Monte Carlo serija', getMcSettings().runs],
-    ['Meseci po seriji', getMcSettings().months],
-    ['Hidden model', 'Hidden puni sledeći JP (start = Base + skupljeni hidden)'],
+    [tr('GLOBALNI PARAMETRI')],
+    [tr('Mesečni Total Bet (EUR)'), glob.T],
+    [tr('Win/Bet Ratio (%)'), r4(glob.baseGameRtp * 100)],
+    [tr('Granularity (EUR)'), glob.g],
+    [tr('Seed (poslednji korišćen)'), lastBaseSeed !== null ? lastBaseSeed : ''],
+    [tr('Početno stanje JP-a'), startModeLabel(glob.startMode)],
+    [tr('Monte Carlo serija'), getMcSettings().runs],
+    [tr('Meseci po seriji'), getMcSettings().months],
+    [tr('Hidden model'), t('Hidden puni sledeći JP (start = Base + skupljeni hidden)', 'Hidden feeds the next JP (start = Base + accumulated hidden)')],
     [],
-    ['JP KONFIGURACIJA', 'Nivo', 'Base (EUR)', 'Min (EUR)', 'Max (EUR)', 'GAP (EUR)', 'Std (%)', 'Hidden (%)', 'Bet Req (EUR)', 'Očekivani JP RTP nivoa (%)']
+    [t('JP KONFIGURACIJA', 'JP CONFIGURATION'), t('Nivo', 'Level'), 'Base (EUR)', 'Min (EUR)', 'Max (EUR)', 'GAP (EUR)', 'Std (%)', 'Hidden (%)', 'Bet Req (EUR)', t('Očekivani JP RTP nivoa (%)', 'Expected level JP RTP (%)')]
   ];
   ents.forEach(e => {
     const lv = readJpConfig(e.prefix);
@@ -3472,27 +3743,27 @@ function exportToExcel() {
   const T = cr.monthlyTurnoverEur;
   let paid = 0; cr.jpState.forEach(s => { paid += s.totalPaidOut; });
   const res = [
-    ['SIMULATION RESULTS (mesečno)'],
-    ['Izvor', cr.source === 'mc' ? `Monte Carlo prosek (${cr.mcRuns} × ${cr.mcMonths} meseci)` : 'Jedan simulirani mesec'],
-    ['Seed', cr.seed],
+    [tr('SIMULATION RESULTS (mesečno)')],
+    [t('Izvor', 'Source'), cr.source === 'mc' ? t(`Monte Carlo prosek (${cr.mcRuns} × ${cr.mcMonths} meseci)`, `Monte Carlo average (${cr.mcRuns} × ${cr.mcMonths} months)`) : t('Jedan simulirani mesec', 'One simulated month')],
+    [tr('Seed'), cr.seed],
     [],
-    ['Metrika', 'Vrednost'],
-    ['Base Game RTP (%)', r4(cr.baseGameRtp * 100)],
-    ['JP RTP (%)', r4(cr.jpRtp * 100)],
-    ['JP RTP očekivano, analitički (%)', r4(cr.analyticRtp * 100)],
-    ['Total RTP (%)', r4(cr.totalRtp * 100)],
-    ['House Edge (%)', r4((1 - cr.totalRtp) * 100)],
-    ['Total JP Paid (EUR)', r2(paid)],
-    ['Base Game Profit (EUR)', r2(T * (1 - cr.baseGameRtp))],
-    ['GGR (EUR)', r2(T - T * cr.baseGameRtp - paid)],
+    [t('Metrika', 'Metric'), t('Vrednost', 'Value')],
+    [tr('Base Game RTP (%)'), r4(cr.baseGameRtp * 100)],
+    [tr('JP RTP (%)'), r4(cr.jpRtp * 100)],
+    [tr('JP RTP očekivano, analitički (%)'), r4(cr.analyticRtp * 100)],
+    [tr('Total RTP (%)'), r4(cr.totalRtp * 100)],
+    [tr('House Edge (%)'), r4((1 - cr.totalRtp) * 100)],
+    [tr('Total JP Paid (EUR)'), r2(paid)],
+    [tr('Base Game Profit (EUR)'), r2(T * (1 - cr.baseGameRtp))],
+    [tr('GGR (EUR)'), r2(T - T * cr.baseGameRtp - paid)],
     [],
-    ['JP STATISTIKA', 'Platinum', 'Gold', 'Diamond'],
-    ['Drops / mes', ...cr.jpState.map(s => r4(s.dropCount))],
-    ['Očekivano drops / mes (analitički)', ...cr.jpState.map(s => r4(s.expectedDrops))],
-    ['Prosečan drop (EUR)', ...cr.jpState.map(s => r2(s.avgPayout))],
-    ['Isplaćeno / mes (EUR)', ...cr.jpState.map(s => r2(s.totalPaidOut))],
-    ['Std kontribucija / mes (EUR)', ...cr.jpState.map(s => r2(s.totalStdContrib))],
-    ['Hidden kontribucija / mes (EUR)', ...cr.jpState.map(s => r2(s.totalHiddenContrib))]
+    [t('JP STATISTIKA', 'JP STATISTICS'), 'Platinum', 'Gold', 'Diamond'],
+    [tr('Drops / mes'), ...cr.jpState.map(s => r4(s.dropCount))],
+    [tr('Očekivano drops / mes (analitički)'), ...cr.jpState.map(s => r4(s.expectedDrops))],
+    [tr('Prosečan drop (EUR)'), ...cr.jpState.map(s => r2(s.avgPayout))],
+    [tr('Isplaćeno / mes (EUR)'), ...cr.jpState.map(s => r2(s.totalPaidOut))],
+    [tr('Std kontribucija / mes (EUR)'), ...cr.jpState.map(s => r2(s.totalStdContrib))],
+    [tr('Hidden kontribucija / mes (EUR)'), ...cr.jpState.map(s => r2(s.totalHiddenContrib))]
   ];
   const ws2 = XLSX.utils.aoa_to_sheet(res);
   ws2['!cols'] = [{ wch: 34 }, { wch: 16 }, { wch: 16 }, { wch: 16 }];
@@ -3502,39 +3773,39 @@ function exportToExcel() {
   const mcs = { current: currentMC, A: scenarioMC.A, B: scenarioMC.B, C: scenarioMC.C };
   if (Object.values(mcs).some(x => x)) {
     const v = (e, f) => (mcs[e.key] ? f(mcs[e.key]) : '');
-    const mc = [['MONTE CARLO (mesečne vrednosti, stanje se prenosi kroz mesece)'], [], ['Metrika', ...ents.map(e => e.label)]];
+    const mc = [[t('MONTE CARLO (mesečne vrednosti, stanje se prenosi kroz mesece)', 'MONTE CARLO (monthly values, state carries over between months)')], [], [t('Metrika', 'Metric'), ...ents.map(e => e.label)]];
     const row = (lbl, f) => mc.push([lbl, ...ents.map(e => v(e, f))]);
-    row('Serije × meseci', a => `${a.settings.runs} × ${a.settings.months}`);
-    row('Seed', a => a.result.seed);
-    row('JP RTP prosek (%)', a => r4(a.rtp.avg));
-    row('JP RTP min mesec (%)', a => r4(a.rtp.min));
-    row('JP RTP max mesec (%)', a => r4(a.rtp.max));
-    row('JP RTP std dev mesečno (%)', a => r4(a.rtp.std));
-    row('JP RTP P5 mesečno (%)', a => r4(a.rtp.p5));
-    row('JP RTP P95 mesečno (%)', a => r4(a.rtp.p95));
-    row('JP RTP P5 za ceo period (%)', a => r4(a.rtp.periodP5));
-    row('JP RTP P95 za ceo period (%)', a => r4(a.rtp.periodP95));
-    row('95% CI proseka - donja (%)', a => r4(a.rtp.ciLow));
-    row('95% CI proseka - gornja (%)', a => r4(a.rtp.ciHigh));
-    row('GGR prosek / mes (EUR)', a => r2(a.ggrAvg));
+    row(tr('Serije × meseci'), a => `${a.settings.runs} × ${a.settings.months}`);
+    row(tr('Seed'), a => a.result.seed);
+    row(tr('JP RTP prosek (%)'), a => r4(a.rtp.avg));
+    row(tr('JP RTP min mesec (%)'), a => r4(a.rtp.min));
+    row(tr('JP RTP max mesec (%)'), a => r4(a.rtp.max));
+    row(tr('JP RTP std dev mesečno (%)'), a => r4(a.rtp.std));
+    row(tr('JP RTP P5 mesečno (%)'), a => r4(a.rtp.p5));
+    row(tr('JP RTP P95 mesečno (%)'), a => r4(a.rtp.p95));
+    row(tr('JP RTP P5 za ceo period (%)'), a => r4(a.rtp.periodP5));
+    row(tr('JP RTP P95 za ceo period (%)'), a => r4(a.rtp.periodP95));
+    row(tr('95% CI proseka - donja (%)'), a => r4(a.rtp.ciLow));
+    row(tr('95% CI proseka - gornja (%)'), a => r4(a.rtp.ciHigh));
+    row(tr('GGR prosek / mes (EUR)'), a => r2(a.ggrAvg));
     const th = getRiskThresholds();
-    row(`Meseci sa JP RTP > ${th.rtp}% (%)`, a => (th.rtp > 0 ? r2(riskOf(a).pRtp * 100) : ''));
-    row(`Meseci sa JP isplatom > ${th.paid} EUR (%)`, a => (th.paid > 0 ? r2(riskOf(a).pPaid * 100) : ''));
-    row('Najgori mesec JP RTP (%)', a => r4(riskOf(a).worstRtp));
-    row('P99 mesečni JP RTP (%)', a => r4(riskOf(a).p99));
-    row('Najgori period JP RTP (%)', a => r4(riskOf(a).worstPeriod));
-    row('Najveća mesečna JP isplata (EUR)', a => r2(riskOf(a).worstPaid));
-    row('Najveći pojedinačni drop (EUR)', a => r2(riskOf(a).maxDrop));
+    row(t(`Meseci sa JP RTP > ${th.rtp}% (%)`, `Months with JP RTP > ${th.rtp}% (%)`), a => (th.rtp > 0 ? r2(riskOf(a).pRtp * 100) : ''));
+    row(t(`Meseci sa JP isplatom > ${th.paid} EUR (%)`, `Months with JP payout > ${th.paid} EUR (%)`), a => (th.paid > 0 ? r2(riskOf(a).pPaid * 100) : ''));
+    row(tr('Najgori mesec JP RTP (%)'), a => r4(riskOf(a).worstRtp));
+    row(tr('P99 mesečni JP RTP (%)'), a => r4(riskOf(a).p99));
+    row(tr('Najgori period JP RTP (%)'), a => r4(riskOf(a).worstPeriod));
+    row(tr('Najveća mesečna JP isplata (EUR)'), a => r2(riskOf(a).worstPaid));
+    row(tr('Najveći pojedinačni drop (EUR)'), a => r2(riskOf(a).maxDrop));
     LEVEL_DEFS.forEach((d, i) => {
       mc.push([]);
       mc.push([d.name.toUpperCase()]);
-      row('Drops / mes (prosek)', a => r4(a.levels[i].dropsAvg));
-      row('Drops / mes min', a => a.levels[i].dropsMin);
-      row('Drops / mes max', a => a.levels[i].dropsMax);
-      row('P(≥1 drop u mesecu) (%)', a => r2(a.levels[i].pAtLeastOne * 100));
-      row('Prosečno meseci između dropova', a => (isFinite(a.levels[i].monthsPerDrop) ? r2(a.levels[i].monthsPerDrop) : ''));
-      row('Prosečan drop (EUR)', a => r2(a.levels[i].avgPayout));
-      row('Najveći drop (EUR)', a => r2(a.levels[i].maxPayout));
+      row(tr('Drops / mes (prosek)'), a => r4(a.levels[i].dropsAvg));
+      row(tr('Drops / mes min'), a => a.levels[i].dropsMin);
+      row(tr('Drops / mes max'), a => a.levels[i].dropsMax);
+      row(tr('P(≥1 drop u mesecu) (%)'), a => r2(a.levels[i].pAtLeastOne * 100));
+      row(tr('Prosečno meseci između dropova'), a => (isFinite(a.levels[i].monthsPerDrop) ? r2(a.levels[i].monthsPerDrop) : ''));
+      row(tr('Prosečan drop (EUR)'), a => r2(a.levels[i].avgPayout));
+      row(tr('Najveći drop (EUR)'), a => r2(a.levels[i].maxPayout));
     });
     const ws3 = XLSX.utils.aoa_to_sheet(mc);
     ws3['!cols'] = [{ wch: 34 }, { wch: 16 }, { wch: 16 }, { wch: 16 }, { wch: 16 }];
@@ -3546,18 +3817,18 @@ function exportToExcel() {
   // ---- Sheet 4: Scenarios (single run) ----
   const sr = { current: currentSingle, A: scenarioResults.A, B: scenarioResults.B, C: scenarioResults.C };
   if (scenarioResults.A || scenarioResults.B || scenarioResults.C) {
-    const sc = [['SCENARIO COMPARISON (jedan simulirani mesec, isti seed)'], [], ['Metrika', ...ents.map(e => e.label)]];
+    const sc = [[t('SCENARIO COMPARISON (jedan simulirani mesec, isti seed)', 'SCENARIO COMPARISON (one simulated month, same seed)')], [], [t('Metrika', 'Metric'), ...ents.map(e => e.label)]];
     const row = (lbl, f) => sc.push([lbl, ...ents.map(e => (sr[e.key] ? f(sr[e.key]) : ''))]);
-    row('JP RTP (%)', x => r4(x.jpRtp * 100));
-    row('JP RTP očekivano (%)', x => r4(x.analyticRtp * 100));
-    row('Total RTP (%)', x => r4(x.totalRtp * 100));
-    row('House Edge (%)', x => r4((1 - x.totalRtp) * 100));
-    row('GGR (EUR)', x => { let p = 0; x.jpState.forEach(s => { p += s.totalPaidOut; }); return r2(x.monthlyTurnoverEur * (1 - x.baseGameRtp) - p); });
+    row(tr('JP RTP (%)'), x => r4(x.jpRtp * 100));
+    row(tr('JP RTP očekivano (%)'), x => r4(x.analyticRtp * 100));
+    row(tr('Total RTP (%)'), x => r4(x.totalRtp * 100));
+    row(tr('House Edge (%)'), x => r4((1 - x.totalRtp) * 100));
+    row(tr('GGR (EUR)'), x => { let p = 0; x.jpState.forEach(s => { p += s.totalPaidOut; }); return r2(x.monthlyTurnoverEur * (1 - x.baseGameRtp) - p); });
     LEVEL_DEFS.forEach((d, i) => {
       sc.push([]); sc.push([d.name.toUpperCase()]);
-      row('Drops', x => x.jpState[i].dropCount);
-      row('Očekivano drops (analitički)', x => r4(x.jpState[i].expectedDrops));
-      row('Average Drop (EUR)', x => r2(x.jpState[i].avgPayout));
+      row(tr('Drops'), x => x.jpState[i].dropCount);
+      row(tr('Očekivano drops (analitički)'), x => r4(x.jpState[i].expectedDrops));
+      row(tr('Average Drop (EUR)'), x => r2(x.jpState[i].avgPayout));
     });
     const ws4 = XLSX.utils.aoa_to_sheet(sc);
     ws4['!cols'] = [{ wch: 30 }, { wch: 16 }, { wch: 16 }, { wch: 16 }, { wch: 16 }];
@@ -3567,7 +3838,7 @@ function exportToExcel() {
   const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
   const filename = `JP_Simulation_${timestamp}.xlsx`;
   XLSX.writeFile(wb, filename);
-  alert(`✅ Excel fajl exportovan!\n\nFajl: ${filename}\n\nProveri folder Downloads.`);
+  alert(t(`✅ Excel fajl exportovan!\n\nFajl: ${filename}\n\nProveri folder Downloads.`, `✅ Excel file exported!\n\nFile: ${filename}\n\nCheck your Downloads folder.`));
 }
 document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
 
@@ -3646,6 +3917,18 @@ async function fetchCryptoRates() {
   return null;
 }
 
+let ratesState = null;
+function renderRatesStatus() {
+  const ts = document.getElementById('ratesTimestamp');
+  if (!ts || !ratesState) return;
+  const { fiat, crypto } = ratesState;
+  const timeStr = ratesState.time.toLocaleTimeString(uiLocale(), { hour: '2-digit', minute: '2-digit' });
+  if (fiat && crypto) { ts.textContent = `✅ Live: ${timeStr}`; ts.style.color = 'var(--accent-green)'; }
+  else if (fiat || crypto) { ts.textContent = `⚠️ ${t('Delimično live', 'Partially live')} (${fiat ? 'fiat' : 'crypto'}): ${timeStr}`; ts.style.color = 'var(--accent-gold)'; }
+  else { ts.textContent = '⚠️ Fallback rates (offline)'; ts.style.color = 'var(--accent-gold)'; }
+  ts.title = fiat || crypto ? '' : t('Live kursevi nisu dostupni (mreža, firewall ili API). Koriste se ugrađeni kursevi.', 'Live rates are unavailable (network, firewall or API). Built-in rates are used.');
+}
+
 async function fetchLiveExchangeRates() {
   const btn = document.getElementById('refreshRatesBtn');
   const txt = document.getElementById('refreshText');
@@ -3672,13 +3955,8 @@ async function fetchLiveExchangeRates() {
   cachedRates = rates;
   applyRatesToCurrencies(rates);
 
-  const timeStr = new Date().toLocaleTimeString('sr-RS', { hour: '2-digit', minute: '2-digit' });
-  if (ts) {
-    if (fiat && crypto) { ts.textContent = `✅ Live: ${timeStr}`; ts.style.color = 'var(--accent-green)'; }
-    else if (fiat || crypto) { ts.textContent = `⚠️ Delimično live (${fiat ? 'fiat' : 'crypto'}): ${timeStr}`; ts.style.color = 'var(--accent-gold)'; }
-    else { ts.textContent = '⚠️ Fallback rates (offline)'; ts.style.color = 'var(--accent-gold)'; }
-    ts.title = fiat || crypto ? '' : 'Live kursevi nisu dostupni (mreža, firewall ili API). Koriste se ugrađeni kursevi.';
-  }
+  ratesState = { fiat: !!fiat, crypto: !!crypto, time: new Date() };
+  renderRatesStatus();
   if (!fiat || !crypto) {
     console.warn(`Live rates: ${fiat ? '' : 'fiat '}${crypto ? '' : 'crypto '}nedostupni, koriste se ugrađeni (fallback) kursevi.`);
   }
@@ -3730,7 +4008,7 @@ function downloadChart() {
   const ctx = canvas.getContext('2d');
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
   const hasData = imageData.data.some((val, i) => i % 4 !== 3 && val !== 0);
-  if (!hasData) { alert('Nema podataka. Pokreni simulaciju!'); return; }
+  if (!hasData) { alert(t('Nema podataka. Pokreni simulaciju!', 'No data. Run the simulation!')); return; }
   const now = new Date();
   const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}`;
   const link = document.createElement('a');
@@ -3813,21 +4091,21 @@ function riskOf(agg) {
 }
 
 function fmtProb(p) {
-  if (p <= 0) return '0% (nijedan mesec)';
+  if (p <= 0) return t('0% (nijedan mesec)', '0% (no months)');
   const every = 1 / p;
-  return (p * 100).toFixed(1) + '% meseci' + (every >= 1.5 ? ` (≈1 u ${every.toFixed(0)} mes)` : '');
+  return (p * 100).toFixed(1) + t('% meseci', '% of months') + (every >= 1.5 ? t(` (≈1 u ${every.toFixed(0)} mes)`, ` (≈1 in ${every.toFixed(0)} mo)`) : '');
 }
 
 function renderRiskMain(agg) {
   if (!agg) return;
   const r = riskOf(agg);
-  setText('riskPRtpLabel', `Meseci sa JP RTP > ${r.th.rtp}%`);
-  setText('riskPRtp', r.th.rtp > 0 ? fmtProb(r.pRtp) : 'unesi prag');
-  setText('riskPPaidLabel', `Meseci sa JP isplatom > ${r.th.paid.toLocaleString('en-US')} EUR`);
-  setText('riskPPaid', r.th.paid > 0 ? fmtProb(r.pPaid) : 'unesi prag');
+  setText('riskPRtpLabel', t(`Meseci sa JP RTP > ${r.th.rtp}%`, `Months with JP RTP > ${r.th.rtp}%`));
+  setText('riskPRtp', r.th.rtp > 0 ? fmtProb(r.pRtp) : t('unesi prag', 'enter a threshold'));
+  setText('riskPPaidLabel', t(`Meseci sa JP isplatom > ${r.th.paid.toLocaleString('en-US')} EUR`, `Months with JP payout > ${r.th.paid.toLocaleString('en-US')} EUR`));
+  setText('riskPPaid', r.th.paid > 0 ? fmtProb(r.pPaid) : t('unesi prag', 'enter a threshold'));
   setText('riskWorst', r.worstRtp.toFixed(3) + '%');
   setText('riskP99', r.p99.toFixed(3) + '%');
-  setText('riskWorstPeriodLabel', `Najgori period od ${agg.settings.months} mes. (JP RTP)`);
+  setText('riskWorstPeriodLabel', t(`Najgori period od ${agg.settings.months} mes. (JP RTP)`, `Worst ${agg.settings.months}-month period (JP RTP)`));
   setText('riskWorstPeriod', r.worstPeriod.toFixed(3) + '%');
   setText('riskWorstPaid', r.worstPaid.toLocaleString('en-US', { maximumFractionDigits: 0 }) + ' EUR');
   setText('riskMaxDrop', r.maxDrop.toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' EUR');
@@ -3835,7 +4113,7 @@ function renderRiskMain(agg) {
 
 function fillComparisonRisk(ent, agg) {
   const r = riskOf(agg);
-  setText(colId(ent, 'mcRisk'), r.th.rtp > 0 ? `${(r.pRtp * 100).toFixed(1)}% (prag ${r.th.rtp}%)` : 'unesi prag');
+  setText(colId(ent, 'mcRisk'), r.th.rtp > 0 ? `${(r.pRtp * 100).toFixed(1)}% (${t('prag', 'threshold')} ${r.th.rtp}%)` : t('unesi prag', 'enter a threshold'));
   setText(colId(ent, 'mcWorst'), r.worstRtp.toFixed(3) + '%');
   setText(colId(ent, 'mcMaxDrop'), r.maxDrop.toLocaleString('en-US', { maximumFractionDigits: 0 }));
 }
@@ -3934,7 +4212,7 @@ function drawSimpleChart(canvasId, o) {
     ctx.save(); ctx.setLineDash([5, 4]); ctx.strokeStyle = C.text; ctx.lineWidth = 1.2;
     ctx.beginPath(); ctx.moveTo(X(o.marker), pad.top); ctx.lineTo(X(o.marker), H - pad.bottom); ctx.stroke(); ctx.restore();
     ctx.fillStyle = C.text; ctx.textAlign = 'left';
-    ctx.fillText('trenutno', X(o.marker) + 4, pad.top + 10);
+    ctx.fillText(t('trenutno', 'current'), X(o.marker) + 4, pad.top + 10);
   }
 
   ctx.fillStyle = C.title; ctx.font = 'bold 13px Inter'; ctx.textAlign = 'left';
@@ -3992,7 +4270,7 @@ document.getElementById('sensSuggestBtn').addEventListener('click', sensSuggestR
 
 async function runSensitivity() {
   const glob = readGlobals();
-  if (!glob.T || glob.T <= 0) { alert('⚠️ Unesi mesečni Total Bet (EUR)!'); return; }
+  if (!glob.T || glob.T <= 0) { alert(t('⚠️ Unesi mesečni Total Bet (EUR)!', '⚠️ Enter the monthly Total Bet (EUR)!')); return; }
   const prefix = sensPrefix();
   const li = sensLevelIdx();
   const key = document.getElementById('sensParam').value;
@@ -4000,9 +4278,9 @@ async function runSensitivity() {
   const from = parseFloat(document.getElementById('sensFrom').value);
   const to = parseFloat(document.getElementById('sensTo').value);
   const nPts = Math.max(2, Math.min(41, parseInt(document.getElementById('sensPoints').value) || 11));
-  if (!isFinite(from) || !isFinite(to) || to <= from) { alert('⚠️ Opseg nije ispravan (Do mora biti veće od Od).'); return; }
+  if (!isFinite(from) || !isFinite(to) || to <= from) { alert(t('⚠️ Opseg nije ispravan (Do mora biti veće od Od).', '⚠️ Invalid range (To must be greater than From).')); return; }
   const baseLevels = readJpConfig(prefix);
-  if (!baseLevels.some(l => l.active) && !(baseLevels[li].max > 0)) { alert('⚠️ Izabrana konfiguracija nema podešen JP.'); return; }
+  if (!baseLevels.some(l => l.active) && !(baseLevels[li].max > 0)) { alert(t('⚠️ Izabrana konfiguracija nema podešen JP.', '⚠️ The selected configuration has no JP set up.')); return; }
   const withMc = document.getElementById('sensMc').checked;
   const mcRuns = Math.max(5, Math.min(500, parseInt(document.getElementById('sensMcRuns').value) || 30));
   const months = getMcSettings().months;
@@ -4021,7 +4299,7 @@ async function runSensitivity() {
     const a = analyticLevel(lv, glob.T);
     const row = {
       x, valid: lv.active && !!a,
-      warn: v.warnings.filter(w => w.type === 'error').length ? 'greška' : (v.warnings.length ? 'upozorenje' : ''),
+      warn: v.warnings.filter(w => w.type === 'error').length ? 'error' : (v.warnings.length ? 'warning' : ''),
       totalRtp: lv.active ? analyticTotalRtp(levels) * 100 : null,
       levelRtp: a ? a.rtp * 100 : null,
       drops: a ? a.drops : null,
@@ -4029,7 +4307,7 @@ async function runSensitivity() {
       p5: null, p95: null, mcAvg: null
     };
     if (withMc && row.valid) {
-      setText('sensStatus', `⏳ Monte Carlo: tačka ${k + 1}/${nPts}`);
+      setText('sensStatus', t(`⏳ Monte Carlo: tačka ${k + 1}/${nPts}`, `⏳ Monte Carlo: point ${k + 1}/${nPts}`));
       const agg = await runMonteCarloCore(levels, glob, seed, { runs: mcRuns, months });
       row.p5 = agg.rtp.p5; row.p95 = agg.rtp.p95; row.mcAvg = agg.rtp.avg;
       row.pAtLeastOne = agg.levels[li].pAtLeastOne;
@@ -4042,7 +4320,7 @@ async function runSensitivity() {
     configLabel: document.getElementById('sensConfig').selectedOptions[0].textContent,
     current: sensCurrentValue(), withMc, mcRuns, months, seed
   };
-  setText('sensStatus', `✅ Gotovo (${nPts} tačaka${withMc ? `, Monte Carlo ${mcRuns} serija × ${months} meseci po tački, seed ${seed}` : ''})`);
+  setText('sensStatus', t(`✅ Gotovo (${nPts} tačaka${withMc ? `, Monte Carlo ${mcRuns} serija × ${months} meseci po tački, seed ${seed}` : ''})`, `✅ Done (${nPts} points${withMc ? `, Monte Carlo ${mcRuns} series × ${months} months per point, seed ${seed}` : ''})`));
   renderSensitivity();
 }
 document.getElementById('sensRunBtn').addEventListener('click', runSensitivity);
@@ -4059,8 +4337,8 @@ function renderSensitivity() {
   const xFmt = v => (SENS_PARAMS[s.key].pct ? v.toFixed(3) + '%' : formatAxisNumber(v));
   document.getElementById('sensResults').style.display = 'block';
 
-  const legend1 = [{ label: 'Ukupni JP RTP (analitički)', color: gold }];
-  if (s.withMc) legend1.push({ label: 'Mesečni raspon P5 - P95 (MC)', color: isLight ? 'rgba(183,121,31,0.25)' : 'rgba(244,196,48,0.22)', box: true });
+  const legend1 = [{ label: t('Ukupni JP RTP (analitički)', 'Total JP RTP (analytical)'), color: gold }];
+  if (s.withMc) legend1.push({ label: t('Mesečni raspon P5 - P95 (MC)', 'Monthly range P5 - P95 (MC)'), color: isLight ? 'rgba(183,121,31,0.25)' : 'rgba(244,196,48,0.22)', box: true });
   drawSimpleChart('sensChart1', {
     xs, xFmt, xLabel: `${s.level} - ${s.label}`,
     yFmt: v => v.toFixed(3) + '%',
@@ -4072,13 +4350,13 @@ function renderSensitivity() {
   drawSimpleChart('sensChart2', {
     xs, xFmt, xLabel: `${s.level} - ${s.label}`,
     yFmt: v => fmtDrops(v),
-    title: `${s.level}: dropova mesečno`,
+    title: t(`${s.level}: dropova mesečno`, `${s.level}: drops per month`),
     series: [{ ys: s.rows.map(r => r.drops), color: blue, width: 2.5 }],
-    marker: s.current, legend: [{ label: 'Drops/mes (analitički)', color: blue }]
+    marker: s.current, legend: [{ label: t('Drops/mes (analitički)', 'Drops/mo (analytical)'), color: blue }]
   });
 
   const thead = document.getElementById('sensHead');
-  thead.innerHTML = `<tr><th>${s.label}</th><th>Ukupni JP RTP</th><th>RTP nivoa</th><th>Drops/mes</th><th>Prosečan drop</th>${s.withMc ? '<th>MC prosek</th><th>MC mesečno P5 - P95</th><th>Meseci sa ≥1 dropom</th>' : ''}<th>Napomena</th></tr>`;
+  thead.innerHTML = t(`<tr><th>${s.label}</th><th>Ukupni JP RTP</th><th>RTP nivoa</th><th>Drops/mes</th><th>Prosečan drop</th>${s.withMc ? '<th>MC prosek</th><th>MC mesečno P5 - P95</th><th>Meseci sa ≥1 dropom</th>' : ''}<th>Napomena</th></tr>`, `<tr><th>${s.label}</th><th>Total JP RTP</th><th>Level RTP</th><th>Drops/mo</th><th>Average drop</th>${s.withMc ? '<th>MC average</th><th>MC monthly P5 - P95</th><th>Months with ≥1 drop</th>' : ''}<th>Note</th></tr>`);
   const body = document.getElementById('sensBody');
   body.innerHTML = '';
   s.rows.forEach(r => {
@@ -4096,7 +4374,7 @@ function renderSensitivity() {
       r.p5 !== null ? `${r.p5.toFixed(2)}% - ${r.p95.toFixed(2)}%` : '-',
       r.pAtLeastOne !== undefined ? (r.pAtLeastOne * 100).toFixed(0) + '%' : '-'
     );
-    cells.push(!r.valid ? 'nevažeće (Base > Min, Min ≥ Max ili Std = 0)' : (r.warn ? '⚠️ ' + r.warn + ' u validaciji' : (isCur ? '← trenutno' : '')));
+    cells.push(!r.valid ? t('nevažeće (Base > Min, Min ≥ Max ili Std = 0)', 'invalid (Base > Min, Min ≥ Max or Std = 0)') : (r.warn ? (r.warn === 'error' ? t('⚠️ greška u validaciji', '⚠️ validation error') : t('⚠️ upozorenje u validaciji', '⚠️ validation warning')) : (isCur ? t('← trenutno', '← current') : '')));
     cells.forEach((v, i) => {
       const td = document.createElement('td');
       td.textContent = v;
@@ -4131,7 +4409,7 @@ function updateShareSum() {
   LEVEL_DEFS.forEach(d => { sum += numVal('rev_' + d.key + '_share'); });
   const el = document.getElementById('revShareSum');
   if (el) {
-    el.textContent = `Zbir udela: ${sum.toFixed(1)}%`;
+    el.textContent = t(`Zbir udela: ${sum.toFixed(1)}%`, `Sum of shares: ${sum.toFixed(1)}%`);
     el.style.color = Math.abs(sum - 100) < 0.05 || sum === 0 ? 'var(--text-muted)' : 'var(--accent-red)';
   }
 }
@@ -4142,16 +4420,16 @@ function computeReverse() {
   const glob = readGlobals();
   const T = glob.T;
   const errs = [];
-  if (!T || T <= 0) errs.push('Unesi mesečni Total Bet u globalnim parametrima.');
+  if (!T || T <= 0) errs.push(t('Unesi mesečni Total Bet u globalnim parametrima.', 'Enter the monthly Total Bet in the global parameters.'));
   const mode = document.getElementById('revMode').value;
   const target = numVal('revTargetRtp');
   const hidShare = numVal('revHidShare') / 100;
   const doRound = document.getElementById('revRound').checked;
-  if (mode === 'rtp' && target <= 0) errs.push('Unesi ciljni ukupni JP RTP.');
-  if (hidShare < 0 || hidShare >= 1) errs.push('Hidden udeo mora biti između 0 i 100%.');
+  if (mode === 'rtp' && target <= 0) errs.push(t('Unesi ciljni ukupni JP RTP.', 'Enter the target total JP RTP.'));
+  if (hidShare < 0 || hidShare >= 1) errs.push(t('Hidden udeo mora biti između 0 i 100%.', 'Hidden share must be between 0 and 100%.'));
   let shareSum = 0;
   LEVEL_DEFS.forEach(d => { shareSum += numVal('rev_' + d.key + '_share'); });
-  if (mode === 'rtp' && Math.abs(shareSum - 100) > 0.05) errs.push(`Zbir udela u JP RTP mora biti 100% (sada ${shareSum.toFixed(1)}%).`);
+  if (mode === 'rtp' && Math.abs(shareSum - 100) > 0.05) errs.push(t(`Zbir udela u JP RTP mora biti 100% (sada ${shareSum.toFixed(1)}%).`, `The JP RTP shares must sum to 100% (currently ${shareSum.toFixed(1)}%).`));
 
   const out = [];
   LEVEL_DEFS.forEach(d => {
@@ -4163,8 +4441,8 @@ function computeReverse() {
     const basePct = numVal('rev_' + d.key + '_basepct') / 100;
     const skip = fv <= 0 || (mode === 'rtp' ? share <= 0 : payout <= 0);
     if (skip) { out.push({ key: d.key, name: d.name, skip: true }); return; }
-    if (w <= 0 || w >= 1) { errs.push(`${d.name}: širina zone mora biti između 0 i 100%.`); return; }
-    if (basePct < 0 || basePct > 1) { errs.push(`${d.name}: Base mora biti između 0 i 100% od Min.`); return; }
+    if (w <= 0 || w >= 1) { errs.push(t(`${d.name}: širina zone mora biti između 0 i 100%.`, `${d.name}: zone width must be between 0 and 100%.`)); return; }
+    if (basePct < 0 || basePct > 1) { errs.push(t(`${d.name}: Base mora biti između 0 i 100% od Min.`, `${d.name}: Base must be between 0 and 100% of Min.`)); return; }
     const drops = unit === 'mes' ? fv : 1 / fv;
     const avgTarget = mode === 'rtp' ? (target / 100) * share * T / drops : payout;
     let min = avgTarget * (1 - w), max = avgTarget * (1 + w), base = min * basePct;
@@ -4190,6 +4468,10 @@ function computeReverse() {
 
 function runReverse() {
   const res = computeReverse();
+  renderReverse(res);
+}
+
+function renderReverse(res) {
   const errDiv = document.getElementById('revWarnings');
   errDiv.innerHTML = '';
   if (res.errs.length) {
@@ -4209,7 +4491,7 @@ function runReverse() {
   res.out.forEach(o => {
     const tr = document.createElement('tr');
     let cells;
-    if (o.skip) cells = [o.name, '-', '-', '-', '-', '-', '-', '-', 'nije zadat'];
+    if (o.skip) cells = [o.name, '-', '-', '-', '-', '-', '-', '-', t('nije zadat', 'not set')];
     else {
       totalRtp += o.rtp; totalContrib += o.stdPct + o.hidPct;
       cells = [o.name, fmtEur(o.base), fmtEur(o.min), fmtEur(o.max), o.stdPct + '%', o.hidPct + '%',
@@ -4218,15 +4500,15 @@ function runReverse() {
     cells.forEach((c, i) => { const td = document.createElement('td'); td.textContent = c; if (i === 0) td.style.textAlign = 'left'; tr.appendChild(td); });
     body.appendChild(tr);
   });
-  const diff = res.mode === 'rtp' ? ` (cilj ${res.target.toFixed(3)}%, razlika ${(totalRtp - res.target).toFixed(3)}% zbog zaokruživanja)` : '';
-  setText('revSummary', `Ukupni JP RTP predloga: ${totalRtp.toFixed(3)}%${diff}  ·  Ukupna kontribucija: ${totalContrib.toFixed(4)}% od Total Bet-a  ·  Operater kroz Base dodaje ${(totalRtp - totalContrib).toFixed(3)}% Total Bet-a`);
+  const diff = res.mode === 'rtp' ? t(` (cilj ${res.target.toFixed(3)}%, razlika ${(totalRtp - res.target).toFixed(3)}% zbog zaokruživanja)`, ` (target ${res.target.toFixed(3)}%, difference ${(totalRtp - res.target).toFixed(3)}% due to rounding)`) : '';
+  setText('revSummary', t(`Ukupni JP RTP predloga: ${totalRtp.toFixed(3)}%${diff}  ·  Ukupna kontribucija: ${totalContrib.toFixed(4)}% od Total Bet-a  ·  Operater kroz Base dodaje ${(totalRtp - totalContrib).toFixed(3)}% Total Bet-a`, `Proposal total JP RTP: ${totalRtp.toFixed(3)}%${diff}  ·  Total contribution: ${totalContrib.toFixed(4)}% of Total Bet  ·  Operator adds ${(totalRtp - totalContrib).toFixed(3)}% of Total Bet through Base`));
   document.getElementById('revResults').style.display = 'block';
   lastReverse = res;
 }
 document.getElementById('revCalcBtn').addEventListener('click', runReverse);
 
 function applyReverse(target) {
-  if (!lastReverse) { alert('⚠️ Prvo izračunaj predlog.'); return; }
+  if (!lastReverse) { alert(t('⚠️ Prvo izračunaj predlog.', '⚠️ Calculate a proposal first.')); return; }
   const prefix = target === 'current' ? '' : 'scenario' + target + '_';
   lastReverse.out.forEach(o => {
     if (o.skip) return;
@@ -4240,8 +4522,8 @@ function applyReverse(target) {
     document.getElementById('scenarioSection').style.display = 'block';
     updateAllScenarioContribs(target);
   }
-  const label = target === 'current' ? 'glavnu konfiguraciju (Current)' : 'Scenario ' + target + ' (' + scenarioName(target) + ')';
-  setText('revApplied', `✅ Primenjeno na ${label}. Pokreni simulaciju ili Monte Carlo da proveriš.`);
+  const label = target === 'current' ? t('glavnu konfiguraciju (Current)', 'the main configuration (Current)') : 'Scenario ' + target + ' (' + scenarioName(target) + ')';
+  setText('revApplied', t(`✅ Primenjeno na ${label}. Pokreni simulaciju ili Monte Carlo da proveriš.`, `✅ Applied to ${label}. Run the simulation or Monte Carlo to check it.`));
 }
 
 // =====================================================================
@@ -4263,7 +4545,7 @@ function collectConfig() {
 }
 
 function applyConfig(cfg) {
-  if (!cfg || typeof cfg !== 'object' || !cfg.values) throw new Error('Fajl nije JP Simulator konfiguracija.');
+  if (!cfg || typeof cfg !== 'object' || !cfg.values) throw new Error(t('Fajl nije JP Simulator konfiguracija.', 'The file is not a JP Simulator configuration.'));
   if (cfg.customCurrencies) {
     Object.keys(cfg.customCurrencies).forEach(c => {
       const cc = cfg.customCurrencies[c];
@@ -4314,7 +4596,7 @@ function downloadText(filename, text, type) {
 
 function saveConfigFile() {
   const cfg = collectConfig();
-  const nm = (prompt('Naziv konfiguracije (koristi se u imenu fajla):', 'JP_config') || 'JP_config').replace(/[^\w\-]+/g, '_');
+  const nm = (prompt(t('Naziv konfiguracije (koristi se u imenu fajla):', 'Configuration name (used in the file name):'), 'JP_config') || 'JP_config').replace(/[^\w\-]+/g, '_');
   cfg.name = nm;
   const d = new Date();
   const stamp = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -4331,9 +4613,9 @@ document.getElementById('configFileInput').addEventListener('change', e => {
     try {
       const cfg = JSON.parse(reader.result);
       applyConfig(cfg);
-      alert(`✅ Konfiguracija učitana${cfg.name ? ': ' + cfg.name : ''}${cfg.saved ? '\nSačuvana: ' + new Date(cfg.saved).toLocaleString('sr-RS') : ''}\n\nPokreni simulaciju za nove rezultate.`);
+      alert(t(`✅ Konfiguracija učitana${cfg.name ? ': ' + cfg.name : ''}${cfg.saved ? '\nSačuvana: ' + new Date(cfg.saved).toLocaleString(uiLocale()) : ''}\n\nPokreni simulaciju za nove rezultate.`, `✅ Configuration loaded${cfg.name ? ': ' + cfg.name : ''}${cfg.saved ? '\nSaved: ' + new Date(cfg.saved).toLocaleString(uiLocale()) : ''}\n\nRun the simulation for new results.`));
     } catch (err) {
-      alert('⚠️ Ne mogu da učitam fajl: ' + err.message);
+      alert(t('⚠️ Ne mogu da učitam fajl: ', '⚠️ Cannot load the file: ') + err.message);
     }
     e.target.value = '';
   };
@@ -4353,10 +4635,10 @@ document.addEventListener('change', autosaveSession);
 document.getElementById('lastSessionBtn').addEventListener('click', () => {
   let cfg = null;
   try { cfg = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch (e) {}
-  if (!cfg) { alert('Nema sačuvane prethodne sesije u ovom browseru.'); return; }
+  if (!cfg) { alert(t('Nema sačuvane prethodne sesije u ovom browseru.', 'No saved previous session in this browser.')); return; }
   try {
     applyConfig(cfg);
-    alert('✅ Vraćena poslednja sesija (' + new Date(cfg.saved).toLocaleString('sr-RS') + ').');
+    alert(t('✅ Vraćena poslednja sesija (', '✅ Last session restored (') + new Date(cfg.saved).toLocaleString(uiLocale()) + ').');
   } catch (err) { alert('⚠️ ' + err.message); }
 });
 
@@ -4368,39 +4650,91 @@ function appendExtraSheets(wb) {
   if (lastSens) {
     const s = lastSens;
     const rows = [
-      ['ANALIZA OSETLJIVOSTI'],
-      ['Konfiguracija', s.configLabel],
-      ['JP nivo', s.level],
-      ['Parametar', s.label],
-      ['Trenutna vrednost', s.current],
-      ['Monte Carlo', s.withMc ? `${s.mcRuns} serija × ${s.months} meseci po tački, seed ${s.seed}` : 'ne'],
+      [t('ANALIZA OSETLJIVOSTI', 'SENSITIVITY ANALYSIS')],
+      [t('Konfiguracija', 'Configuration'), s.configLabel],
+      [t('JP nivo', 'JP level'), s.level],
+      [t('Parametar', 'Parameter'), s.label],
+      [t('Trenutna vrednost', 'Current value'), s.current],
+      ['Monte Carlo', s.withMc ? t(`${s.mcRuns} serija × ${s.months} meseci po tački, seed ${s.seed}`, `${s.mcRuns} series × ${s.months} months per point, seed ${s.seed}`) : t('ne', 'no')],
       [],
-      [s.label, 'Ukupni JP RTP (%)', 'RTP nivoa (%)', 'Drops/mes', 'Prosečan drop (EUR)', 'MC prosek (%)', 'MC P5 (%)', 'MC P95 (%)', 'Važeće']
+      [s.label, t('Ukupni JP RTP (%)', 'Total JP RTP (%)'), t('RTP nivoa (%)', 'Level RTP (%)'), t('Drops/mes', 'Drops/mo'), t('Prosečan drop (EUR)', 'Average drop (EUR)'), t('MC prosek (%)', 'MC average (%)'), 'MC P5 (%)', 'MC P95 (%)', t('Važeće', 'Valid')]
     ];
     s.rows.forEach(r => rows.push([r4(r.x), r.totalRtp !== null ? r4(r.totalRtp) : '', r.levelRtp !== null ? r4(r.levelRtp) : '',
       r.drops !== null ? r4(r.drops) : '', r.avgHit !== null ? r2(r.avgHit) : '',
-      r.mcAvg !== null ? r4(r.mcAvg) : '', r.p5 !== null ? r4(r.p5) : '', r.p95 !== null ? r4(r.p95) : '', r.valid ? 'da' : 'ne']));
+      r.mcAvg !== null ? r4(r.mcAvg) : '', r.p5 !== null ? r4(r.p5) : '', r.p95 !== null ? r4(r.p95) : '', r.valid ? t('da', 'yes') : t('ne', 'no')]));
     const ws = XLSX.utils.aoa_to_sheet(rows);
     ws['!cols'] = [{ wch: 26 }, { wch: 18 }, { wch: 14 }, { wch: 12 }, { wch: 18 }, { wch: 14 }, { wch: 11 }, { wch: 11 }, { wch: 8 }];
-    XLSX.utils.book_append_sheet(wb, ws, 'Osetljivost');
+    XLSX.utils.book_append_sheet(wb, ws, t('Osetljivost', 'Sensitivity'));
   }
   if (lastReverse) {
     const rows = [
-      ['OBRNUTI KALKULATOR - PREDLOG'],
-      ['Mod', lastReverse.mode === 'rtp' ? 'Ciljni JP RTP + učestalost' : 'Ciljni prosečan drop + učestalost'],
-      ['Ciljni JP RTP (%)', lastReverse.mode === 'rtp' ? lastReverse.target : ''],
+      [t('OBRNUTI KALKULATOR - PREDLOG', 'REVERSE CALCULATOR - PROPOSAL')],
+      [t('Mod', 'Mode'), lastReverse.mode === 'rtp' ? t('Ciljni JP RTP + učestalost', 'Target JP RTP + frequency') : t('Ciljni prosečan drop + učestalost', 'Target average drop + frequency')],
+      [t('Ciljni JP RTP (%)', 'Target JP RTP (%)'), lastReverse.mode === 'rtp' ? lastReverse.target : ''],
       [],
-      ['Nivo', 'Base (EUR)', 'Min (EUR)', 'Max (EUR)', 'Std (%)', 'Hidden (%)', 'Drops/mes', 'Prosečan drop (EUR)', 'RTP nivoa (%)']
+      [t('Nivo', 'Level'), 'Base (EUR)', 'Min (EUR)', 'Max (EUR)', 'Std (%)', 'Hidden (%)', t('Drops/mes', 'Drops/mo'), t('Prosečan drop (EUR)', 'Average drop (EUR)'), t('RTP nivoa (%)', 'Level RTP (%)')]
     ];
-    lastReverse.out.forEach(o => rows.push(o.skip ? [o.name, 'nije zadat'] : [o.name, o.base, o.min, o.max, o.stdPct, o.hidPct, r4(o.drops), r2(o.avgHit), r4(o.rtp)]));
+    lastReverse.out.forEach(o => rows.push(o.skip ? [o.name, t('nije zadat', 'not set')] : [o.name, o.base, o.min, o.max, o.stdPct, o.hidPct, r4(o.drops), r2(o.avgHit), r4(o.rtp)]));
     const ws = XLSX.utils.aoa_to_sheet(rows);
     ws['!cols'] = [{ wch: 22 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 10 }, { wch: 11 }, { wch: 11 }, { wch: 18 }, { wch: 14 }];
-    XLSX.utils.book_append_sheet(wb, ws, 'Obrnuti kalkulator');
+    XLSX.utils.book_append_sheet(wb, ws, t('Obrnuti kalkulator', 'Reverse calculator'));
   }
 }
 
 // init
 updateReverseMode();
+
+
+// =====================================================================
+// PROMENA JEZIKA: prevod statičkog teksta + ponovni prikaz dinamičkih delova
+// (računanje se ne ponavlja, samo se postojeći rezultati ponovo ispisuju)
+// =====================================================================
+function rerenderDynamic() {
+  const safe = fn => { try { fn(); } catch (e) { console.error('i18n rerender:', e); } };
+  safe(updateIterationCount);
+  safe(updateMainAnalytic);
+  safe(validateConfiguration);
+  ['A', 'B', 'C'].forEach(l => safe(() => { updateAllScenarioContribs(l); updateScenarioHeader(l); }));
+  safe(() => { if (currentResult) displayResults(currentResult); else drawChartAll(); });
+  safe(() => {
+    const mcBox = document.getElementById('monteCarloResults');
+    if (currentMC && mcBox && mcBox.style.display === 'block') displayMcStats(currentMC);
+  });
+  safe(() => { if (currentSingle) fillComparisonSingle('current', currentSingle); });
+  safe(() => { if (currentMC) fillComparisonMC('current', currentMC); });
+  ['A', 'B', 'C'].forEach(l => safe(() => {
+    if (scenarioResults[l]) fillComparisonSingle(l, scenarioResults[l]);
+    if (scenarioMC[l]) {
+      fillComparisonMC(l, scenarioMC[l]);
+      const st = document.getElementById('scMcStatus_' + l);
+      if (st) st.textContent = scMcStatusText(scenarioMC[l]);
+    }
+  }));
+  safe(() => { if (lastBaseSeed !== null) showUsedSeed(lastBaseSeed); });
+  safe(redrawSens);
+  safe(() => { if (lastReverse) renderReverse(lastReverse); });
+  safe(updateShareSum);
+  safe(updateRateDisplay);
+  safe(updateCryptoEquivalent);
+  safe(renderRatesStatus);
+  ['allMcStatus', 'sensStatus', 'revApplied'].forEach(id => safe(() => setText(id, '')));
+}
+
+function updateLangButton() {
+  const b = document.getElementById('langToggle');
+  if (b) b.textContent = LANG === 'en' ? '🌐 SR' : '🌐 EN';
+}
+
+function applyLanguage(lang) {
+  LANG = lang === 'en' ? 'en' : 'sr';
+  try { localStorage.setItem('jp-lang', LANG); } catch (e) {}
+  translateStaticDom(LANG);
+  rerenderDynamic();
+  updateLangButton();
+}
+
+document.getElementById('langToggle').addEventListener('click', () => applyLanguage(LANG === 'en' ? 'sr' : 'en'));
+setTimeout(() => { if (LANG === 'en') applyLanguage('en'); else updateLangButton(); }, 0);
 
 </script>
 
