@@ -1,4 +1,4 @@
-# JP Simulator
+# 🎰 JP Simulator
 
 Alat za podešavanje i testiranje jackpot (JP) konfiguracija sa 3 nivoa: **Platinum**, **Gold** i **Diamond**.
 
@@ -36,6 +36,8 @@ Ceo alat je jedan HTML fajl (`index.html`). Ne treba instalacija ni server: fajl
 
 **GitHub Pages:** otvori link repozitorijuma (`https://<korisnik>.github.io/<repo>/`). Posle svake izmene na GitHub-u sačekaj 1-2 minuta i osveži stranicu sa **Ctrl+F5**.
 
+Jezik se menja dugmetom **🌐 EN / 🌐 SR** u zaglavlju. Izbor se pamti, a promena jezika ne briše unete vrednosti ni rezultate.
+
 Za prvi test:
 
 1. Upiši **Mesečni Total Bet (EUR)**, npr. `11,000,000`.
@@ -59,6 +61,7 @@ Za prvi test:
 | Konvertor valuta | Tabele konfiguracije u 60+ fiat i kripto valuta, sa live kursevima |
 | Konfiguracije | Čuvanje i učitavanje JSON fajla, automatsko čuvanje poslednje sesije |
 | Export | Excel sa konfiguracijom, rezultatima, Monte Carlo, scenarijima, osetljivošću i predlogom kalkulatora |
+| Jezik | Srpski i engleski, dugme 🌐 u zaglavlju (izbor se pamti u browseru) |
 | Izgled | Dark i light mode, prilagođeno i za telefon |
 
 ---
@@ -284,6 +287,10 @@ Vrednosti se izvoze kao brojevi, pa se u Excel-u mogu dalje računati.
 ---
 
 ## Istorija izmena
+
+### v3.1
+
+- **Dvojezični interfejs (srpski / engleski):** prevedeni su svi natpisi, objašnjenja, upozorenja, poruke i Excel export. Promena jezika samo ponovo ispisuje postojeće rezultate, bez ponovnog računanja.
 
 ### v3
 
