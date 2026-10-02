@@ -992,6 +992,9 @@ body.light-mode .tip::after {
     .rev-table td{text-align:left}
     .eur-hint{display:none;font-size:0.72rem;color:var(--accent-blue);margin:-0.55rem 0 0.6rem 0.2rem;font-weight:500}
     .scenario-input-small + .eur-hint{margin:0.15rem 0 0.2rem 0.2rem}
+    .cur-search{margin-bottom:0.35rem}
+    .cur-search-count{font-size:0.72rem;color:var(--text-muted);margin:0 0 0.3rem 0.2rem}
+    select[size]:not([size="1"]){padding:0.25rem}
   </style>
   <!-- SheetJS Library za Excel export -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -1056,6 +1059,8 @@ body.light-mode .tip::after {
       </div>
       <div class="inline">
         <label for="cfgCurrency">Valuta JP konfiguracije <span class="tip" data-tip="Valuta u kojoj unosiš Base, Min, Max i Bet Requirement (glavna konfiguracija i scenariji), npr. kako stoje u postojećem JP-u. Simulacija, Total Bet i svi rezultati ostaju u EUR. Iznosi se preračunavaju po trenutnom kursu.">ⓘ</span></label>
+        <input type="search" id="cfgCurrencySearch" class="cur-search" placeholder="🔍 Pretraži valutu (npr. RSD, dinar, peso)" autocomplete="off">
+        <div class="cur-search-count" id="cfgCurrencySearchCount"></div>
         <select id="cfgCurrency"><option value="EUR">EUR - Euro</option></select>
         <div id="cfgCurPrefixWrap" style="display:none;">
           <label for="cfgCurPrefix">Crypto jedinica</label>
@@ -1936,7 +1941,7 @@ body.light-mode .tip::after {
     <h2>💱 Konvertor valuta - Svi Scenariji</h2>
 
     <div class="warning-box">
-      ⚠️ <strong>VAŽNO:</strong> Kursevi se učitavaju uživo (status je u zaglavlju). Ako live kursevi nisu dostupni, koriste se ugrađeni kursevi iz februara 2026.<br>
+      ⚠️ <strong>VAŽNO:</strong> Kursevi se učitavaju uživo (status je u zaglavlju). Ako live kursevi nisu dostupni, koriste se ugrađeni kursevi (fiat od 1. oktobra 2026).<br>
       Za crypto valute preporučujemo korišćenje <strong>milli/micro prefiksa</strong> radi čitljivosti.<br>
       <strong>➕ Dodaj Custom Valutu</strong> ako ti treba specifičan kurs.
     </div>
@@ -1991,7 +1996,9 @@ body.light-mode .tip::after {
     </div>
 
     <div style="max-width: 600px;">
-      <label for="convCurrency">Izaberi valutu (Top 50 Fiat + Top 10 Crypto)</label>
+      <label for="convCurrency">Izaberi valutu (160+ fiat i kripto valuta)</label>
+      <input type="search" id="convCurrencySearch" class="cur-search" placeholder="🔍 Pretraži valutu (npr. RSD, dinar, peso)" autocomplete="off">
+      <div class="cur-search-count" id="convCurrencySearchCount"></div>
       <select id="convCurrency"></select>
 
       <div class="rate-display-box" id="rateDisplayBox" style="display:none;">
@@ -2184,7 +2191,6 @@ const I18N = {
 "↔ Predloži opseg": "↔ Suggest range",
 "💱 Konvertor valuta - Svi Scenariji": "💱 Currency converter - All scenarios",
 "VAŽNO:": "IMPORTANT:",
-"Kursevi se učitavaju uživo (status je u zaglavlju). Ako live kursevi nisu dostupni, koriste se ugrađeni kursevi iz februara 2026.": "Exchange rates are loaded live (status is in the header). If live rates are unavailable, built-in rates from February 2026 are used.",
 "Za crypto valute preporučujemo korišćenje": "For crypto currencies we recommend using",
 "milli/micro prefiksa": "milli/micro prefixes",
 "radi čitljivosti.": "for readability.",
@@ -2202,7 +2208,6 @@ const I18N = {
 "micro (0.000001x) - Milioniti deo (1 μBTC, 1 μETH)": "micro (0.000001x) - One millionth (1 μBTC, 1 μETH)",
 "Primer:": "Example:",
 "Ekvivalent u EUR:": "Equivalent in EUR:",
-"Izaberi valutu (Top 50 Fiat + Top 10 Crypto)": "Choose currency (Top 50 Fiat + Top 10 Crypto)",
 "💰 Generiši tabele za SVE scenarije": "💰 Generate tables for ALL scenarios",
 "Sačuvaj sve parametre i scenarije u JSON fajl": "Save all parameters and scenarios to a JSON file",
 "Učitaj konfiguraciju iz JSON fajla": "Load a configuration from a JSON file",
@@ -2266,7 +2271,10 @@ const I18N = {
 "Valuta JP konfiguracije": "JP configuration currency",
 "Valuta u kojoj unosiš Base, Min, Max i Bet Requirement (glavna konfiguracija i scenariji), npr. kako stoje u postojećem JP-u. Simulacija, Total Bet i svi rezultati ostaju u EUR. Iznosi se preračunavaju po trenutnom kursu.": "Currency in which you enter Base, Min, Max and Bet Requirement (main configuration and scenarios), e.g. as they are set in an existing JP. The simulation, Total Bet and all results stay in EUR. Amounts are converted at the current exchange rate.",
 "Crypto jedinica": "Crypto unit",
-"1x (cela valuta)": "1x (whole unit)"
+"1x (cela valuta)": "1x (whole unit)",
+"Izaberi valutu (160+ fiat i kripto valuta)": "Choose currency (160+ fiat and crypto currencies)",
+"🔍 Pretraži valutu (npr. RSD, dinar, peso)": "🔍 Search currency (e.g. RSD, dinar, peso)",
+"Kursevi se učitavaju uživo (status je u zaglavlju). Ako live kursevi nisu dostupni, koriste se ugrađeni kursevi (fiat od 1. oktobra 2026).": "Exchange rates are loaded live (status is in the header). If live rates are unavailable, built-in rates are used (fiat as of 1 October 2026)."
 };
 let I18N_REV = null;
 function i18nNorm(s) { return String(s).replace(/\s+/g, ' ').trim(); }
@@ -2447,62 +2455,181 @@ function updateGapWarnings() {
 updateGapWarnings();
 
 
+// Ugrađeni kursevi: fiat 1. oktobar 2026 (exchangerate-api), kripto okvirno. Live kursevi ih zamenjuju.
 const currencies = {
-  'USD': {name: 'US Dollar', rate: 1.19, type: 'fiat'},
   'EUR': {name: 'Euro', rate: 1.0, type: 'fiat'},
-  'GBP': {name: 'British Pound', rate: 0.87, type: 'fiat'},
-  'JPY': {name: 'Japanese Yen', rate: 181.6, type: 'fiat'},
-  'CHF': {name: 'Swiss Franc', rate: 0.91, type: 'fiat'},
-  'CAD': {name: 'Canadian Dollar', rate: 1.61, type: 'fiat'},
-  'AUD': {name: 'Australian Dollar', rate: 1.67, type: 'fiat'},
-  'CNY': {name: 'Chinese Yuan', rate: 7.85, type: 'fiat'},
-  'SEK': {name: 'Swedish Krona', rate: 11.5, type: 'fiat'},
-  'NOK': {name: 'Norwegian Krone', rate: 11.0, type: 'fiat'},
-  'DKK': {name: 'Danish Krone', rate: 7.45, type: 'fiat'},
-  'PLN': {name: 'Polish Zloty', rate: 4.21, type: 'fiat'},
-  'CZK': {name: 'Czech Koruna', rate: 25.2, type: 'fiat'},
-  'HUF': {name: 'Hungarian Forint', rate: 390.0, type: 'fiat'},
-  'RON': {name: 'Romanian Leu', rate: 4.97, type: 'fiat'},
-  'BGN': {name: 'Bulgarian Lev', rate: 1.96, type: 'fiat'},
-  'HRK': {name: 'Croatian Kuna', rate: 7.53, type: 'fiat'},
-  'RSD': {name: 'Serbian Dinar', rate: 117.0, type: 'fiat'},
-  'ISK': {name: 'Icelandic Króna', rate: 150.0, type: 'fiat'},
-  'AED': {name: 'UAE Dirham', rate: 4.04, type: 'fiat'},
-  'SAR': {name: 'Saudi Riyal', rate: 4.12, type: 'fiat'},
-  'ILS': {name: 'Israeli Shekel', rate: 4.0, type: 'fiat'},
-  'ZAR': {name: 'South African Rand', rate: 20.5, type: 'fiat'},
-  'EGP': {name: 'Egyptian Pound', rate: 54.0, type: 'fiat'},
-  'TRY': {name: 'Turkish Lira', rate: 35.5, type: 'fiat'},
-  'SGD': {name: 'Singapore Dollar', rate: 1.45, type: 'fiat'},
-  'HKD': {name: 'Hong Kong Dollar', rate: 8.60, type: 'fiat'},
-  'KRW': {name: 'South Korean Won', rate: 1450.0, type: 'fiat'},
-  'INR': {name: 'Indian Rupee', rate: 107.76, type: 'fiat'},
-  'IDR': {name: 'Indonesian Rupiah', rate: 17200.0, type: 'fiat'},
-  'THB': {name: 'Thai Baht', rate: 38.5, type: 'fiat'},
-  'MYR': {name: 'Malaysian Ringgit', rate: 5.0, type: 'fiat'},
-  'PHP': {name: 'Philippine Peso', rate: 61.5, type: 'fiat'},
-  'NZD': {name: 'New Zealand Dollar', rate: 1.78, type: 'fiat'},
-  'MXN': {name: 'Mexican Peso', rate: 18.8, type: 'fiat'},
-  'BRL': {name: 'Brazilian Real', rate: 5.45, type: 'fiat'},
-  'ARS': {name: 'Argentine Peso', rate: 1050.0, type: 'fiat'},
-  'CLP': {name: 'Chilean Peso', rate: 980.0, type: 'fiat'},
-  'COP': {name: 'Colombian Peso', rate: 4250.0, type: 'fiat'},
-  'PEN': {name: 'Peruvian Sol', rate: 4.10, type: 'fiat'},
-  'RUB': {name: 'Russian Ruble', rate: 100.0, type: 'fiat'},
-  'UAH': {name: 'Ukrainian Hryvnia', rate: 45.0, type: 'fiat'},
-  'PKR': {name: 'Pakistani Rupee', rate: 305.0, type: 'fiat'},
-  'BDT': {name: 'Bangladeshi Taka', rate: 120.0, type: 'fiat'},
-  'VND': {name: 'Vietnamese Dong', rate: 27000.0, type: 'fiat'},
-  'NGN': {name: 'Nigerian Naira', rate: 1650.0, type: 'fiat'},
-  'KES': {name: 'Kenyan Shilling', rate: 143.0, type: 'fiat'},
-  'TWD': {name: 'Taiwan Dollar', rate: 34.5, type: 'fiat'},
-  'BTC': {name: 'Bitcoin', rate: 57710.0, type: 'crypto'},
+  'AED': {name: 'United Arab Emirates Dirham', rate: 4.16537, type: 'fiat'},
+  'AFN': {name: 'Afghan Afghani', rate: 73.288461, type: 'fiat'},
+  'ALL': {name: 'Albanian Lek', rate: 92.07308, type: 'fiat'},
+  'AMD': {name: 'Armenian Dram', rate: 412.092061, type: 'fiat'},
+  'ANG': {name: 'Netherlands Antillean Guilder', rate: 2.030228, type: 'fiat'},
+  'AOA': {name: 'Angolan Kwanza', rate: 1082.831326, type: 'fiat'},
+  'ARS': {name: 'Argentine Peso', rate: 1721.180525, type: 'fiat'},
+  'AUD': {name: 'Australian Dollar', rate: 1.630072, type: 'fiat'},
+  'AWG': {name: 'Aruban Florin', rate: 2.030228, type: 'fiat'},
+  'AZN': {name: 'Azerbaijani Manat', rate: 1.929598, type: 'fiat'},
+  'BAM': {name: 'Bosnia-Herzegovina Convertible Mark', rate: 1.95583, type: 'fiat'},
+  'BBD': {name: 'Barbadian Dollar', rate: 2.268411, type: 'fiat'},
+  'BDT': {name: 'Bangladeshi Taka', rate: 139.475664, type: 'fiat'},
+  'BGN': {name: 'Bulgarian Lev', rate: 1.95583, type: 'fiat'},
+  'BHD': {name: 'Bahraini Dinar', rate: 0.426461, type: 'fiat'},
+  'BIF': {name: 'Burundian Franc', rate: 3400.511643, type: 'fiat'},
+  'BMD': {name: 'Bermudan Dollar', rate: 1.134205, type: 'fiat'},
+  'BND': {name: 'Brunei Dollar', rate: 1.448598, type: 'fiat'},
+  'BOB': {name: 'Bolivian Boliviano', rate: 13.667077, type: 'fiat'},
+  'BRL': {name: 'Brazilian Real', rate: 5.904126, type: 'fiat'},
+  'BSD': {name: 'Bahamian Dollar', rate: 1.134205, type: 'fiat'},
+  'BTN': {name: 'Bhutanese Ngultrum', rate: 108.755877, type: 'fiat'},
+  'BWP': {name: 'Botswanan Pula', rate: 16.022893, type: 'fiat'},
+  'BYN': {name: 'Belarusian Ruble', rate: 3.419402, type: 'fiat'},
+  'BZD': {name: 'Belize Dollar', rate: 2.268411, type: 'fiat'},
+  'CAD': {name: 'Canadian Dollar', rate: 1.611585, type: 'fiat'},
+  'CDF': {name: 'Congolese Franc', rate: 2622.744361, type: 'fiat'},
+  'CHF': {name: 'Swiss Franc', rate: 0.946928, type: 'fiat'},
+  'CLF': {name: 'Chilean Unit of Account (UF)', rate: 0.027957, type: 'fiat'},
+  'CLP': {name: 'Chilean Peso', rate: 1105.034018, type: 'fiat'},
+  'CNH': {name: 'Chinese Yuan (Offshore)', rate: 7.605685, type: 'fiat'},
+  'CNY': {name: 'Chinese Yuan', rate: 7.612965, type: 'fiat'},
+  'COP': {name: 'Colombian Peso', rate: 3788.161988, type: 'fiat'},
+  'CRC': {name: 'Costa Rican Colón', rate: 518.001946, type: 'fiat'},
+  'CUP': {name: 'Cuban Peso', rate: 27.220932, type: 'fiat'},
+  'CVE': {name: 'Cape Verdean Escudo', rate: 110.265, type: 'fiat'},
+  'CZK': {name: 'Czech Koruna', rate: 24.431512, type: 'fiat'},
+  'DJF': {name: 'Djiboutian Franc', rate: 201.572133, type: 'fiat'},
+  'DKK': {name: 'Danish Krone', rate: 7.475612, type: 'fiat'},
+  'DOP': {name: 'Dominican Peso', rate: 67.514373, type: 'fiat'},
+  'DZD': {name: 'Algerian Dinar', rate: 151.884689, type: 'fiat'},
+  'EGP': {name: 'Egyptian Pound', rate: 59.015846, type: 'fiat'},
+  'ERN': {name: 'Eritrean Nakfa', rate: 17.013082, type: 'fiat'},
+  'ETB': {name: 'Ethiopian Birr', rate: 187.857429, type: 'fiat'},
+  'FJD': {name: 'Fijian Dollar', rate: 2.544221, type: 'fiat'},
+  'FKP': {name: 'Falkland Islands Pound', rate: 0.854805, type: 'fiat'},
+  'FOK': {name: 'Faroese Króna', rate: 7.475643, type: 'fiat'},
+  'GBP': {name: 'British Pound', rate: 0.854718, type: 'fiat'},
+  'GEL': {name: 'Georgian Lari', rate: 2.956141, type: 'fiat'},
+  'GGP': {name: 'Guernsey Pound', rate: 0.854805, type: 'fiat'},
+  'GHS': {name: 'Ghanaian Cedi', rate: 13.295988, type: 'fiat'},
+  'GIP': {name: 'Gibraltar Pound', rate: 0.854805, type: 'fiat'},
+  'GMD': {name: 'Gambian Dalasi', rate: 84.614657, type: 'fiat'},
+  'GNF': {name: 'Guinean Franc', rate: 9985.744071, type: 'fiat'},
+  'GTQ': {name: 'Guatemalan Quetzal', rate: 8.668281, type: 'fiat'},
+  'GYD': {name: 'Guyanaese Dollar', rate: 237.134602, type: 'fiat'},
+  'HKD': {name: 'Hong Kong Dollar', rate: 8.894854, type: 'fiat'},
+  'HNL': {name: 'Honduran Lempira', rate: 30.476368, type: 'fiat'},
+  'HRK': {name: 'Croatian Kuna', rate: 7.5345, type: 'fiat'},
+  'HTG': {name: 'Haitian Gourde', rate: 148.309949, type: 'fiat'},
+  'HUF': {name: 'Hungarian Forint', rate: 366.326713, type: 'fiat'},
+  'IDR': {name: 'Indonesian Rupiah', rate: 20281.534999, type: 'fiat'},
+  'ILS': {name: 'Israeli New Shekel', rate: 3.479793, type: 'fiat'},
+  'IMP': {name: 'Manx Pound', rate: 0.854805, type: 'fiat'},
+  'INR': {name: 'Indian Rupee', rate: 108.800441, type: 'fiat'},
+  'IQD': {name: 'Iraqi Dinar', rate: 1484.361702, type: 'fiat'},
+  'IRR': {name: 'Iranian Rial', rate: 1763984.569937, type: 'fiat'},
+  'ISK': {name: 'Icelandic Króna', rate: 136.85965, type: 'fiat'},
+  'JEP': {name: 'Jersey Pound', rate: 0.854805, type: 'fiat'},
+  'JMD': {name: 'Jamaican Dollar', rate: 179.904558, type: 'fiat'},
+  'JOD': {name: 'Jordanian Dinar', rate: 0.804152, type: 'fiat'},
+  'JPY': {name: 'Japanese Yen', rate: 178.359503, type: 'fiat'},
+  'KES': {name: 'Kenyan Shilling', rate: 147.283429, type: 'fiat'},
+  'KGS': {name: 'Kyrgyz Som', rate: 99.284969, type: 'fiat'},
+  'KHR': {name: 'Cambodian Riel', rate: 4589.802632, type: 'fiat'},
+  'KID': {name: 'Kiribati Dollar', rate: 1.629614, type: 'fiat'},
+  'KMF': {name: 'Comorian Franc', rate: 491.96775, type: 'fiat'},
+  'KRW': {name: 'South Korean Won', rate: 1537.448689, type: 'fiat'},
+  'KWD': {name: 'Kuwaiti Dinar', rate: 0.349783, type: 'fiat'},
+  'KYD': {name: 'Cayman Islands Dollar', rate: 0.945171, type: 'fiat'},
+  'KZT': {name: 'Kazakhstani Tenge', rate: 499.3244, type: 'fiat'},
+  'LAK': {name: 'Laotian Kip', rate: 25298.374032, type: 'fiat'},
+  'LBP': {name: 'Lebanese Pound', rate: 101511.390722, type: 'fiat'},
+  'LKR': {name: 'Sri Lankan Rupee', rate: 374.972238, type: 'fiat'},
+  'LRD': {name: 'Liberian Dollar', rate: 194.5693, type: 'fiat'},
+  'LSL': {name: 'Lesotho Loti', rate: 18.609007, type: 'fiat'},
+  'LYD': {name: 'Libyan Dinar', rate: 7.245752, type: 'fiat'},
+  'MAD': {name: 'Moroccan Dirham', rate: 10.999787, type: 'fiat'},
+  'MDL': {name: 'Moldovan Leu', rate: 20.111032, type: 'fiat'},
+  'MGA': {name: 'Malagasy Ariary', rate: 4980.240495, type: 'fiat'},
+  'MKD': {name: 'Macedonian Denar', rate: 61.497, type: 'fiat'},
+  'MMK': {name: 'Myanmar Kyat', rate: 2380.69709, type: 'fiat'},
+  'MNT': {name: 'Mongolian Tugrik', rate: 4047.919182, type: 'fiat'},
+  'MOP': {name: 'Macanese Pataca', rate: 9.162154, type: 'fiat'},
+  'MRU': {name: 'Mauritanian Ouguiya', rate: 45.278427, type: 'fiat'},
+  'MUR': {name: 'Mauritian Rupee', rate: 54.211121, type: 'fiat'},
+  'MVR': {name: 'Maldivian Rufiyaa', rate: 17.545487, type: 'fiat'},
+  'MWK': {name: 'Malawian Kwacha', rate: 1981.170459, type: 'fiat'},
+  'MXN': {name: 'Mexican Peso', rate: 20.496916, type: 'fiat'},
+  'MYR': {name: 'Malaysian Ringgit', rate: 4.626002, type: 'fiat'},
+  'MZN': {name: 'Mozambican Metical', rate: 72.48583, type: 'fiat'},
+  'NAD': {name: 'Namibian Dollar', rate: 18.609007, type: 'fiat'},
+  'NGN': {name: 'Nigerian Naira', rate: 1515.81289, type: 'fiat'},
+  'NIO': {name: 'Nicaraguan Córdoba', rate: 41.738036, type: 'fiat'},
+  'NOK': {name: 'Norwegian Krone', rate: 10.900494, type: 'fiat'},
+  'NPR': {name: 'Nepalese Rupee', rate: 174.009403, type: 'fiat'},
+  'NZD': {name: 'New Zealand Dollar', rate: 2.011089, type: 'fiat'},
+  'OMR': {name: 'Omani Rial', rate: 0.436099, type: 'fiat'},
+  'PAB': {name: 'Panamanian Balboa', rate: 1.134205, type: 'fiat'},
+  'PEN': {name: 'Peruvian Sol', rate: 3.90533, type: 'fiat'},
+  'PGK': {name: 'Papua New Guinean Kina', rate: 5.089913, type: 'fiat'},
+  'PHP': {name: 'Philippine Peso', rate: 71.043098, type: 'fiat'},
+  'PKR': {name: 'Pakistani Rupee', rate: 313.947476, type: 'fiat'},
+  'PLN': {name: 'Polish Zloty', rate: 4.366247, type: 'fiat'},
+  'PYG': {name: 'Paraguayan Guarani', rate: 6649.497217, type: 'fiat'},
+  'QAR': {name: 'Qatari Riyal', rate: 4.128508, type: 'fiat'},
+  'RON': {name: 'Romanian Leu', rate: 5.279352, type: 'fiat'},
+  'RSD': {name: 'Serbian Dinar', rate: 117.525113, type: 'fiat'},
+  'RUB': {name: 'Russian Ruble', rate: 94.867806, type: 'fiat'},
+  'RWF': {name: 'Rwandan Franc', rate: 1677.951468, type: 'fiat'},
+  'SAR': {name: 'Saudi Riyal', rate: 4.253271, type: 'fiat'},
+  'SBD': {name: 'Solomon Islands Dollar', rate: 9.008799, type: 'fiat'},
+  'SCR': {name: 'Seychellois Rupee', rate: 16.677524, type: 'fiat'},
+  'SDG': {name: 'Sudanese Pound', rate: 506.277213, type: 'fiat'},
+  'SEK': {name: 'Swedish Krona', rate: 11.338024, type: 'fiat'},
+  'SGD': {name: 'Singapore Dollar', rate: 1.448935, type: 'fiat'},
+  'SHP': {name: 'St. Helena Pound', rate: 0.854805, type: 'fiat'},
+  'SLE': {name: 'Sierra Leonean Leone', rate: 27.963294, type: 'fiat'},
+  'SLL': {name: 'Sierra Leonean Leone (1964-2022)', rate: 27964.197215, type: 'fiat'},
+  'SOS': {name: 'Somali Shilling', rate: 647.170686, type: 'fiat'},
+  'SRD': {name: 'Surinamese Dollar', rate: 42.648857, type: 'fiat'},
+  'SSP': {name: 'South Sudanese Pound', rate: 6906.037614, type: 'fiat'},
+  'STN': {name: 'São Tomé & Príncipe Dobra', rate: 24.5, type: 'fiat'},
+  'SYP': {name: 'Syrian Pound', rate: 138.138187, type: 'fiat'},
+  'SZL': {name: 'Swazi Lilangeni', rate: 18.609007, type: 'fiat'},
+  'THB': {name: 'Thai Baht', rate: 38.091155, type: 'fiat'},
+  'TJS': {name: 'Tajikistani Somoni', rate: 10.484661, type: 'fiat'},
+  'TMT': {name: 'Turkmenistani Manat', rate: 3.9742, type: 'fiat'},
+  'TND': {name: 'Tunisian Dinar', rate: 3.375979, type: 'fiat'},
+  'TOP': {name: 'Tongan Paʻanga', rate: 2.708973, type: 'fiat'},
+  'TRY': {name: 'Turkish Lira', rate: 55.625784, type: 'fiat'},
+  'TTD': {name: 'Trinidad & Tobago Dollar', rate: 8.020268, type: 'fiat'},
+  'TVD': {name: 'Tuvaluan Dollar', rate: 1.629614, type: 'fiat'},
+  'TWD': {name: 'New Taiwan Dollar', rate: 36.132493, type: 'fiat'},
+  'TZS': {name: 'Tanzanian Shilling', rate: 2987.088824, type: 'fiat'},
+  'UAH': {name: 'Ukrainian Hryvnia', rate: 50.784639, type: 'fiat'},
+  'UGX': {name: 'Ugandan Shilling', rate: 4424.072755, type: 'fiat'},
+  'USD': {name: 'US Dollar', rate: 1.134029, type: 'fiat'},
+  'UYU': {name: 'Uruguayan Peso', rate: 45.606152, type: 'fiat'},
+  'UZS': {name: 'Uzbekistani Som', rate: 13421.054616, type: 'fiat'},
+  'VES': {name: 'Venezuelan Bolívar', rate: 976.840876, type: 'fiat'},
+  'VND': {name: 'Vietnamese Dong', rate: 29398.818231, type: 'fiat'},
+  'VUV': {name: 'Vanuatu Vatu', rate: 135.054628, type: 'fiat'},
+  'WST': {name: 'Samoan Tala', rate: 3.102168, type: 'fiat'},
+  'XAF': {name: 'Central African CFA Franc', rate: 655.957, type: 'fiat'},
+  'XCD': {name: 'East Caribbean Dollar', rate: 3.062355, type: 'fiat'},
+  'XCG': {name: 'Caribbean Guilder', rate: 2.030228, type: 'fiat'},
+  'XDR': {name: 'Special Drawing Rights (IMF)', rate: 0.835751, type: 'fiat'},
+  'XOF': {name: 'West African CFA Franc', rate: 655.957, type: 'fiat'},
+  'XPF': {name: 'CFP Franc', rate: 119.332, type: 'fiat'},
+  'YER': {name: 'Yemeni Rial', rate: 268.366432, type: 'fiat'},
+  'ZAR': {name: 'South African Rand', rate: 18.60511, type: 'fiat'},
+  'ZMW': {name: 'Zambian Kwacha', rate: 22.306041, type: 'fiat'},
+  'ZWG': {name: 'Zimbabwe Gold', rate: 30.3779, type: 'fiat'},
+  'ZWL': {name: 'Zimbabwean Dollar (2009–2024)', rate: 30.3779, type: 'fiat'},
+  'BTC': {name: 'Bitcoin', rate: 74797, type: 'crypto'},
   'ETH': {name: 'Ethereum', rate: 1616.93, type: 'crypto'},
-  'USDT': {name: 'Tether (USD Stablecoin)', rate: 0.84, type: 'crypto'},
-  'BNB': {name: 'Binance Coin', rate: 543.0, type: 'crypto'},
+  'USDT': {name: 'Tether (USD Stablecoin)', rate: 0.8818, type: 'crypto'},
+  'USDC': {name: 'USD Coin (USD Stablecoin)', rate: 0.8818, type: 'crypto'},
+  'BNB': {name: 'Binance Coin', rate: 543, type: 'crypto'},
   'SOL': {name: 'Solana', rate: 67.15, type: 'crypto'},
   'XRP': {name: 'Ripple', rate: 1.16, type: 'crypto'},
-  'USDC': {name: 'USD Coin (USD Stablecoin)', rate: 0.84, type: 'crypto'},
   'ADA': {name: 'Cardano', rate: 0.2151, type: 'crypto'},
   'AVAX': {name: 'Avalanche', rate: 7.28, type: 'crypto'},
   'DOGE': {name: 'Dogecoin', rate: 0.0754, type: 'crypto'}
@@ -2510,7 +2637,92 @@ const currencies = {
 window.currencies = currencies; // Expose globally for live rates
 
 
-function populateCurrencySelect(){const sel=document.getElementById('convCurrency');sel.innerHTML='';const LIVE=['USD','GBP','RSD','CHF','JPY','CNY','TRY','INR','AUD','CAD','BRL','MXN','BTC','ETH','USDT','BNB','ADA','XRP','SOL','DOT','DOGE','LTC'];const fiatLive=[],fiatStatic=[],cryptoLive=[],cryptoStatic=[],custom=[];Object.keys(currencies).forEach(code=>{const curr=currencies[code];const isLive=LIVE.includes(code);if(curr.custom){custom.push(code);}else if(curr.type==='fiat'){isLive?fiatLive.push(code):fiatStatic.push(code);}else if(curr.type==='crypto'){isLive?cryptoLive.push(code):cryptoStatic.push(code);}else if(curr.type==='custom'){custom.push(code);}});fiatLive.sort();fiatStatic.sort();cryptoLive.sort();cryptoStatic.sort();custom.sort();if(fiatLive.length>0){const g=document.createElement('optgroup');g.label='🟢 FIAT Live Rates (Auto-updated)';fiatLive.forEach(code=>{const opt=document.createElement('option');opt.value=code;opt.textContent=`${code} - ${currencies[code].name} 🟢`;g.appendChild(opt);});sel.appendChild(g);}if(fiatStatic.length>0){const g=document.createElement('optgroup');g.label='⚪ FIAT Static (Feb 2026)';fiatStatic.forEach(code=>{const opt=document.createElement('option');opt.value=code;opt.textContent=`${code} - ${currencies[code].name}`;g.appendChild(opt);});sel.appendChild(g);}if(cryptoLive.length>0){const g=document.createElement('optgroup');g.label='🟢 CRYPTO Live Rates (Auto-updated)';cryptoLive.forEach(code=>{const opt=document.createElement('option');opt.value=code;opt.textContent=`${code} - ${currencies[code].name} 🟢`;g.appendChild(opt);});sel.appendChild(g);}if(cryptoStatic.length>0){const g=document.createElement('optgroup');g.label='⚪ CRYPTO Static (Feb 2026)';cryptoStatic.forEach(code=>{const opt=document.createElement('option');opt.value=code;opt.textContent=`${code} - ${currencies[code].name}`;g.appendChild(opt);});sel.appendChild(g);}if(custom.length>0){const g=document.createElement('optgroup');g.label='➕ Custom Currencies';custom.forEach(code=>{const opt=document.createElement('option');opt.value=code;opt.textContent=`${code} - ${currencies[code].name}${currencies[code].type==='crypto'?' (crypto)':''}`;g.appendChild(opt);});sel.appendChild(g);}}
+// ===== Liste valuta (konvertor + valuta konfiguracije) sa pretragom =====
+const __curNames = {};
+function currencyDisplayName(code, lang) {
+  const key = (lang || 'en') + ':' + code;
+  if (__curNames[key] !== undefined) return __curNames[key];
+  let n = code;
+  try { n = new Intl.DisplayNames([lang === 'sr' ? 'sr-Latn' : 'en'], { type: 'currency' }).of(code) || code; } catch (e) {}
+  __curNames[key] = n;
+  return n;
+}
+function currencySearchText(code) {
+  const c = currencies[code] || {};
+  const sr = currencyDisplayName(code, 'sr');
+  return (code + ' ' + (c.name || '') + ' ' + (sr !== code ? sr : '') + (code === 'EUR' ? ' euro evro' : '')).toLowerCase();
+}
+function fillCurrencySelect(sel) {
+  if (!sel) return;
+  const prev = sel.value;
+  sel.innerHTML = '';
+  const add = (parent, code) => {
+    const c = currencies[code];
+    const o = document.createElement('option');
+    o.value = code;
+    o.textContent = `${code} - ${c.name}${c.live ? ' 🟢' : ''}`;
+    o.dataset.search = currencySearchText(code);
+    parent.appendChild(o);
+  };
+  if (currencies.EUR) add(sel, 'EUR');
+  const groups = [
+    [t('Fiat valute', 'Fiat currencies'), c => !currencies[c].custom && currencies[c].type === 'fiat' && c !== 'EUR'],
+    [t('Kripto valute', 'Crypto currencies'), c => !currencies[c].custom && currencies[c].type === 'crypto'],
+    [t('Custom valute', 'Custom currencies'), c => currencies[c].custom]
+  ];
+  groups.forEach(([label, fn]) => {
+    const codes = Object.keys(currencies).filter(fn).sort();
+    if (!codes.length) return;
+    const g = document.createElement('optgroup');
+    g.label = label;
+    codes.forEach(c => add(g, c));
+    sel.appendChild(g);
+  });
+  if (prev && Array.from(sel.options).some(o => o.value === prev)) sel.value = prev;
+  applyCurrencySearch(sel.id);
+}
+function populateCurrencySelect() { fillCurrencySelect(document.getElementById('convCurrency')); }
+
+// Pretraga: filtrira listu po kodu i nazivu (engleski i srpski), prikazuje rezultate kao otvorenu listu
+function applyCurrencySearch(selId) {
+  const sel = document.getElementById(selId);
+  const inp = document.getElementById(selId + 'Search');
+  if (!sel || !inp) return;
+  const q = inp.value.trim().toLowerCase();
+  let visible = 0;
+  sel.querySelectorAll('option').forEach(o => {
+    const m = !q || (o.dataset.search || o.textContent.toLowerCase()).includes(q);
+    o.hidden = !m;
+    if (m) visible++;
+  });
+  sel.querySelectorAll('optgroup').forEach(g => { g.hidden = !Array.from(g.children).some(o => !o.hidden); });
+  sel.size = q ? Math.max(2, Math.min(10, visible + sel.querySelectorAll('optgroup:not([hidden])').length)) : 1;
+  const cnt = document.getElementById(selId + 'SearchCount');
+  if (cnt) cnt.textContent = q ? (visible ? t(`${visible} rezultata - klikni valutu ili pritisni Enter`, `${visible} results - click a currency or press Enter`) : t('Nema rezultata', 'No results')) : '';
+}
+function initCurrencySearch(selId) {
+  const sel = document.getElementById(selId);
+  const inp = document.getElementById(selId + 'Search');
+  if (!sel || !inp) return;
+  inp.addEventListener('input', () => applyCurrencySearch(selId));
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const first = Array.from(sel.options).find(o => !o.hidden);
+      if (first) {
+        if (sel.value !== first.value) { sel.value = first.value; sel.dispatchEvent(new Event('change')); }
+        else closeCurrencySearch(selId);
+      }
+    } else if (e.key === 'Escape') { closeCurrencySearch(selId); }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); sel.focus(); }
+  });
+  sel.addEventListener('change', () => closeCurrencySearch(selId));
+}
+function closeCurrencySearch(selId) {
+  const inp = document.getElementById(selId + 'Search');
+  if (inp && inp.value) { inp.value = ''; applyCurrencySearch(selId); }
+}
+
 populateCurrencySelect();
 
 function updateRateDisplay() {
@@ -3884,6 +4096,7 @@ function applyRatesToCurrencies(rates) {
     // Custom valute koje je korisnik uneo se ne prepisuju live kursevima
     if (c && !c.custom && rates[code] !== undefined && rates[code] !== null) {
       c.rate = rates[code];
+      c.live = true;
       updateCount++;
     }
   });
@@ -3928,9 +4141,22 @@ async function fetchFiatRates() {
   return null;
 }
 
+// Kripto valute koje se učitavaju uživo (CoinGecko id + naziv)
+const CRYPTO_IDS = {
+  BTC: { id: 'bitcoin', name: 'Bitcoin' }, ETH: { id: 'ethereum', name: 'Ethereum' }, USDT: { id: 'tether', name: 'Tether (USD Stablecoin)' },
+  USDC: { id: 'usd-coin', name: 'USD Coin (USD Stablecoin)' }, BNB: { id: 'binancecoin', name: 'Binance Coin' }, SOL: { id: 'solana', name: 'Solana' },
+  XRP: { id: 'ripple', name: 'Ripple' }, ADA: { id: 'cardano', name: 'Cardano' }, DOGE: { id: 'dogecoin', name: 'Dogecoin' },
+  AVAX: { id: 'avalanche-2', name: 'Avalanche' }, DOT: { id: 'polkadot', name: 'Polkadot' }, LTC: { id: 'litecoin', name: 'Litecoin' },
+  TRX: { id: 'tron', name: 'Tron' }, TON: { id: 'the-open-network', name: 'Toncoin' }, LINK: { id: 'chainlink', name: 'Chainlink' },
+  SHIB: { id: 'shiba-inu', name: 'Shiba Inu' }, BCH: { id: 'bitcoin-cash', name: 'Bitcoin Cash' }, XLM: { id: 'stellar', name: 'Stellar' },
+  DAI: { id: 'dai', name: 'Dai (USD Stablecoin)' }, POL: { id: 'polygon-ecosystem-token', name: 'Polygon' }, XMR: { id: 'monero', name: 'Monero' },
+  SUI: { id: 'sui', name: 'Sui' }, NEAR: { id: 'near', name: 'NEAR Protocol' }, UNI: { id: 'uniswap', name: 'Uniswap' }
+};
+
 async function fetchCryptoRates() {
   try {
-    const d = await fetchJson('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,tether,binancecoin,cardano,ripple,solana,polkadot,dogecoin,litecoin,usd-coin,avalanche-2&vs_currencies=eur');
+    const ids = Object.values(CRYPTO_IDS).map(x => x.id).join(',');
+    const d = await fetchJson('https://api.coingecko.com/api/v3/simple/price?ids=' + ids + '&vs_currencies=eur');
     if (d && d.bitcoin && d.bitcoin.eur) return d;
   } catch (e) {}
   return null;
@@ -3956,20 +4182,22 @@ async function fetchLiveExchangeRates() {
 
   const [fiat, crypto] = await Promise.all([fetchFiatRates(), fetchCryptoRates()]);
   const rates = {};
-  const FIAT_CODES = ['USD','GBP','RSD','CHF','JPY','CNY','TRY','INR','AUD','CAD','BRL','MXN'];
+  // Ako API ne odgovori, ostaju ugrađeni kursevi iz tabele (ne prepisuju se starijim vrednostima)
   if (fiat) {
-    // Svi fiat kursevi iz tabele koje API vraća (ne samo lista "live" valuta)
-    Object.keys(window.currencies).forEach(code => {
-      if (window.currencies[code].type === 'fiat' && typeof fiat[code] === 'number') rates[code] = fiat[code];
+    // Svi fiat kursevi koje API vraća; valute koje nisu u tabeli se dodaju
+    Object.keys(fiat).forEach(code => {
+      if (code === 'EUR' || typeof fiat[code] !== 'number' || !(fiat[code] > 0)) return;
+      if (!window.currencies[code]) window.currencies[code] = { name: currencyDisplayName(code), rate: fiat[code], type: 'fiat' };
+      if (window.currencies[code].type === 'fiat') rates[code] = fiat[code];
     });
-  } else {
-    FIAT_CODES.forEach(c => { rates[c] = FALLBACK_RATES[c]; });
   }
   if (crypto) {
-    const map = { BTC: 'bitcoin', ETH: 'ethereum', USDT: 'tether', BNB: 'binancecoin', ADA: 'cardano', XRP: 'ripple', SOL: 'solana', DOT: 'polkadot', DOGE: 'dogecoin', LTC: 'litecoin', USDC: 'usd-coin', AVAX: 'avalanche-2' };
-    Object.keys(map).forEach(c => { const v = crypto[map[c]] && crypto[map[c]].eur; if (typeof v === 'number') rates[c] = v; });
-  } else {
-    ['BTC','ETH','USDT','BNB','ADA','XRP','SOL','DOT','DOGE','LTC'].forEach(c => { rates[c] = FALLBACK_RATES[c]; });
+    Object.keys(CRYPTO_IDS).forEach(c => {
+      const v = crypto[CRYPTO_IDS[c].id] && crypto[CRYPTO_IDS[c].id].eur;
+      if (typeof v !== 'number' || !(v > 0)) return;
+      if (!window.currencies[c]) window.currencies[c] = { name: CRYPTO_IDS[c].name, rate: v, type: 'crypto' };
+      rates[c] = v;
+    });
   }
   cachedRates = rates;
   applyRatesToCurrencies(rates);
@@ -4550,7 +4778,7 @@ function applyReverse(target) {
 // ČUVANJE / UČITAVANJE KONFIGURACIJA (JSON + poslednja sesija)
 // =====================================================================
 
-const CONFIG_EXCLUDE = new Set(['customCurrencyCode', 'customCurrencyRate', 'customCurrencyType', 'rateDisplay', 'cryptoEquivalent', 'configFileInput']);
+const CONFIG_EXCLUDE = new Set(['customCurrencyCode', 'customCurrencyRate', 'customCurrencyType', 'rateDisplay', 'cryptoEquivalent', 'configFileInput', 'cfgCurrencySearch', 'convCurrencySearch']);
 const SESSION_KEY = 'jp-last-session';
 
 function collectConfig() {
@@ -4778,27 +5006,7 @@ function fromEurNice(vEur) {
   return parseFloat((Math.round(v / step) * step).toFixed(step < 1 ? Math.round(-Math.log10(step)) : 0));
 }
 
-function populateCfgCurrency() {
-  const sel = document.getElementById('cfgCurrency');
-  if (!sel) return;
-  const prev = sel.value || 'EUR';
-  sel.innerHTML = '';
-  const add = (parent, code, label) => { const o = document.createElement('option'); o.value = code; o.textContent = label; parent.appendChild(o); };
-  add(sel, 'EUR', 'EUR - Euro');
-  const groups = [
-    ['Fiat', c => !currencies[c].custom && currencies[c].type === 'fiat' && c !== 'EUR'],
-    ['Crypto', c => !currencies[c].custom && currencies[c].type === 'crypto'],
-    ['Custom', c => currencies[c].custom]
-  ];
-  groups.forEach(([lbl, fn]) => {
-    const codes = Object.keys(currencies).filter(fn).sort();
-    if (!codes.length) return;
-    const g = document.createElement('optgroup'); g.label = lbl;
-    codes.forEach(c => add(g, c, `${c} - ${currencies[c].name}`));
-    sel.appendChild(g);
-  });
-  sel.value = currencies[prev] || prev === 'EUR' ? prev : 'EUR';
-}
+function populateCfgCurrency() { fillCurrencySelect(document.getElementById('cfgCurrency')); }
 
 // "≈ X EUR" ispod svakog polja sa iznosom
 function ensureEurHints() {
@@ -4876,6 +5084,8 @@ function onCfgCurrencyChange() {
 
 (function initCfgCurrency() {
   populateCfgCurrency();
+  initCurrencySearch('cfgCurrency');
+  initCurrencySearch('convCurrency');
   ensureEurHints();
   const sel = document.getElementById('cfgCurrency');
   const pre = document.getElementById('cfgCurPrefix');
@@ -4890,12 +5100,15 @@ function onCfgCurrencyChange() {
   populateCurrencySelect = function () { origPop(); populateCfgCurrency(); };
   // novi kursevi -> osveži EUR ekvivalente (rezultati ostaju dok se ponovo ne pokrene simulacija)
   const origApply = applyRatesToCurrencies;
-  applyRatesToCurrencies = function (rates) { const n = origApply(rates); lastCfgFactor = cfgFactorToEur(); updateCfgCurrencyUI(); return n; };
+  applyRatesToCurrencies = function (rates) { const n = origApply(rates); populateCurrencySelect(); lastCfgFactor = cfgFactorToEur(); updateCfgCurrencyUI(); return n; };
   // učitavanje konfiguracije -> osveži prikaz valute
   const origRefresh = refreshAfterLoad;
   refreshAfterLoad = function () {
-    const cur = currencies[cfgCur()];
-    if (!cur && cfgCur() !== 'EUR') document.getElementById('cfgCurrency').value = 'EUR';
+    const sel = document.getElementById('cfgCurrency');
+    if (sel.value !== 'EUR' && !currencies[sel.value]) {
+      alert(t(`⚠️ Valuta konfiguracije ${sel.value} trenutno nije dostupna (nema kursa). Iznosi su učitani, ali se tumače kao EUR dok se ne izabere valuta.`, `⚠️ Configuration currency ${sel.value} is currently unavailable (no rate). Amounts were loaded but are treated as EUR until a currency is selected.`));
+      sel.value = 'EUR';
+    }
     lastCfgFactor = cfgFactorToEur();
     origRefresh();
     refreshAfterCfgCurrencyChange();
@@ -4937,6 +5150,7 @@ function rerenderDynamic() {
   safe(updateRateDisplay);
   safe(updateCryptoEquivalent);
   safe(renderRatesStatus);
+  safe(populateCurrencySelect);
   safe(updateCfgCurrencyUI);
   ['allMcStatus', 'sensStatus', 'revApplied'].forEach(id => safe(() => setText(id, '')));
 }
