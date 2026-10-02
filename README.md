@@ -58,7 +58,7 @@ Za prvi test:
 | Obrnuti kalkulator | Iz cilja (JP RTP ili prosečan drop + učestalost) predlaže Base, Min, Max, Std i Hidden |
 | Analiza osetljivosti | Kako se JP RTP i učestalost menjaju kada se pomera jedan parametar |
 | Validacija | Upozorenja za Base > Min, Min ≥ Max, hidden overflow i neaktivne nivoe |
-| Konvertor valuta | Tabele konfiguracije u 60+ fiat i kripto valuta, sa live kursevima |
+| Konvertor valuta | Tabele konfiguracije u 160+ fiat i 20+ kripto valuta, sa live kursevima i pretragom |
 | Konfiguracije | Čuvanje i učitavanje JSON fajla, automatsko čuvanje poslednje sesije |
 | Export | Excel sa konfiguracijom, rezultatima, Monte Carlo, scenarijima, osetljivošću i predlogom kalkulatora |
 | Jezik | Srpski i engleski, dugme 🌐 u zaglavlju (izbor se pamti u browseru) |
@@ -85,7 +85,7 @@ Ispod parametara se odmah vide **očekivani JP RTP (analitički)**, očekivani b
 
 Kada se menja postojeći JP koji nije u EUR (npr. RSD), iznosi se ne moraju ručno konvertovati:
 
-1. U **Valuta JP konfiguracije** izaberi valutu (fiat, kripto ili custom). Kod kripto valuta bira se i jedinica (1x, milli, micro).
+1. U **Valuta JP konfiguracije** izaberi valutu (fiat, kripto ili custom). Valutu možeš da potražiš u polju 🔍 po kodu ili nazivu, na engleskom ili srpskom (npr. `RSD`, `dinar`, `peso`). Enter bira prvi rezultat. Kod kripto valuta bira se i jedinica (1x, milli, micro).
 2. Base, Min, Max i Bet Requirement (glavna konfiguracija i scenariji) upiši tačno kako stoje u postojećem JP-u.
 3. Ispod svakog polja se odmah vidi ekvivalent u EUR, a pored izbora valute kurs koji se koristi (live ili ugrađeni).
 
@@ -227,6 +227,8 @@ Generiše tabele konfiguracije (Current i scenariji) u izabranoj valuti.
 - **Live kursevi** se učitavaju pri otvaranju i osvežavaju na svakih 5 minuta (ili dugmetom Refresh):
   - fiat: `api.exchangerate-api.com`, rezervni izvor `open.er-api.com`
   - kripto: `api.coingecko.com`
+- Lista sadrži sve valute koje vraća API (160+ fiat) i 20+ kripto valuta. Valute sa live kursem su označene sa 🟢. Iznad liste je polje za pretragu (kod ili naziv, engleski ili srpski).
+- Ugrađeni kursevi (kad nema interneta): fiat od 1. oktobra 2026, kripto okvirno.
 - Status u zaglavlju: **✅ Live**, **⚠️ Delimično live** (samo fiat ili samo kripto) ili **⚠️ Fallback rates** (ugrađeni kursevi).
 - **Zaokruživanje:** fiat na 2 značajne cifre (npr. 1.19 → 1.2, 41.65 → 42). Valute bez decimala (RSD, HUF, JPY, KRW, IDR, VND, CLP, ISK) idu na ceo broj.
 - **Kripto prefiksi:** milli (mBTC) i micro (μBTC), za čitljive iznose.
@@ -300,6 +302,11 @@ Vrednosti se izvoze kao brojevi, pa se u Excel-u mogu dalje računati.
 ---
 
 ## Istorija izmena
+
+### v3.3
+
+- **Pretraga valuta** u izboru valute konfiguracije i u konvertoru (kod ili naziv, engleski ili srpski).
+- **Proširena lista valuta:** sve fiat valute koje vraća API (160+) i 20+ kripto valuta. Ugrađeni fiat kursevi osveženi na 1. oktobar 2026.
 
 ### v3.2
 
